@@ -1,0 +1,69 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" width="50%">
+    <Dialog id="FormDialog" title="Editar novedad" titleAlignment="Center">
+        <content>
+            <f:Form width="1200px">
+                <f:layout>
+                    <f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4" emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="2" singleContainerFullSize="true" />
+                </f:layout>
+                <f:formContainers>
+                    <f:FormContainer>
+                        <f:formElements>
+                            <f:FormElement>
+                                <f:fields>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Label text="{i18n>dateTime}:" />
+                                        <DateTimePicker id="fromDate" placeholder="{i18n>enterDate}" valueFormat="dd.MM.yyyy HH:mm" displayFormat="dd.MM.yyyy HH:mm" value="{tempOData>/date}" change="handleChange" class="sapUiSmallMarginBottom" />
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement>
+                                <f:fields>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Label text="{i18n>place}:" />
+
+                                        <ComboBox id="cmbPlaceEdit" selectedKey="{tempOData>/key}" selectionChange=".onSelectionChange" items="{
+												path: 'places>/',
+												templateShareable: true
+											}">
+                                            <core:Item key="{places>id}" text="{places>value}" />
+                                        </ComboBox>
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement>
+                                <f:fields>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Label text="{i18n>team}:" />
+                                        <Input  width="205px" id="team" value="{tempOData>/team}" />
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement>
+                                <f:fields>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Label text="{i18n>operator}:" />
+                                        <Input width="205px" id="operator" value="{tempOData>/operator}" />
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement>
+                                <f:fields>
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Label text="{i18n>novelty}:" />
+                                        <Input width="300px" id="novelty" value="{tempOData>/novelty}" />
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                        </f:formElements>
+                    </f:FormContainer>
+                </f:formContainers>
+            </f:Form>
+        </content>
+        <beginButton>
+            <Button text="Guardar" press="saveEdit" />
+        </beginButton>
+        <endButton>
+            <Button text="Cerrar" press="closeDialog" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

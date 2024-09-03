@@ -1,0 +1,17 @@
+<mvc:View controllerName="transener.registrocronologicoeventos.controller.Perturbaciones.Perturbaciones" xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m" xmlns:custom="transener.registrocronologicoeventos.components">
+	<Shell id="shell">
+		<Page title="{i18n>disturbances}" showNavButton="true" enableScrolling="true" navButtonPress=".onNavBack" class="backForm">
+			<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding backForm">
+				<items>
+					<IconTabFilter text="Datos Generales" key="generalData">
+						<!--<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.forms.formPerturbaciones" type="XML"/>-->
+					</IconTabFilter>
+					<IconTabFilter text="Consecuentes" key="consecuentes">
+						<Text text="Attachments go here ..."/>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</Page>
+	</Shell>
+</mvc:View>

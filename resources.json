@@ -1,0 +1,115 @@
+{
+    "resources": [
+        {
+            "name": "services/UserDataService-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "utils/formatter.js"
+        },
+        {
+            "name": "manifest.json"
+        },
+        {
+            "name": "services/oDataServices.js"
+        },
+        {
+            "name": "services/UserDataService.js"
+        },
+        {
+            "name": "services/EquiposServices.js"
+        },
+        {
+            "name": "model/models.js"
+        },
+        {
+            "name": "controller/Main.controller.js"
+        },
+        {
+            "name": "Component.js"
+        },
+        {
+            "name": "manifest-bundle.zip"
+        },
+        {
+            "name": "Component-preload.js",
+            "merged": true
+        },
+        {
+            "name": "utils/formatter-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "services/oDataServices-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "i18n/i18n.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "services/EquiposServices-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "model/models-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "controller/Main-dbg.controller.js",
+            "isDebug": true
+        },
+        {
+            "name": "Component-dbg.js",
+            "isDebug": true
+        },
+        {
+            "name": "../../sap-ui-version.json"
+        },
+        {
+            "name": "neo-app.json"
+        },
+        {
+            "name": "di.code-validation.core_issues.json"
+        },
+        {
+            "name": "localService/Z_SCP_OPERACIONES_SRV/metadata.xml"
+        },
+        {
+            "name": "fragments/forms/tableEdit.fragment.xml"
+        },
+        {
+            "name": "fragments/forms/formScheduled.fragment.xml"
+        },
+        {
+            "name": "fragments/forms/formNovelties.fragment.xml"
+        },
+        {
+            "name": "fragments/forms/formDisturbances.fragment.xml"
+        },
+        {
+            "name": "view/Main.view.xml"
+        },
+        {
+            "name": "localService/metadata.xml"
+        },
+        {
+            "name": "fragments/tableTask.fragment.xml"
+        },
+        {
+            "name": "fragments/tableNovelties.fragment.xml"
+        },
+        {
+            "name": "fragments/tableGeneral.fragment.xml"
+        },
+        {
+            "name": "fragments/tableDisturbances.fragment.xml"
+        },
+        {
+            "name": "css/style.css"
+        },
+        {
+            "name": "index.html"
+        }
+    ]
+}

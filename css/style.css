@@ -1,0 +1,88 @@
+.tabbedBar .sapMITBHead {
+    text-align: center;
+}
+
+.btn {
+    min-width: 80px;
+}
+
+.sapUiFormM:not(.sapUiFormEdit) .sapUiFormResGridCont {
+    background-color: #f7f7f7;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.FlexForm {
+    background-color: #f7f7f7;
+    padding:10px;
+    margin: 5px;
+}
+
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridMain>div:not(.sapUiRespGridSpanL12):not(.sapUiFormResGridLastContL) {
+    padding-right: unset;
+}
+
+.container {
+    width: 1000px;
+    background-color: blue;
+}
+
+/* Enter your custom styles here */
+/* Enter your custom styles here */
+.tabbedBar .sapMITBHead {
+    text-align: center;
+}
+
+.btn {
+    min-width: 80px;
+}
+
+.sapUiFormM:not(.sapUiFormEdit) .sapUiFormResGridCont {
+    background-color: #d0d5d8;
+    padding: 5px;
+
+}
+
+.backForm {
+    background-color: #fff;
+}
+
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridMain>div:not(.sapUiRespGridSpanL12):not(.sapUiFormResGridLastContL) {
+    padding-right: unset;
+}
+
+.border {
+    border: solid orange 1px;
+    background-color: rgb(211, 205, 205);
+
+}
+
+.sapUiForm .sapMCbBg {
+    left: 7px;
+}
+
+.title {
+    color: black;
+}
+
+.subtitle {
+    color: black;
+}
+
+.sapMListTbl .sapMVBox {
+    background-color: rgb(211, 205, 205);
+
+}
+
+.TabBackground {
+    background-color: #FFF;
+}
+
+.containerDialog {
+    width: 1200px;
+}
+
+.sapMITBContent {
+    padding: unset;
+    background-color: unset;
+}

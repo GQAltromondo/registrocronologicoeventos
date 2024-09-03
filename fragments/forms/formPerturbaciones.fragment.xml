@@ -1,0 +1,590 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" width="50%">
+	<Dialog id="FormPerturbaciones" title="Perturbaciones / Desconexiones" titleAlignment="Start">
+		<content>
+			<IconTabBar>
+				<items>
+					<IconTabFilter text="Datos Generales">
+						<FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
+							<HBox width="100%">
+								<VBox width="50%" class="FlexForm">
+									<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
+										<Label text="{i18n>novelty}:"/>
+										<Text text="{NovedadesFormJsonModel>/CodNovedad}"></Text>
+										<CheckBox id="chkRecierre" text="Recierre" select=".onCheckBoxSelect" groupName="GrupoPerturbacion"/>
+										<CheckBox id="chkRecDeseng" text="Rec. y Deseng" select=".onCheckBoxSelect" groupName="GrupoPerturbacion"/>
+										<CheckBox id="chkDeseng" text="Deseng" select=".onCheckBoxSelect" groupName="GrupoPerturbacion"/>
+										<CheckBox id="chkEmergencia" text="F/S Emergencia" select=".onCheckBoxSelect" groupName="GrupoPerturbacion"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="{i18n>estacion}:" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<ComboBox id="cmbLugarId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+												items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+												<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
+											</ComboBox>
+											<ComboBox id="cmbLugar" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+												items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+												<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
+											</ComboBox>
+										</HBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="{i18n>team}:" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<ComboBox id="cmbEquipoId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
+												items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
+												<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo}"/>
+											</ComboBox>
+											<ComboBox id="cmbEquipo" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
+												items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
+												<core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}"/>
+											</ComboBox>
+										</HBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Fecha/Hora"/>
+										<DateTimePicker
+											value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+										<Label text="SubIndice"/>
+										<Input width="80px" text="{NovedadesFormJsonModel>/Subindice}" enabled="false"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Indisponible Desde"/>
+										<DateTimePicker	value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+									</HBox>
+								</VBox>
+								<VBox width="50%" class="FlexForm">
+									<HBox width="100%" alignItems="Center" justifyContent="End">
+										<Label text="Referencia" class="sapUiSmallMarginEnd"/>
+										<Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="250px" id="d"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Motivo"/>
+										<HBox>
+											<ComboBox id="cmbMotivoId" width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
+												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+												<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+											</ComboBox>
+											<ComboBox id="cmbMotivo" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
+												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+												<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
+											</ComboBox>
+										</HBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Estado de Tiem." class="sapUiSmallMarginEnd"/>
+										<HBox>
+											<ComboBox id="cmbWeatherId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodWeather}"
+												items="{ path: 'ClimasJsonModel>/Climas', templateShareable: true }">
+												<core:Item key="{ClimasJsonModel>CodigoClima}" text="{ClimasJsonModel>CodigoClima}"/>
+											</ComboBox>
+											<ComboBox id="cmbWeather" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodWeather}"
+												items="{ path: 'ClimasJsonModel>/Climas', templateShareable: true }">
+												<core:Item key="{ClimasJsonModel>CodigoClima}" text="{ClimasJsonModel>DescClima}"/>
+											</ComboBox>
+										</HBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Comentarios"/>
+										<Input id="InputComments" value="{NovedadesFormJsonModel>Comentarios}" fieldWidth="90%" width="400px"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Se informo a Empresa"/>
+										<ComboBox id="informoEmpresa" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+											selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+											<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
+												text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+										</ComboBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Se informo a Tecnico"/>
+										<ComboBox id="informoTecnico" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+											selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/TecnicosEt', templateShareable: true }">
+											<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+										</ComboBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Se informo a Personal"/>
+										<ComboBox id="informoPersonal" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+											selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+											<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+										</ComboBox>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Causa"/>
+										<HBox>
+											<ComboBox id="cmbCausaId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}"
+												items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+												<core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>CodigoCausa}"/>
+											</ComboBox>
+											<ComboBox id="cmbCausa" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}"
+												items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+												<core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}"/>
+											</ComboBox>
+										</HBox>
+									</HBox>
+								</VBox>
+							</HBox>
+							<FlexBox class="FlexForm" width="100%">
+								<VBox width="30%" class="FlexForm">
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Pot. Cortada [MW]" class="sapUiSmallMarginEnd"/>
+										<Input id="potCortada" width="150px"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Reposicion [hh:mm]" class="sapUiSmallMarginEnd"/>
+										<Input id="reposicion" width="150px"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="ENS[MWh]" class="sapUiSmallMarginEnd"/>
+										<Input id="ens" width="150px"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Factor de Reduccion" class="sapUiSmallMarginEnd"/>
+										<Input id="facReduccion" width="150px"/>
+									</HBox>
+									<HBox justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="Perdida de aporte [MW]" class="sapUiSmallMarginEnd"/>
+										<Input id="perdidaAporte" width="150px"/>
+									</HBox>
+								</VBox>
+								<VBox width="70%" class="FlexForm">
+									<ScrollContainer >
+										<Table width="130%" class="no-padding-header-table">
+											<columns>
+												<Column width="100px" hAlign="Center">
+													<Text wrapping="false" text=""/>
+												</Column>
+												<Column width="150px" hAlign="Center">
+													<Text wrapping="false" text="MAXIMA CORRIENTE"/>
+												</Column>
+												<Column width="370px" hAlign="Center">
+													<Text wrapping="false" text="EXCITACION"/>
+												</Column>
+												<Column width="110px" hAlign="Center">
+													<Text wrapping="false" text="DISPARO"/>
+												</Column>
+												<Column width="200px" hAlign="Center">
+													<Text text="EXCITACION"/>
+												</Column>
+												<Column width="120px" hAlign="Center">
+													<Text wrapping="false" text="DISPARO"/>
+												</Column>
+												<Column width="250px" hAlign="Center">
+													<Text wrapping="false" text=""/>
+												</Column>
+											</columns>
+											<items>
+												<ColumnListItem>
+													<cells>
+														<HBox>
+															<VBox alignItems="Center">
+																<Label text="E.T" class="title"/>
+																<Label text="" class="title"/>
+																<Input value="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+															</VBox>
+															<VBox alignItems="Center">
+																<Label text="KM." class="title"/>
+																<Label text="" class="title"/>
+																<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+															</VBox>
+														</HBox>
+														<HBox >
+															<VBox alignItems="Center">
+																<Label text="INST" class="title"/>
+																<Label text="TD" class="subttitle"/>
+																<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+															</VBox>
+															<VBox alignItems="Center">
+																<Label text="TEMP" class="title" textAlign="Center"/>
+																<Label text="T1" textAlign="Center"/>
+																<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+															</VBox>
+															<VBox alignItems="Center">
+																<Label text="MAX" class="title" textAlign="Center"/>
+																<Label text="PLI" textAlign="Center"/>
+																<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+															</VBox>
+														</HBox>
+														<VBox>
+															<Label text="EZ" class="title" textAlign="Center"/>
+															<HBox>
+																<VBox alignItems="Center">
+																	<Label text="FN" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FR"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FS"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FT"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="TX"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="RX"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="T2"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="Ts2"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+															</HBox>
+														</VBox>
+														<VBox>
+															<Label text="PZ" class="title" textAlign="Center"/>
+															<HBox>
+																<VBox alignItems="Center">
+																	<Label text="DPZ" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="RR"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+															</HBox>
+														</VBox>
+														<VBox>
+															<Label text="ED" class="title" textAlign="Center"/>
+															<HBox>
+																<VBox alignItems="Center">
+																	<Label text="FN" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FR"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FS"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="FT"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+															</HBox>
+														</VBox>
+														<VBox>
+															<Label text="U" class="title" textAlign="Center"/>
+															<HBox>
+																<VBox alignItems="Center">
+																	<Label text="{i18n>U}" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text=">U" />
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																</HBox>
+															</VBox>
+															<HBox width="100px">
+																<VBox alignItems="Center">
+																	<Label text="DAG" class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="DISCO" class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="BZ" class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="PFI" class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="OSC" class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																</VBox>
+															</HBox>
+														</cells>
+													</ColumnListItem>
+												</items>
+											</Table>
+										</ScrollContainer>
+									</VBox>
+								</FlexBox>
+								<HBox width="100%">
+									<VBox width="50%" class="FlexForm">
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<ComboBox></ComboBox>
+												<DatePicker></DatePicker>
+											</HBox>
+										</HBox>
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Se energizó desde:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<ComboBox></ComboBox>
+												<DatePicker></DatePicker>
+											</HBox>
+										</HBox>
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Se cargó desde:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<ComboBox></ComboBox>
+												<DatePicker></DatePicker>
+											</HBox>
+										</HBox>
+									</VBox>
+									<VBox width="50%" class="FlexForm">
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Comentarios:" class="sapUiSmallMarginEnd"/>
+											<Input/>
+										</HBox>
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Se informó a Empresa:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<DatePicker></DatePicker>
+												<ComboBox id="informoPruebaEmpresa" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+													selectedKey="{PruebasListJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+													<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
+														text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+												</ComboBox>
+											</HBox>
+										</HBox>
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Se informó a Técnico:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<DatePicker></DatePicker>
+												<ComboBox id="informoPruebaTecnico" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+													selectedKey="{PruebasListJsonModel>/InformoTecnico}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+													<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
+														text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+												</ComboBox>
+											</HBox>
+										</HBox>
+										<HBox justifyContent="SpaceBetween" alignItems="Center">
+											<Label text="Se informó a Personal:" class="sapUiSmallMarginEnd"/>
+											<HBox>
+												<DatePicker></DatePicker>
+												<ComboBox id="informoPruebaPersonal" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
+													selectedKey="{PruebasListJsonModel>/InformoPersonal}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+													<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
+														text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+												</ComboBox>
+											</HBox>
+										</HBox>
+									</VBox>
+								</HBox>
+								<FlexBox class="FlexForm" direction="Column" width="100%">
+									<HBox justifyContent="SpaceBetween" width="50%" alignItems="Center">
+										<Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd"/>
+										<HBox>
+											<ComboBox></ComboBox>
+											<DatePicker></DatePicker>
+										</HBox>
+									</HBox>
+									<VBox width="100%" class="FlexForm">
+										<ScrollContainer >
+											<Table width="130%" class="no-padding-header-table">
+												<columns>
+													<Column width="100px" hAlign="Center">
+														<Text wrapping="false" text=""/>
+													</Column>
+													<Column width="150px" hAlign="Center">
+														<Text wrapping="false" text="MAXIMA CORRIENTE"/>
+													</Column>
+													<Column width="370px" hAlign="Center">
+														<Text wrapping="false" text="EXCITACION"/>
+													</Column>
+													<Column width="110px" hAlign="Center">
+														<Text wrapping="false" text="DISPARO"/>
+													</Column>
+													<Column width="200px" hAlign="Center">
+														<Text text="EXCITACION"/>
+													</Column>
+													<Column width="120px" hAlign="Center">
+														<Text wrapping="false" text="DISPARO"/>
+													</Column>
+													<Column width="250px" hAlign="Center">
+														<Text wrapping="false" text=""/>
+													</Column>
+												</columns>
+												<items>
+													<ColumnListItem>
+														<cells>
+															<HBox>
+																<VBox alignItems="Center">
+																	<Label text="E.T" class="title"/>
+																	<Label text="" class="title"/>
+																	<Input value="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="KM." class="title"/>
+																	<Label text="" class="title"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																</VBox>
+															</HBox>
+															<HBox >
+																<VBox alignItems="Center">
+																	<Label text="INST" class="title"/>
+																	<Label text="TD" class="subttitle"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="TEMP" class="title" textAlign="Center"/>
+																	<Label text="T1" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+																<VBox alignItems="Center">
+																	<Label text="MAX" class="title" textAlign="Center"/>
+																	<Label text="PLI" textAlign="Center"/>
+																	<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																</VBox>
+															</HBox>
+															<VBox>
+																<Label text="EZ" class="title" textAlign="Center"/>
+																<HBox>
+																	<VBox alignItems="Center">
+																		<Label text="FN" textAlign="Center"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FR"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FS"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FT"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="TX"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="RX"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="T2"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="Ts2"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																</HBox>
+															</VBox>
+															<VBox>
+																<Label text="PZ" class="title" textAlign="Center"/>
+																<HBox>
+																	<VBox alignItems="Center">
+																		<Label text="DPZ" textAlign="Center"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="RR"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																</HBox>
+															</VBox>
+															<VBox>
+																<Label text="ED" class="title" textAlign="Center"/>
+																<HBox>
+																	<VBox alignItems="Center">
+																		<Label text="FN" textAlign="Center"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FR"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FS"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="FT"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																</HBox>
+															</VBox>
+															<VBox>
+																<Label text="U" class="title" textAlign="Center"/>
+																<HBox>
+																	<VBox alignItems="Center">
+																		<Label text="{i18n>U}" textAlign="Center"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text=">U" />
+																			<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																		</VBox>
+																	</HBox>
+																</VBox>
+																<HBox width="100px">
+																	<VBox alignItems="Center">
+																		<Label text="DAG" class="title"/>
+																		<Label text="" class="title"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="DISCO" class="title"/>
+																		<Label text="" class="title"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="BZ" class="title"/>
+																		<Label text="" class="title"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="PFI" class="title"/>
+																		<Label text="" class="title"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																	</VBox>
+																	<VBox alignItems="Center">
+																		<Label text="OSC" class="title"/>
+																		<Label text="" class="title"/>
+																		<CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}"/>
+																	</VBox>
+																</HBox>
+															</cells>
+														</ColumnListItem>
+													</items>
+												</Table>
+											</ScrollContainer>
+										</VBox>
+									</FlexBox>
+								</FlexBox>
+							</IconTabFilter>
+							<IconTabFilter text="Consecuentes">
+								<FlexBox class="sapUiSmallMargin containerDialog"></FlexBox>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</content>
+				<beginButton>
+					<Button text="Guardar" press="onSaveNovedad"/>
+				</beginButton>
+				<endButton>
+					<Button text="Cerrar" press="closeDialog"/>
+				</endButton>
+			</Dialog>
+		</core:FragmentDefinition>

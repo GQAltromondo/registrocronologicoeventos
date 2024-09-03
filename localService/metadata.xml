@@ -1,0 +1,121 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+	<edmx:DataServices m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="Z_SCP_LIBRO_GUARDIAS_SRV" xml:lang="es" sap:schema-version="1">
+			<EntityType Name="TurnosHeader" sap:content-version="1">
+				<Key><PropertyRef Name="Empresa"/><PropertyRef Name="Id"/></Key><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Legajo" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Fromdate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Todate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Status" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Boss" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Operador" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><NavigationProperty Name="TurnoUsuarioSet" Relationship="Z_SCP_LIBRO_GUARDIAS_SRV.Turnos_Usuarios" FromRole="FromRole_Turnos_Usuarios"
+					ToRole="ToRole_Turnos_Usuarios"/></EntityType>
+			<EntityType Name="UsuarioGuardia" sap:content-version="1">
+				<Key><PropertyRef Name="Empresa"/><PropertyRef Name="Id"/><PropertyRef Name="Legajo"/></Key><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Sociedad" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Id Guardia" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Usuario" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Usuario" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Legajo" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="Nº personal" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Nombre" Type="Edm.String" Nullable="false" MaxLength="255" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Funcion" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:label="c" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/></EntityType>
+			<EntityType Name="Userlist" sap:content-version="1">
+				<Key><PropertyRef Name="Nombre"/><PropertyRef Name="Apellido"/><PropertyRef Name="Legajo"/></Key><Property Name="Nombre" Type="Edm.String" Nullable="false" MaxLength="25" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Apellido" Type="Edm.String" Nullable="false" MaxLength="25" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Legajo" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="TipoHab" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/></EntityType>
+			<EntityType Name="Puestos" sap:content-version="1">
+				<Key><PropertyRef Name="Id"/></Key><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Puesto" Type="Edm.String" Nullable="false" MaxLength="50" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/></EntityType>
+			<EntityType Name="GuardiasList" sap:content-version="1">
+				<Key><PropertyRef Name="Empresa"/><PropertyRef Name="Id"/></Key><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Sociedad" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Tipo" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Tp.objeto" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Linea" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="FhFormat" Type="Edm.String" Nullable="false" MaxLength="16" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Io" Type="Edm.String" Nullable="false" MaxLength="1" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Fechahora" Type="Edm.DateTime" Nullable="false" Precision="0" sap:unicode="false" sap:label="Cronomarcador"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false"/><Property Name="LugarFormat" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="Lugar" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Tiponovedad" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="Tipo Novedad"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false"/><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Lugar" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Equipo" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Mensaje" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Novedad" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Creado_Por" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:label="Operador" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><NavigationProperty Name="NovedadesSet" Relationship="Z_SCP_LIBRO_GUARDIAS_SRV.To_Novedades" FromRole="FromRole_To_Novedades"
+					ToRole="ToRole_To_Novedades"/></EntityType>
+			<EntityType Name="Lugares" sap:content-version="1">
+				<Key><PropertyRef Name="Lugar"/></Key><Property Name="Lugar" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Descripcion" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/></EntityType>
+			<EntityType Name="Novedades" sap:content-version="1">
+				<Key><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Key><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Novedad" Type="Edm.String" Nullable="false" MaxLength="255" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><NavigationProperty Name="GuardiasListSet" Relationship="Z_SCP_LIBRO_GUARDIAS_SRV.To_Novedades" FromRole="ToRole_To_Novedades"
+					ToRole="FromRole_To_Novedades"/></EntityType>
+			<EntityType Name="Equipos" sap:content-version="1">
+				<Key><PropertyRef Name="Equipo"/></Key><Property Name="Equipo" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Descripcion" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/></EntityType>
+			<EntityType Name="TipoNovedad" sap:content-version="1">
+				<Key><PropertyRef Name="Empresa"/><PropertyRef Name="Codigo"/></Key><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Sociedad" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Codigo" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Codigo Tipo Novedad"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false"/><Property Name="Descripcion" Type="Edm.String" Nullable="false" MaxLength="80" sap:unicode="false" sap:label="Tipo de Novedad"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false"/></EntityType>
+			<EntityType Name="IntruccionesOperativas" sap:content-version="1">
+				<Key><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Key><Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="Id Instruccion Op."
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Sociedad" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Desde" Type="Edm.DateTime" Nullable="false" Precision="0" sap:unicode="false" sap:label="Cronomarcador"
+					sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Hasta" Type="Edm.DateTime" Precision="0" sap:unicode="false" sap:label="Cronomarcador" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Estacion" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="Ubic.técn." sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Equipo" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:label="Ubic.técn." sap:creatable="false"
+					sap:updatable="false" sap:sortable="false"/><Property Name="Tipo" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Novedad" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Creadopor" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="Usuario" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Attachments" Type="Edm.Boolean" Nullable="false" sap:unicode="false" sap:label="VERDADERO" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Estado" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="Estado" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/></EntityType>
+			<EntityType Name="Lineas" sap:content-version="1">
+				<Key><PropertyRef Name="Tplnr"/></Key><Property Name="Tplnr" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Pltxt" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Eqart" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false"/><Property Name="Codigo" Type="Edm.String" Nullable="false" MaxLength="40" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/><Property Name="Empresa" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:creatable="false" sap:updatable="false"
+					sap:sortable="false" sap:filterable="false"/></EntityType>
+			<Association Name="Turnos_Usuarios" sap:content-version="1"><End Type="Z_SCP_LIBRO_GUARDIAS_SRV.TurnosHeader" Multiplicity="1" Role="FromRole_Turnos_Usuarios"/><End Type="Z_SCP_LIBRO_GUARDIAS_SRV.UsuarioGuardia" Multiplicity="*" Role="ToRole_Turnos_Usuarios"/>
+				<ReferentialConstraint>
+					<Principal Role="FromRole_Turnos_Usuarios"><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Principal>
+					<Dependent Role="ToRole_Turnos_Usuarios"><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="To_Novedades" sap:content-version="1"><End Type="Z_SCP_LIBRO_GUARDIAS_SRV.GuardiasList" Multiplicity="1" Role="FromRole_To_Novedades"/><End Type="Z_SCP_LIBRO_GUARDIAS_SRV.Novedades" Multiplicity="*" Role="ToRole_To_Novedades"/>
+				<ReferentialConstraint>
+					<Principal Role="FromRole_To_Novedades"><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Principal>
+					<Dependent Role="ToRole_To_Novedades"><PropertyRef Name="Id"/><PropertyRef Name="Empresa"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="Z_SCP_LIBRO_GUARDIAS_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx"><EntitySet Name="TurnosHeaderSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.TurnosHeader" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:content-version="1"/><EntitySet Name="UsuarioGuardiaSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.UsuarioGuardia" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:content-version="1"/><EntitySet Name="UserlistSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Userlist" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="PuestoSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Puestos" sap:creatable="false" sap:updatable="false" sap:deletable="false"
+				sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="GuardiasListSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.GuardiasList" sap:pageable="false" sap:addressable="false"
+				sap:content-version="1"/><EntitySet Name="LugaresSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Lugares" sap:creatable="false" sap:updatable="false" sap:deletable="false"
+				sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="NovedadesSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Novedades" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="EquiposSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Equipos" sap:creatable="false" sap:updatable="false" sap:deletable="false"
+				sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="TipoNovedadSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.TipoNovedad" sap:creatable="false" sap:updatable="false"
+				sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/><EntitySet Name="IntruccionesOperativasSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.IntruccionesOperativas" sap:creatable="false"
+				sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/><EntitySet Name="LineasSet" EntityType="Z_SCP_LIBRO_GUARDIAS_SRV.Lineas" sap:creatable="false" sap:updatable="false" sap:deletable="false"
+				sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+				<AssociationSet Name="To_NovedadesSet" Association="Z_SCP_LIBRO_GUARDIAS_SRV.To_Novedades" sap:creatable="false" sap:updatable="false"
+					sap:deletable="false" sap:content-version="1"><End EntitySet="GuardiasListSet" Role="FromRole_To_Novedades"/><End EntitySet="NovedadesSet" Role="ToRole_To_Novedades"/></AssociationSet>
+				<AssociationSet Name="Turnos_UsuariosSet" Association="Z_SCP_LIBRO_GUARDIAS_SRV.Turnos_Usuarios" sap:creatable="false" sap:updatable="false"
+					sap:deletable="false" sap:content-version="1"><End EntitySet="TurnosHeaderSet" Role="FromRole_Turnos_Usuarios"/><End EntitySet="UsuarioGuardiaSet" Role="ToRole_Turnos_Usuarios"/></AssociationSet>
+			</EntityContainer><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/Z_SCP_LIBRO_GUARDIAS_SRV/$metadata"/><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/Z_SCP_LIBRO_GUARDIAS_SRV/$metadata"/></Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

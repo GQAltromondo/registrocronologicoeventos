@@ -1,0 +1,1 @@
+sap.ui.define(["sap/ui/core/format/NumberFormat"],function(){"use strict";return{uppercase:function(e){if(!e){return}else{return e.toUpperCase()}}}});
