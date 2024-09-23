@@ -10,8 +10,8 @@
 								<VBox width="40%">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>place} / {i18n>ET}:"/>
-										<ComboBox id="LugarFilter" change="handleChangeF" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-											<core:Item key="{Estaciones>Estacion}" text="{Estaciones>Codigo}"/>
+										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
+											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText= "{Estaciones>Descripcion}"/>
 										</ComboBox>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
@@ -19,7 +19,7 @@
 										<!--<ComboBox id="EquipoFilter" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">-->
 										<!--	<core:Item key="{EquiposModel>CodEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>-->
 										<!--</ComboBox>-->
-										<ComboBox id="TipoEquipoFilter" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
+										<ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
 											<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo} - {TipoModel>Descripcion}"/>
 										</ComboBox>
 									</HBox>
@@ -105,6 +105,7 @@
 								</menu>
 							</MenuButton>
 							<ToolbarSpacer/>
+								<Button type="Emphasized" id="saveTableChanges" text="{i18n>save}" visible="false" press="onSaveTableChange"/>
 						</OverflowToolbar>
 					</footer>
 				</Page>

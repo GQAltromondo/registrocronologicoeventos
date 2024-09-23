@@ -1,26 +1,28 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
 	<t:Table id="tableNovedades" rows="{ path: 'oNovedadesModel>/', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
 		<t:columns>
-			<t:Column width="50px">
-				<Label/>
-				<t:template>
-					<HBox >
-						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
-					</HBox>
-				</t:template>
-			</t:Column>
+			<!--<t:Column width="50px">-->
+			<!--	<Label/>-->
+			<!--	<t:template>-->
+			<!--		<HBox >-->
+			<!--			<Button type="Transparent" press="onSee" icon="sap-icon://show"/>-->
+			<!--		</HBox>-->
+			<!--	</t:template>-->
+			<!--</t:Column>-->
 			<t:Column width='150px'>
 				<Label text="{i18n>fromDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-					<DateTimePicker change="handleTableChanges"	value="{ 'path': 'oNovedadesModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+					<DateTimePicker change="handleTableChanges"
+						value="{ 'path': 'oNovedadesModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
 			<t:Column>
 				<Label text="{i18n>toDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-						<DateTimePicker	change="handleTableChanges" value="{ 'path': 'oNovedadesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+					<DateTimePicker change="handleTableChanges"
+						value="{ 'path': 'oNovedadesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
 			<t:Column>
@@ -57,11 +59,12 @@
 					<Text text="{oNovedadesModel>fromDate}"/>
 				</t:template>
 			</t:Column>
-			<t:Column width="130px">
+			<t:Column width="180px">
 				<Label/>
 				<t:template>
 					<HBox justifyContent="SpaceAround" wrap="Wrap">
-						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://accept"/>
+						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
+						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
 						<Button type="Transparent" press="onEdit" icon="sap-icon://edit"/>
 						<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 					</HBox>

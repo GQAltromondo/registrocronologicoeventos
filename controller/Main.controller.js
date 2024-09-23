@@ -394,7 +394,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
 		},
 		onScheduledPress: function () {
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formScheduled")
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
 		},
 		onNoveltiesPress: function () {
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovelties")

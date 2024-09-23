@@ -1,9 +1,22 @@
 .tabbedBar .sapMITBHead {
     text-align: center;
 }
+
 .btn {
     min-width: 80px;
 }
+
+.HBoxContainer {
+    width:100%;
+    align-items:center;
+    gap: 5px;
+}
+.HBoxWrapper{
+    width: 50%;
+    align-items: center;
+    justify-content: space-between;
+}
+
 
 .sapUiFormM:not(.sapUiFormEdit) .sapUiFormResGridCont {
     background-color: #f7f7f7;
@@ -13,7 +26,7 @@
 
 .FlexForm {
     background-color: #f7f7f7;
-    padding:10px;
+    padding: 10px;
     margin: 5px;
 }
 
@@ -78,7 +91,7 @@
 }
 
 .containerDialog {
-    width: 1200px;
+    width: 1300px;
 }
 
 .sapMITBContent {

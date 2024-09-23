@@ -1,45 +1,45 @@
 jQuery.sap.require("transener/registrocronologicoeventos/libs/xlsx");
 jQuery.sap.require("transener/registrocronologicoeventos/libs/jszip");
 sap.ui.define([
-	"transener/registrocronologicoeventos/controller/BaseController",
-	"sap/m/MessageToast",
-	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator",
-	"sap/ui/model/json/JSONModel",
-	"sap/ui/core/Fragment",
-	"sap/m/MessageBox",
-	"sap/m/MessageStrip",
-	"transener/registrocronologicoeventos/services/UserDataService",
-	"transener/registrocronologicoeventos/services/PerturbacionesService",
-	"transener/registrocronologicoeventos/services/DispActuantesService",
-	"transener/registrocronologicoeventos/services/TipificacionesFallasService",
-	"transener/registrocronologicoeventos/services/EstadoTiempoService",
-	"transener/registrocronologicoeventos/services/MotivosService",
-	"transener/registrocronologicoeventos/services/ClimasService",
-	"transener/registrocronologicoeventos/services/CausasService",
-	"transener/registrocronologicoeventos/services/NovedadesService",
-	"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
-	"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
-	"transener/registrocronologicoeventos/services/EquiposService",
-	"transener/registrocronologicoeventos/services/ReportesService",
-	"transener/registrocronologicoeventos/services/EstacionesService",
-	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/formatter",
-	"transener/registrocronologicoeventos/utils/ModelHelper",
-	"transener/registrocronologicoeventos/utils/ValidateHelper",
-	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
-	"transener/registrocronologicoeventos/utils/FormatHelper"
+"transener/registrocronologicoeventos/controller/BaseController",
+"sap/m/MessageToast",
+"sap/ui/model/Filter",
+"sap/ui/model/FilterOperator",
+"sap/ui/model/json/JSONModel",
+"sap/ui/core/Fragment",
+"sap/m/MessageBox",
+"sap/m/MessageStrip",
+"transener/registrocronologicoeventos/services/UserDataService",
+"transener/registrocronologicoeventos/services/PerturbacionesService",
+"transener/registrocronologicoeventos/services/DispActuantesService",
+"transener/registrocronologicoeventos/services/TipificacionesFallasService",
+"transener/registrocronologicoeventos/services/EstadoTiempoService",
+"transener/registrocronologicoeventos/services/MotivosService",
+"transener/registrocronologicoeventos/services/ClimasService",
+"transener/registrocronologicoeventos/services/CausasService",
+"transener/registrocronologicoeventos/services/NovedadesService",
+"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
+"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
+"transener/registrocronologicoeventos/services/EquiposService",
+"transener/registrocronologicoeventos/services/ReportesService",
+"transener/registrocronologicoeventos/services/EstacionesService",
+"transener/registrocronologicoeventos/services/oDataServices",
+"transener/registrocronologicoeventos/utils/formatter",
+"transener/registrocronologicoeventos/utils/ModelHelper",
+"transener/registrocronologicoeventos/utils/ValidateHelper",
+"transener/registrocronologicoeventos/utils/MessageBoxHelper",
+"transener/registrocronologicoeventos/utils/FormatHelper"
 ], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, userDataService,
-	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
-	CausasService,
-	NovedadesService, EmpresaTramitacionService,
-	PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
-	MessageBoxHelper,
-	FormatHelper) {
-	"use strict";
-	var oDialog = null;
+PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
+CausasService,
+NovedadesService, EmpresaTramitacionService,
+PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
+MessageBoxHelper,
+FormatHelper) {
+"use strict";
+var oDialog = null;
 
-	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
+return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
 		testOperators: ["Bonavita", "Vandale", "Burbaud"],
 		_valueHelpDialog3: null,
 		currentUser: {},
@@ -71,6 +71,12 @@ sap.ui.define([
 			ModelHelper.getModel("NovedadesPorEquiposJsonModel", oView)
 			ModelHelper.getModel("EstacionesJsonModel", oView)
 			ModelHelper.getModel("RegionesEnsJsonModel", oView)
+			ModelHelper.getModel("formPerturbacionesModel", oView).setData({
+				"chkRecierre": false,
+				"chkRecDeseng": false,
+				"chkDeseng": false,
+				"chkEmergencia": false
+			})
 		},
 		onAfterRendering: function () {
 			this.loadSociety();
@@ -405,25 +411,36 @@ sap.ui.define([
 		onEditP: function (oEvent) {
 			var oButton = oEvent.getSource();
 			var oColumnListItem = oButton.getParent();
+			const formPerturbaciones = ModelHelper.getModel("formPerturbacionesModel").getData()
 
 			var oContext = oColumnListItem.getBindingContext("oPerturbacionesModel");
 			var oSelectedData = oContext.getObject();
-			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData)
 
-			// for (var key in data) {
-			// 	if (data.hasOwnProperty(key)) {
-			// 		var item = data[key];
-			// 		if (item.value === oSelectedData.place) {
-			// 			oSelectedData.key = item.id;
-			// 			break;
-			// 		}
-			// 	}
-			// }
-
+			// Guarda los datos seleccionados en el modelo
+			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
 			console.log(oSelectedData);
-			//	this.getView().getModel("tempOData").setData(oSelectedData);
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones");
+
+			if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre && oSelectedData.GenIndisponibilidad) {
+				formPerturbaciones.chkRecDeseng = true
+			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre) {
+				formPerturbaciones.chkRecierre = true
+			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
+				formPerturbaciones.chkDeseng = true
+			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad) {
+				formPerturbaciones.chkEmergencia = true
+			}
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
 		},
+
+		onCloseDialog: function () {
+			console.log("ACA")
+			if (oDialog) {
+				oDialog.close();
+				oDialog.destroy()
+				oDialog = null
+			}
+		},
+
 		onSearchLGuard: function (evt) {
 
 			var novedades = [];
@@ -602,7 +619,7 @@ sap.ui.define([
 				oDialog.destroy();
 			}
 
-			Fragment.load({
+			return Fragment.load({
 				name: fragment,
 				controller: this,
 			}).then(
@@ -763,7 +780,7 @@ sap.ui.define([
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones");
 		},
 		onScheduledPress: function () {
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formScheduled");
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas");
 		},
 		onNoveltiesPress: function () {
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovelties");
@@ -4846,55 +4863,82 @@ sap.ui.define([
 			}
 			return pattern.format(date);
 		},
-		// handleTableChanges: function (oEvent) {
-		// 	var oComboBox = oEvent.getSource();
-		// 	var oTable = oComboBox.getParent();
-
-		// 	while (oTable && oTable.getMetadata().getName() !== "sap.ui.table.Table") {
-		// 		oTable = oTable.getParent();
-		// 	}
-
-		// 	var oTableId = oTable.getId()
-		// 	var iRowIndex = oComboBox.getParent().getIndex();
-
-		// 	var oRow = oTable.getRows()[iRowIndex];
-		// 	if (oTableId === "container-registrocronologicoeventos---Main--generalTable") {
-		// 		oRow.getCells()[7].getItems()[0].setEnabled(true)
-		// 	} else {
-		// 		oRow.getCells()[8].getItems()[0].setEnabled(true)
-		// 	}
-		// }
 		handleTableChanges: function (oEvent) {
 			var oComboBox = oEvent.getSource();
 			var oTable = oComboBox.getParent();
 
-			// Encuentra la tabla en la jerarquía de padres
 			while (oTable && oTable.getMetadata().getName() !== "sap.ui.table.Table") {
 				oTable = oTable.getParent();
 			}
 
-			// Obtener el valor de NovedadId de la fila donde se hizo el cambio
-			var oRowContext = oComboBox.getBindingContext("oNovedadesModel");
-			var sNovedadId = oRowContext.getProperty("IdNovedad");
+			var oTableId = oTable.getId()
+			var iRowIndex = oComboBox.getParent().getIndex();
 
-			// Recorrer las filas de la tabla
-			var oRows = oTable.getRows();
-			for (var i = 0; i < oRows.length; i++) {
-				var oRowContext = oRows[i].getBindingContext("oNovedadesModel");
-				var sRowNovedadId = oRowContext.getProperty("IdNovedad");
-
-				// Habilitar el ícono correspondiente
-				if (sRowNovedadId === sNovedadId) {
-
-					console.log(oRowContext)
-					if (oTable.getId() === "container-registrocronologicoeventos---Main--generalTable") {
-						oRows[i].getCells()[7].getItems()[0].setEnabled(true);
-					} else {
-						oRows[i].getCells()[8].getItems()[0].setEnabled(true);
-					}
-					break; // Salir del bucle después de encontrar y habilitar el ícono correspondiente
-				}
+			var oRow = oTable.getRows()[iRowIndex];
+			console.log(oRow)
+			if (oTableId === "container-registrocronologicoeventos---Main--generalTable") {
+				oRow.getCells()[6].getItems()[1].setEnabled(true)
+			} else {
+				oRow.getCells()[7].getItems()[1].setEnabled(true)
 			}
+
+			this.byId("saveTableChanges").setVisible(true)
 		},
-	});
+		onSaveTableChange: function () {
+			// Capturar el IconTabBar activo
+			var oIconTabBar = this.byId("idIconTabBarNoIcons"); // Reemplazar con el id de tu IconTabBar
+			var sSelectedKey = oIconTabBar.getSelectedKey(); // El key de la pestaña activa
+
+			// Asignar el id de la tabla dependiendo de la pestaña activa
+			var sTableId;
+			var sModel;
+			switch (sSelectedKey) {
+			case "General":
+				sTableId = "generalTable";
+				sModel = "filtered"
+				break;
+			case "Novedades":
+				sTableId = "tableNovedades";
+				sModel = "oNovedadesModel"
+				break;
+			case "Perturbaciones":
+				sTableId = "tablePerturbaciones";
+				sModel = "oPerturbacionesModel"
+				break;
+			case "TrabajosProgramados":
+				sTableId = "tableProgramadas";
+				sModel = "oTProgramadasModel"
+				break;
+			default:
+				sap.m.MessageToast.show("No se ha seleccionado una pestaña válida");
+				return;
+			}
+
+			// Obtener la tabla
+			var oTable = this.byId(sTableId);
+			if (!oTable) {
+				sap.m.MessageToast.show("Tabla no encontrada");
+				return;
+			}
+
+			// Obtener el modelo y los datos
+			var oModel = oTable.getModel(sModel);
+			var sPath = oTable.getBinding("rows").getPath(); // Obtener el camino de los datos
+
+			var oRow = oTable.getRows()
+
+			oRow.forEach(function (row, index) {
+					if (sTableId === "generalTable") {
+						row.getCells()[6].getItems()[1].setEnabled(false)
+					} else {
+						row.getCells()[7].getItems()[1].setEnabled(false)
+					}
+				});
+		// Actualizar el modelo con los cambios
+	
+	// Mostrar un mensaje de éxito
+	sap.m.MessageToast.show("Todas las filas se han actualizado correctamente");
+
+}
+});
 });

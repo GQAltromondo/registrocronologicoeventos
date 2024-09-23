@@ -1,13 +1,13 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
 	<t:Table id="generalTable" rows="{ path: 'filtered>/', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
-		<t:Column width="50px">
-			<Label/>
-			<t:template>
-				<HBox >
-					<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
-				</HBox>
-			</t:template>
-		</t:Column>
+		<!--<t:Column width="50px">-->
+		<!--	<Label/>-->
+		<!--	<t:template>-->
+		<!--		<HBox >-->
+		<!--			<Button type="Transparent" press="onSee" icon="sap-icon://show"/>-->
+		<!--		</HBox>-->
+		<!--	</t:template>-->
+		<!--</t:Column>-->
 		<t:columns>
 			<t:Column sortProperty="FhFormat">
 				<Label text="{i18n>dateTime}"/>
@@ -50,11 +50,12 @@
 					<Text text="{path:'filtered>Creado_Por', formatter: '.formatter.uppercase'}"/>
 				</t:template>
 			</t:Column>
-			<t:Column width="130px">
+			<t:Column width="180px">
 				<Label/>
 				<t:template>
 					<HBox justifyContent="SpaceAround" wrap="Wrap">
-						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://accept"/>
+						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
+						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
 						<Button type="Transparent" press="onEdit" icon="sap-icon://edit"/>
 						<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 					</HBox>
