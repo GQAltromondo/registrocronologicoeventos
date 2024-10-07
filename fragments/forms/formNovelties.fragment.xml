@@ -48,15 +48,17 @@
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Fecha/Hora"/>
-										<DatePicker/>
+										<DateTimePicker
+											value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 										<HBox alignItems="Center">
 											<Label text="SubIndice" class="sapUiTinyMarginEnd"/>
 											<Input text="0" width="40px" enabled="false"/>
 										</HBox>
 									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center" blocked="true">
+									<HBox justifyContent="SpaceBetween" alignItems="Center" blocked="false">
 										<Label text="Indisponible Desde"/>
-										<DatePicker/>
+										<DateTimePicker
+											value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<HBox justifyContent="SpaceBetween" alignItems="Center">
@@ -90,7 +92,7 @@
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Comentarios"/>
-										<Input id="InputComments" fieldWidth="90%" width="300px"/>
+										<Input value="{NovedadesFormJsonModel>/Comentarios}" fieldWidth="90%" width="300px"/>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Se informo a Empresa"/>
@@ -110,7 +112,7 @@
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Se informo a Personal"/>
 										<ComboBox id="informoPersonal" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"
-											selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+											selectedKey="{NovedadesFormJsonModel>/InformoPersonal}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
 											<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
 										</ComboBox>
 									</HBox>
@@ -127,11 +129,11 @@
 								<VBox blocked="true" width="50%" class="FlexForm">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Pot. Cortada"/>
-										<Input id="potCortada"/>
+										<Input value=" {NovedadesFormJsonModel>/PotCortada}" />
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Tiempo Corte"/>
-										<Input id="reposicion"/>
+										<Input value=" {NovedadesFormJsonModel>/TiempoCorte}"/>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="ENS"/>
@@ -236,7 +238,7 @@
 			</IconTabBar>
 		</content>
 		<beginButton>
-			<Button text=" Guardar" press=" saveEdit"/>
+			<Button text=" Guardar" press=" onSaveNovedad"/>
 		</beginButton>
 		<endButton>
 			<Button text="Cerrar" press="closeDialog"/>

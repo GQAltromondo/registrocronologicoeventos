@@ -23,5 +23,9 @@
 	"EntDispo": null,
 	"EntServicio": null,
 	"TipoPerturbacion": "",
-	"Subindice":"0"
+	"Subindice":"0",
+	"Reemplazobushmaq":"",
+	"Caidaestructuras":"",
+	"Comentanorma": "",
+	"Informoemp":""
 }

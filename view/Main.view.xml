@@ -48,7 +48,7 @@
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>initialDate}"/>
-										<DatePicker id="initialDate" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
+										<DatePicker id="InitialDate" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
 									</HBox>
 									<HBox width="80%" justifyContent="SpaceBetween" class="sapUiResponsiveMargin">
 										<Button class="btn" text="{i18n>search}" press="onSearchLGuard"/>

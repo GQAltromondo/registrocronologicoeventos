@@ -1,45 +1,45 @@
 jQuery.sap.require("transener/registrocronologicoeventos/libs/xlsx");
 jQuery.sap.require("transener/registrocronologicoeventos/libs/jszip");
 sap.ui.define([
-"transener/registrocronologicoeventos/controller/BaseController",
-"sap/m/MessageToast",
-"sap/ui/model/Filter",
-"sap/ui/model/FilterOperator",
-"sap/ui/model/json/JSONModel",
-"sap/ui/core/Fragment",
-"sap/m/MessageBox",
-"sap/m/MessageStrip",
-"transener/registrocronologicoeventos/services/UserDataService",
-"transener/registrocronologicoeventos/services/PerturbacionesService",
-"transener/registrocronologicoeventos/services/DispActuantesService",
-"transener/registrocronologicoeventos/services/TipificacionesFallasService",
-"transener/registrocronologicoeventos/services/EstadoTiempoService",
-"transener/registrocronologicoeventos/services/MotivosService",
-"transener/registrocronologicoeventos/services/ClimasService",
-"transener/registrocronologicoeventos/services/CausasService",
-"transener/registrocronologicoeventos/services/NovedadesService",
-"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
-"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
-"transener/registrocronologicoeventos/services/EquiposService",
-"transener/registrocronologicoeventos/services/ReportesService",
-"transener/registrocronologicoeventos/services/EstacionesService",
-"transener/registrocronologicoeventos/services/oDataServices",
-"transener/registrocronologicoeventos/utils/formatter",
-"transener/registrocronologicoeventos/utils/ModelHelper",
-"transener/registrocronologicoeventos/utils/ValidateHelper",
-"transener/registrocronologicoeventos/utils/MessageBoxHelper",
-"transener/registrocronologicoeventos/utils/FormatHelper"
+	"transener/registrocronologicoeventos/controller/BaseController",
+	"sap/m/MessageToast",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/core/Fragment",
+	"sap/m/MessageBox",
+	"sap/m/MessageStrip",
+	"transener/registrocronologicoeventos/services/UserDataService",
+	"transener/registrocronologicoeventos/services/PerturbacionesService",
+	"transener/registrocronologicoeventos/services/DispActuantesService",
+	"transener/registrocronologicoeventos/services/TipificacionesFallasService",
+	"transener/registrocronologicoeventos/services/EstadoTiempoService",
+	"transener/registrocronologicoeventos/services/MotivosService",
+	"transener/registrocronologicoeventos/services/ClimasService",
+	"transener/registrocronologicoeventos/services/CausasService",
+	"transener/registrocronologicoeventos/services/NovedadesService",
+	"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
+	"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
+	"transener/registrocronologicoeventos/services/EquiposService",
+	"transener/registrocronologicoeventos/services/ReportesService",
+	"transener/registrocronologicoeventos/services/EstacionesService",
+	"transener/registrocronologicoeventos/services/oDataServices",
+	"transener/registrocronologicoeventos/utils/formatter",
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/ValidateHelper",
+	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
+	"transener/registrocronologicoeventos/utils/FormatHelper"
 ], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, userDataService,
-PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
-CausasService,
-NovedadesService, EmpresaTramitacionService,
-PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
-MessageBoxHelper,
-FormatHelper) {
-"use strict";
-var oDialog = null;
+	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
+	CausasService,
+	NovedadesService, EmpresaTramitacionService,
+	PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
+	MessageBoxHelper,
+	FormatHelper) {
+	"use strict";
+	var oDialog = null;
 
-return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
+	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
 		testOperators: ["Bonavita", "Vandale", "Burbaud"],
 		_valueHelpDialog3: null,
 		currentUser: {},
@@ -479,6 +479,8 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 			var tipoEquipoFilter = this.byId("TipoEquipoFilter").getSelectedKey();
 			var FromDateFilter = this.byId("FromDateFilter").getDateValue();
 			var ToDateFilter = this.byId("ToDateFilter").getDateValue();
+			var InitialDate = this.byId("InitialDate").getDateValue();
+			console.log(InitialDate)
 
 			if (lugarFilter) {
 				serverFilters.push(
@@ -516,33 +518,25 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 					operator: sap.ui.model.FilterOperator.BT,
 					value1: FromDateFilter,
 					value2: ToDateFilter
-				}));
-			} else if
-
-			(FromDateFilter) {
-				serverFilters.push(new sap.ui.model.Filter({
-					path: "Fechahora",
-					operator: sap.ui.model.FilterOperator.GT,
-					value1: FromDateFilter
 				}))
-
 				NSFilters.push(new sap.ui.model.Filter({
 					path: "InicioNove",
-					operator: sap.ui.model.FilterOperator.GT,
-					value1: FromDateFilter
-				}))
-			} else if (ToDateFilter) {
+					operator: sap.ui.model.FilterOperator.BT,
+					value1: FromDateFilter,
+					value2: ToDateFilter
+				}));
+			}
+			if (InitialDate) {
 				serverFilters.push(new sap.ui.model.Filter({
 					path: "Fechahora",
-					operator: sap.ui.model.FilterOperator.LT,
-					value1: FromDateFilter
+					operator: sap.ui.model.FilterOperator.EQ,
+					value1: InitialDate
 				}))
-
 				NSFilters.push(new sap.ui.model.Filter({
-					path: "FechaFinNove",
-					operator: sap.ui.model.FilterOperator.LT,
-					value1: FromDateFilter
-				}))
+					path: "InicioNove",
+					operator: sap.ui.model.FilterOperator.EQ,
+					value1: new Date(InitialDate)
+				}));
 			}
 
 			oGuardiasSetModel.read('/GuardiasListSet', {
@@ -651,6 +645,7 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 			// 	}
 
 			var data = ModelHelper.getModel("NovedadesFormJsonModel").getData();
+			console.log(data)
 			var bool = data.InicioNove <= data.EntIndis;
 			if (data.EntDispo && data.EntServicio) {
 				if (data.EntIndis > data.EntDispo || data.EntDispo > data.EntServicio) {
@@ -667,7 +662,7 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 			}
 
 			if (!bool && (!data.Recierre || data.GenIndisponibilidad)) {
-				MessageBox.Alert(" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
+				MessageBox.show(" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
 					" Ent. Disponibilidad debe ser mayor que Ent. Indisponibilidad\n" +
 					" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n");
 				return;
@@ -774,15 +769,22 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 			oNovedadesModel.refresh(true);
 			return !bValid;
 		},
+		resetNovedadesModel: function () {
+			const oModel = ModelHelper.getModel('NovedadesFormJsonModel')
+			var oData = oModel.loadData("model/NovedadesFormJsonModel.json");
+		},
 		onDisturbancesPress: function () {
 			// var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			// 		oRouter.navTo("Perturbaciones");
+			this.resetNovedadesModel()
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones");
 		},
 		onScheduledPress: function () {
+			this.resetNovedadesModel()
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas");
 		},
 		onNoveltiesPress: function () {
+			this.resetNovedadesModel()
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovelties");
 		},
 		//Reporte informe Diario
@@ -4928,17 +4930,17 @@ return BaseController.extend("transener.registrocronologicoeventos.controller.Ma
 			var oRow = oTable.getRows()
 
 			oRow.forEach(function (row, index) {
-					if (sTableId === "generalTable") {
-						row.getCells()[6].getItems()[1].setEnabled(false)
-					} else {
-						row.getCells()[7].getItems()[1].setEnabled(false)
-					}
-				});
-		// Actualizar el modelo con los cambios
-	
-	// Mostrar un mensaje de éxito
-	sap.m.MessageToast.show("Todas las filas se han actualizado correctamente");
+				if (sTableId === "generalTable") {
+					row.getCells()[6].getItems()[1].setEnabled(false)
+				} else {
+					row.getCells()[7].getItems()[1].setEnabled(false)
+				}
+			});
+			// Actualizar el modelo con los cambios
 
-}
-});
+			// Mostrar un mensaje de éxito
+			sap.m.MessageToast.show("Todas las filas se han actualizado correctamente");
+
+		}
+	});
 });
