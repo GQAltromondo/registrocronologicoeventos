@@ -1,14 +1,16 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" width="50%">
 	<Dialog id="formNovelties" title="Novedades del Sistema" titleAlignment="Start">
 		<content>
-			<IconTabBar>
-				<items>
-					<IconTabFilter text="Datos Generales" key="generales">
+	
 						<FlexBox  class="sapUiSmallMargin containerDialog" direction="Column">
 							<HBox width="100%">
-								<VBox height="350px" width="50%" class="sapUiSmallMarginBotton FlexForm">
-									<HBox height="110px" justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>novelty}:"/>
+								<HBox height="300px" width="50%" class="sapUiSmallMarginBotton FlexForm">
+									<VBox width="100%" alignItems="Center" justifyContent="End">
+										<Label text="Referencia" class="sapUiSmallMarginEnd"/>
+										<Input enabled="false" width="250px" />
+									</VBox>
+									<VBox  justifyContent="SpaceBetween" alignItems="Center">
+										<Label text="{i18n>noveltyType}:"/>
 										<HBox>
 											<ComboBox id="cmbNoveltiesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
 												items="{ path: 'Novedades>/novs', templateShareable: true }">
@@ -19,8 +21,8 @@
 												<core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}"/>
 											</ComboBox>
 										</HBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
+									</VBox>
+									<VBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>estacion}:"/>
 										<HBox>
 											<ComboBox id="cmbPlaceDisturbancesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"
@@ -32,8 +34,8 @@
 												<core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}"/>
 											</ComboBox>
 										</HBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
+									</VBox>
+									<VBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>team}:"/>
 										<HBox>
 											<ComboBox id="cmbPlaceTeamId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodTipo}"
@@ -45,29 +47,14 @@
 												<core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}"/>
 											</ComboBox>
 										</HBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
+									</VBox>
+									<VBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="Fecha/Hora"/>
 										<DateTimePicker
 											value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-										<HBox alignItems="Center">
-											<Label text="SubIndice" class="sapUiTinyMarginEnd"/>
-											<Input text="0" width="40px" enabled="false"/>
-										</HBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center" blocked="false">
-										<Label text="Indisponible Desde"/>
-										<DateTimePicker
-											value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<HBox justifyContent="SpaceBetween" alignItems="Center">
-											<Label text="Parte de Indisponibilidad" class="sapUiTinyMarginEnd"/>
-											<CheckBox/>
-										</HBox>
-										<Input width="300px"/>
-									</HBox>
-								</VBox>
+									</VBox>
+							
+								</HBox>
 								<VBox height="350px" width="50%" class="sapUiSmallMarginBotton FlexForm">
 									<HBox width="100%" alignItems="Center" justifyContent="End">
 										<Label text="Referencia" class="sapUiSmallMarginEnd"/>
@@ -227,15 +214,7 @@
 								</VBox>
 							</HBox>
 						</FlexBox>
-					</IconTabFilter>
-					<IconTabFilter text="Al. / Lim. /Sobrec." class="containerDialog">
-						<FlexBox class="sapUiSmallMargin containerDialog"></FlexBox>
-					</IconTabFilter>
-					<IconTabFilter text="Fuera de Banda / En Banda">
-							<FlexBox class="sapUiSmallMargin containerDialog"></FlexBox>
-					</IconTabFilter>
-				</items>
-			</IconTabBar>
+				
 		</content>
 		<beginButton>
 			<Button text=" Guardar" press=" onSaveNovedad"/>

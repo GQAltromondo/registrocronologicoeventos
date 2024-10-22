@@ -46,6 +46,7 @@ sap.ui.define([
 		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
 		formatter: formatter,
 		onInit: function () {
+			var cUrl = this.getBaseURL(); 
 			var oController = this;
 			var oView = this.getView()
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -57,7 +58,7 @@ sap.ui.define([
 			// 	Object.assign(oController.currentUser, data);
 
 			// });
-
+			this.loadUserDataModel();
 			this.getView().setModel();
 			this.getView().getModel('LGuardias')
 			ModelHelper.getModel("utilsModel", oView)
@@ -77,6 +78,163 @@ sap.ui.define([
 				"chkDeseng": false,
 				"chkEmergencia": false
 			})
+		},
+		getBaseURL: function () {
+
+            debugger; 
+             
+            var appId  = this.getOwnerComponent().getManifestEntry("/sap.app/id");
+
+            //var appId = this.getManifestEntry("/sap.app/id");
+            var appPath = appId.replaceAll(".", "/");
+            var appModulePath = jQuery.sap.getModulePath(appPath);
+            
+            var jsonModel = sap.ui.getCore().getModel("appCurrentInfo");
+            //checks if the model exists
+            if (!jsonModel) {
+                jsonModel = new sap.ui.model.json.JSONModel();
+                jsonModel.setSizeLimit(9999);
+                jsonModel.appUrl = appModulePath;
+                sap.ui.getCore().setModel(jsonModel, "appCurrentInfo");
+                //initilializing = appModulePath; 
+                jsonModel.setData({});
+            }
+            return appModulePath;
+             
+        },
+
+		loadUserDataModel: function(callback) {
+
+			
+			debugger; 
+
+			var UserDataService = this;
+			this.callback = callback;
+			//reads user api
+			/* var path = this._servicePathPrefix + this._servicePath;
+			jQuery.ajax(path + "?multiValuesAsArrays=true", {
+				method: "GET",
+				success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
+				error: jQuery.proxy(UserDataService.onReadUserApiError, UserDataService)
+			});
+			*/
+			 
+			const url =   sap.ui.getCore().getModel("appCurrentInfo").appUrl  + "/user-api/currentUser";
+            var oModel = new sap.ui.model.json.JSONModel() ;
+            var mock = {
+                firstname: "Dummy",
+                lastname: "User",
+                email: "dummy.user@com",
+                name: "dummy.user@com",
+                displayName: "Dummy User (dummy.user@com)",
+				groups: [ "Mantenimiento_GerRegional",   
+							"Examinadores_PT15",
+							"Selector_evaluadores_PT15",
+							"seguridadH_PT15",
+							"Rep_Direccion_PT15",
+							"MedicinaLaboral_PT15",
+							"Gestion_Calidad_PT152",
+							"Direccion_TecnicaPT15",
+							"Auditor_Externo",
+						    "Gestion_habilitaciones",
+							"Solicitante_PT15",
+						 	"Mantenimiento_Secretaria",
+							"Director_Tecnico",
+ 							"Ger_Operaciones",
+						  "Aprobacion_Habilitaciones" 
+						]
+
+
+            };
+
+			oModel.loadData(url);
+			var that = this;  
+            oModel.dataLoaded()
+                .then(() => {
+                    //check if data has been loaded
+                    //for local testing, set mock data
+                    if (oModel.getData().email) {
+
+						var cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl+ '/IAS/scim/Users?filter=emails.value eq "' + oModel.getData().email + '"' 
+
+						//Llamar a API del IAS
+						$.ajax({
+
+							type: "GET",
+							contentType: "application/scim+json",
+							url: cUrl,
+							xhrFields: { withCredentials: false },
+							dataType: "json",
+							async: false,
+		
+							success: function (data, textStatus, jqXHR) {
+								 
+								//window.alert("success");
+								console.log("It works");
+								var oModelUser = new sap.ui.model.json.JSONModel();
+								oModelUser.setData(data.Resources);
+		
+								debugger;
+								var  aDatosUsuario = that.armarDatos(data.Resources);
+								 
+								oModel.setData(aDatosUsuario);
+//								oView.getView().setModel(oModel, "users");
+		
+							},
+							error: function (data, xhr, textStatus) { 
+								console.log(data);
+								console.log(xhr);
+								console.log(textStatus);
+								debugger;
+								window.alert("error"); 
+							}
+						});
+
+
+						// Fin llamar a API del IAS
+					}
+					else{	
+                        oModel.setData(mock);
+                    }
+                  
+
+                    // this.setModel(oModel, "userInfo");
+                    
+                })
+                .catch(() => {
+                    oModel.setData(mock);
+                     
+                     
+                });
+
+ 
+
+
+		},
+
+		armarDatos: function(datos) {
+
+			debugger;
+
+			var aGroupsTemporal = datos[0].groups;
+
+			var aGroups = aGroupsTemporal.map(function(fila) {
+				return fila.display;
+			  });
+
+			var aUserData = {
+                firstname: datos[0].displayName,
+                lastname:  datos[0].displayName,
+                email: datos[0].emails[0].value,
+                name: datos[0].emails[0].value,
+                displayName: datos[0].displayName,
+				groups: aGroups
+
+
+            };
+
+			return aUserData; 
+
 		},
 		onAfterRendering: function () {
 			this.loadSociety();
@@ -3534,7 +3692,7 @@ sap.ui.define([
 							el.Horainfcammesa = that.formatTimeRPDF(el.Horainfcammesa);
 
 							for (var x in el) {
-								if (!(el[x] !== null && [x] !== undefined)) {
+								if (!(el[x] !== null && [x] != undefined)) {
 									el[x] = "";
 								}
 							}
