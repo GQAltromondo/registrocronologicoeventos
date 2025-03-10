@@ -9,7 +9,9 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/m/MessageBox",
 	"sap/m/MessageStrip",
-	"transener/registrocronologicoeventos/services/UserDataService",
+	"sap/m/VBox",
+	"sap/m/Dialog",
+	"transener/registrocronologicoeventos/services/UserService",
 	"transener/registrocronologicoeventos/services/PerturbacionesService",
 	"transener/registrocronologicoeventos/services/DispActuantesService",
 	"transener/registrocronologicoeventos/services/TipificacionesFallasService",
@@ -29,7 +31,7 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/ValidateHelper",
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/utils/FormatHelper"
-], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, userDataService,
+], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, EmpresaTramitacionService,
@@ -46,23 +48,21 @@ sap.ui.define([
 		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
 		formatter: formatter,
 		onInit: function () {
-			var cUrl = this.getBaseURL(); 
-			var oController = this;
-			var oView = this.getView()
-			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-			this.globalBusyDialog = new sap.m.BusyDialog();
-			// userDataService.loadModel(function (data) {
-			// 	if (typeof data.groups == "string") {
-			// 		data.groups = [data.groups];
-			// 	}
-			// 	Object.assign(oController.currentUser, data);
+			this.getBaseURL()
 
-			// });
-			this.loadUserDataModel();
+			this.globalBusyDialog = new sap.m.BusyDialog();
+			UserService.loadModel()
+			//this.loadUserDataModel();
 			this.getView().setModel();
 			this.getView().getModel('LGuardias')
+			this.loadModels()
+			this.loadTipoNovedades();
+		},
+		loadModels: function () {
+			var oView = this.getView()
 			ModelHelper.getModel("utilsModel", oView)
 			ModelHelper.getModel('MotivosJsonModel', oView)
+			ModelHelper.getModel('EquiposModel', oView)
 			ModelHelper.getModel('ClimasJsonModel', oView)
 			ModelHelper.getModel('CausasJsonModel', oView)
 			ModelHelper.getModel("NovedadesFormJsonModel", oView)
@@ -78,164 +78,166 @@ sap.ui.define([
 				"chkDeseng": false,
 				"chkEmergencia": false
 			})
+			ModelHelper.getModel('oNovedadesModel', oView).setData({ data: [], count: 0 })
+			ModelHelper.getModel('oPerturbacionesModel', oView).setData({ data: [], count: 0 })
+			ModelHelper.getModel('oTProgramadasModel', oView).setData({ data: [], count: 0 })
+			ModelHelper.getModel('oFilteredModel', oView).setData({ data: [], count: 0 })
 		},
 		getBaseURL: function () {
 
-            debugger; 
-             
-            var appId  = this.getOwnerComponent().getManifestEntry("/sap.app/id");
+			var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
 
-            //var appId = this.getManifestEntry("/sap.app/id");
-            var appPath = appId.replaceAll(".", "/");
-            var appModulePath = jQuery.sap.getModulePath(appPath);
-            
-            var jsonModel = sap.ui.getCore().getModel("appCurrentInfo");
-            //checks if the model exists
-            if (!jsonModel) {
-                jsonModel = new sap.ui.model.json.JSONModel();
-                jsonModel.setSizeLimit(9999);
-                jsonModel.appUrl = appModulePath;
-                sap.ui.getCore().setModel(jsonModel, "appCurrentInfo");
-                //initilializing = appModulePath; 
-                jsonModel.setData({});
-            }
-            return appModulePath;
-             
-        },
+			//var appId = this.getManifestEntry("/sap.app/id");
+			var appPath = appId.replaceAll(".", "/");
+			var appModulePath = jQuery.sap.getModulePath(appPath);
 
-		loadUserDataModel: function(callback) {
-
-			
-			debugger; 
-
-			var UserDataService = this;
-			this.callback = callback;
-			//reads user api
-			/* var path = this._servicePathPrefix + this._servicePath;
-			jQuery.ajax(path + "?multiValuesAsArrays=true", {
-				method: "GET",
-				success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
-				error: jQuery.proxy(UserDataService.onReadUserApiError, UserDataService)
-			});
-			*/
-			 
-			const url =   sap.ui.getCore().getModel("appCurrentInfo").appUrl  + "/user-api/currentUser";
-            var oModel = new sap.ui.model.json.JSONModel() ;
-            var mock = {
-                firstname: "Dummy",
-                lastname: "User",
-                email: "dummy.user@com",
-                name: "dummy.user@com",
-                displayName: "Dummy User (dummy.user@com)",
-				groups: [ "Mantenimiento_GerRegional",   
-							"Examinadores_PT15",
-							"Selector_evaluadores_PT15",
-							"seguridadH_PT15",
-							"Rep_Direccion_PT15",
-							"MedicinaLaboral_PT15",
-							"Gestion_Calidad_PT152",
-							"Direccion_TecnicaPT15",
-							"Auditor_Externo",
-						    "Gestion_habilitaciones",
-							"Solicitante_PT15",
-						 	"Mantenimiento_Secretaria",
-							"Director_Tecnico",
- 							"Ger_Operaciones",
-						  "Aprobacion_Habilitaciones" 
-						]
-
-
-            };
-
-			oModel.loadData(url);
-			var that = this;  
-            oModel.dataLoaded()
-                .then(() => {
-                    //check if data has been loaded
-                    //for local testing, set mock data
-                    if (oModel.getData().email) {
-
-						var cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl+ '/IAS/scim/Users?filter=emails.value eq "' + oModel.getData().email + '"' 
-
-						//Llamar a API del IAS
-						$.ajax({
-
-							type: "GET",
-							contentType: "application/scim+json",
-							url: cUrl,
-							xhrFields: { withCredentials: false },
-							dataType: "json",
-							async: false,
-		
-							success: function (data, textStatus, jqXHR) {
-								 
-								//window.alert("success");
-								console.log("It works");
-								var oModelUser = new sap.ui.model.json.JSONModel();
-								oModelUser.setData(data.Resources);
-		
-								debugger;
-								var  aDatosUsuario = that.armarDatos(data.Resources);
-								 
-								oModel.setData(aDatosUsuario);
-//								oView.getView().setModel(oModel, "users");
-		
-							},
-							error: function (data, xhr, textStatus) { 
-								console.log(data);
-								console.log(xhr);
-								console.log(textStatus);
-								debugger;
-								window.alert("error"); 
-							}
-						});
-
-
-						// Fin llamar a API del IAS
-					}
-					else{	
-                        oModel.setData(mock);
-                    }
-                  
-
-                    // this.setModel(oModel, "userInfo");
-                    
-                })
-                .catch(() => {
-                    oModel.setData(mock);
-                     
-                     
-                });
-
- 
-
+			var jsonModel = sap.ui.getCore().getModel("appCurrentInfo");
+			//checks if the model exists
+			if (!jsonModel) {
+				jsonModel = new sap.ui.model.json.JSONModel();
+				jsonModel.setSizeLimit(9999);
+				jsonModel.appUrl = appModulePath;
+				sap.ui.getCore().setModel(jsonModel, "appCurrentInfo");
+				//initilializing = appModulePath; 
+				jsonModel.setData({});
+			}
+			return appModulePath;
 
 		},
 
-		armarDatos: function(datos) {
-
-			debugger;
-
-			var aGroupsTemporal = datos[0].groups;
-
-			var aGroups = aGroupsTemporal.map(function(fila) {
-				return fila.display;
-			  });
-
-			var aUserData = {
-                firstname: datos[0].displayName,
-                lastname:  datos[0].displayName,
-                email: datos[0].emails[0].value,
-                name: datos[0].emails[0].value,
-                displayName: datos[0].displayName,
-				groups: aGroups
+		// loadUserDataModel: function (callback) {
 
 
-            };
+		// 	debugger;
 
-			return aUserData; 
+		// 	var UserDataService = this;
+		// 	this.callback = callback;
+		// 	//reads user api
+		// 	/* var path = this._servicePathPrefix + this._servicePath;
+		// 	jQuery.ajax(path + "?multiValuesAsArrays=true", {
+		// 		method: "GET",
+		// 		success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
+		// 		error: jQuery.proxy(UserDataService.onReadUserApiError, UserDataService)
+		// 	});
+		// 	*/
 
-		},
+		// 	const url = sap.ui.getCore().getModel("appCurrentInfo").appUrl + "/user-api/currentUser";
+		// 	var oModel = new sap.ui.model.json.JSONModel();
+		// 	var mock = {
+		// 		firstname: "Dummy",
+		// 		lastname: "User",
+		// 		email: "dummy.user@com",
+		// 		name: "dummy.user@com",
+		// 		displayName: "Dummy User (dummy.user@com)",
+		// 		groups: ["Mantenimiento_GerRegional",
+		// 			"Examinadores_PT15",
+		// 			"Selector_evaluadores_PT15",
+		// 			"seguridadH_PT15",
+		// 			"Rep_Direccion_PT15",
+		// 			"MedicinaLaboral_PT15",
+		// 			"Gestion_Calidad_PT152",
+		// 			"Direccion_TecnicaPT15",
+		// 			"Auditor_Externo",
+		// 			"Gestion_habilitaciones",
+		// 			"Solicitante_PT15",
+		// 			"Mantenimiento_Secretaria",
+		// 			"Director_Tecnico",
+		// 			"Ger_Operaciones",
+		// 			"Aprobacion_Habilitaciones"
+		// 		]
+
+
+		// 	};
+
+		// 	oModel.loadData(url);
+		// 	var that = this;
+		// 	oModel.dataLoaded()
+		// 		.then(() => {
+		// 			//check if data has been loaded
+		// 			//for local testing, set mock data
+		// 			if (oModel.getData().email) {
+
+		// 				var cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl + '/IAS/scim/Users?filter=emails.value eq "' + oModel.getData().email + '"'
+
+		// 				//Llamar a API del IAS
+		// 				$.ajax({
+
+		// 					type: "GET",
+		// 					contentType: "application/scim+json",
+		// 					url: cUrl,
+		// 					xhrFields: { withCredentials: false },
+		// 					dataType: "json",
+		// 					async: false,
+
+		// 					success: function (data, textStatus, jqXHR) {
+
+		// 						//window.alert("success");
+		// 						console.log("It works");
+		// 						var oModelUser = new sap.ui.model.json.JSONModel();
+		// 						oModelUser.setData(data.Resources);
+
+		// 						debugger;
+		// 						var aDatosUsuario = that.armarDatos(data.Resources);
+
+		// 						oModel.setData(aDatosUsuario);
+		// 						//								oView.getView().setModel(oModel, "users");
+
+		// 					},
+		// 					error: function (data, xhr, textStatus) {
+		// 						console.log(data);
+		// 						console.log(xhr);
+		// 						console.log(textStatus);
+		// 						debugger;
+		// 						window.alert("error");
+		// 					}
+		// 				});
+
+
+		// 				// Fin llamar a API del IAS
+		// 			}
+		// 			else {
+		// 				oModel.setData(mock);
+		// 			}
+
+
+		// 			// this.setModel(oModel, "userInfo");
+
+		// 		})
+		// 		.catch(() => {
+		// 			oModel.setData(mock);
+
+
+		// 		});
+
+
+
+
+		// },
+
+		// armarDatos: function (datos) {
+
+		// 	debugger;
+
+		// 	var aGroupsTemporal = datos[0].groups;
+
+		// 	var aGroups = aGroupsTemporal.map(function (fila) {
+		// 		return fila.display;
+		// 	});
+
+		// 	var aUserData = {
+		// 		firstname: datos[0].displayName,
+		// 		lastname: datos[0].displayName,
+		// 		email: datos[0].emails[0].value,
+		// 		name: datos[0].emails[0].value,
+		// 		displayName: datos[0].displayName,
+		// 		groups: aGroups
+
+
+		// 	};
+
+		// 	return aUserData;
+
+		// },
 		onAfterRendering: function () {
 			this.loadSociety();
 
@@ -246,6 +248,7 @@ sap.ui.define([
 			TipificacionesFallasService.loadModel();
 			//TODO cambiar a empresa seleccionada
 			EstacionesService.loadEstaciones('100')
+			EquiposService.loadNSEquipos('100');
 
 			EmpresaTramitacionService.loadTramitacion('100')
 			var oModel = sap.ui.getCore().getModel("NovedadesFormJsonModel");
@@ -275,16 +278,17 @@ sap.ui.define([
 		},
 		handleChangeF: function (evt) {
 			console.log("PASE")
-			var sValue = evt.getParameter("value");
-			var estacion = evt.getSource().getSelectedKey();
+			var estacion = evt.getParameter("value");
+			var codigo = evt.getSource().getSelectedKey();
+			console.log(estacion)
 			//var tipo = this.byId("TipoEquipoFilter").getSelectedKey();
 			// var equiposModel = this.getEquiposModel();
 			// equiposModel.setData({
 			// 	Equipos: [],
 			// 	busy: true
 			// });
-			EquiposService.LoadEquipos(estacion);
-			if (!sValue) {
+			EquiposService.LoadEquipos(codigo, "100");
+			if (!estacion) {
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
 		},
@@ -600,7 +604,7 @@ sap.ui.define([
 		},
 
 		onSearchLGuard: function (evt) {
-
+			var generales = []
 			var novedades = [];
 			var perturbaciones = [];
 			var trabajosProgramados = [];
@@ -617,8 +621,6 @@ sap.ui.define([
 			oTableTP.setBusy(true)
 
 			var oGuardiasSetModel = this.getView().getModel('LGuardias')
-			var oFilteredModel = new JSONModel([]);
-
 			var oOperacionesSetModel = this.getView().getModel('Operaciones')
 
 			ModelHelper.getModel('oNovedadesModel')
@@ -632,9 +634,9 @@ sap.ui.define([
 				oMs.destroy();
 			}
 			var lugarFilter = this.byId("LugarFilter").getSelectedKey();
-			var lugarValue = this.byId("LugarFilter").getSelectedItem().getText();
+			var lugarValue = this.byId("LugarFilter").getSelectedItem()?.getText();
 			var novedadesFilter = this.byId("NovedadesFilter").getSelectedKeys();
-			var tipoEquipoFilter = this.byId("TipoEquipoFilter").getSelectedKey();
+			var tipoEquipoFilter = this.byId("EquipoFilter").getSelectedKey();
 			var FromDateFilter = this.byId("FromDateFilter").getDateValue();
 			var ToDateFilter = this.byId("ToDateFilter").getDateValue();
 			var InitialDate = this.byId("InitialDate").getDateValue();
@@ -663,10 +665,10 @@ sap.ui.define([
 
 			if (tipoEquipoFilter) {
 				serverFilters.push(
-					new Filter("Equnr", FilterOperator.Contains, tipoEquipoFilter)
+					new Filter("Equipo", FilterOperator.EQ, tipoEquipoFilter)
 				);
 				NSFilters.push(
-					new Filter("CodTipo", FilterOperator.Contains, tipoEquipoFilter)
+					new Filter("CodTipo", FilterOperator.EQ, tipoEquipoFilter)
 				);
 			}
 
@@ -701,7 +703,7 @@ sap.ui.define([
 				filters: serverFilters,
 				success: (data) => {
 
-					oFilteredModel.setData(data.results)
+					generales.push(...data.results);
 					oTable.setShowOverlay(false);
 					oTable.setBusy(false)
 					console.log(data)
@@ -725,9 +727,18 @@ sap.ui.define([
 							trabajosProgramados.push(item);
 						}
 					});
-					ModelHelper.getModel('oNovedadesModel', oView).setData(novedades)
-					ModelHelper.getModel('oPerturbacionesModel', oView).setData(perturbaciones)
-					ModelHelper.getModel('oTProgramadasModel', oView).setData(trabajosProgramados)
+
+
+					console.log("Novedades", novedades)
+					console.log("Perturbaciones", perturbaciones)
+					console.log("Programadas", trabajosProgramados)
+					console.log("Generales", generales)
+
+
+					ModelHelper.getModel('oNovedadesModel').setData({ data: novedades, count: novedades.length })
+					ModelHelper.getModel('oPerturbacionesModel').setData({ data: perturbaciones, count: perturbaciones.length })
+					ModelHelper.getModel('oTProgramadasModel').setData({ data: trabajosProgramados, count: trabajosProgramados.length })
+					ModelHelper.getModel('oFilteredModel').setData({ data: generales, count: generales.length });
 
 					console.log(novedades)
 					oTableNS.setBusy(false)
@@ -750,7 +761,6 @@ sap.ui.define([
 				}
 			})
 
-			oView.setModel(oFilteredModel, "filtered");
 		},
 		onSelectionChange: function () {
 			this.getView().byId("generalTable").setShowOverlay(true);
@@ -857,23 +867,23 @@ sap.ui.define([
 			console.log(oSelectedCheckBox.getId())
 
 			switch (oSelectedCheckBox.getId()) {
-			case "chkRecierre":
-				oData.CodNovedad = "P"
-				oData.Recierre = bSelected;
-				break;
-			case "chkDeseng":
-				oData.CodNovedad = "P"
-				oData.GenIndisponibilidad = bSelected;
-				break;
-			case "chkRecDeseng":
-				oData.CodNovedad = "P"
-				oData.Recierre = bSelected;
-				oData.GenIndisponibilidad = bSelected;
-				break;
-			case "chkEmergencia":
-				oData.CodNovedad = "D"
-				oData.GenIndisponibilidad = bSelected;
-				break;
+				case "chkRecierre":
+					oData.CodNovedad = "P"
+					oData.Recierre = bSelected;
+					break;
+				case "chkDeseng":
+					oData.CodNovedad = "P"
+					oData.GenIndisponibilidad = bSelected;
+					break;
+				case "chkRecDeseng":
+					oData.CodNovedad = "P"
+					oData.Recierre = bSelected;
+					oData.GenIndisponibilidad = bSelected;
+					break;
+				case "chkEmergencia":
+					oData.CodNovedad = "D"
+					oData.GenIndisponibilidad = bSelected;
+					break;
 			}
 			oModel.setData(oData)
 
@@ -901,16 +911,16 @@ sap.ui.define([
 			};
 			var novedad = oNovedadesModel.getProperty("/CodNovedad");
 			if (novedad === "C") {
-				delete(oRules.CodDispAct);
-				delete(oRules.CodAreaResp);
-				delete(oRules.CodWeather);
-				delete(oRules.GenIndisponibilidad);
+				delete (oRules.CodDispAct);
+				delete (oRules.CodAreaResp);
+				delete (oRules.CodWeather);
+				delete (oRules.GenIndisponibilidad);
 			}
 			if (novedad === "I") {
-				delete(oRules.CodDispAct);
+				delete (oRules.CodDispAct);
 			}
 			if (novedad === "D") {
-				delete(oRules.CodDispAct);
+				delete (oRules.CodDispAct);
 				//delete(oRules.EntIndis);
 			}
 			var tipo = oNovedadesModel.getProperty("/CodTipo");
@@ -920,7 +930,7 @@ sap.ui.define([
 			var recierre = oNovedadesModel.getProperty("/Recierre");
 			var genIndisponibilidad = oNovedadesModel.getProperty("/GenIndisponibilidad");
 			if (recierre && genIndisponibilidad === false) {
-				delete(oRules.EntIndis);
+				delete (oRules.EntIndis);
 			}
 			var data = oNovedadesModel.getData();
 			var bValid = ValidateHelper.make(data, oRules);
@@ -1545,24 +1555,24 @@ sap.ui.define([
 							}
 
 							switch (el.Tipo) {
-							case "1":
-								fechasDiarias[i].forzadas.push(el);
-								break;
-							case "2":
-								fechasDiarias[i].programadas.push(el);
-								break;
-							case "3":
-								if (diaNovedad.getTime() == fecha.getTime()) {
-									fechasDiarias[i].recierres.push(el);
-								}
-								break;
-							case "4":
-								//TODO creo que solo lo agrega el primer dia
-								if (diaNovedad.getTime() == fecha.getTime()) {
-									fechasDiarias[i].comentariosGenerales.push(el);
-								}
+								case "1":
+									fechasDiarias[i].forzadas.push(el);
+									break;
+								case "2":
+									fechasDiarias[i].programadas.push(el);
+									break;
+								case "3":
+									if (diaNovedad.getTime() == fecha.getTime()) {
+										fechasDiarias[i].recierres.push(el);
+									}
+									break;
+								case "4":
+									//TODO creo que solo lo agrega el primer dia
+									if (diaNovedad.getTime() == fecha.getTime()) {
+										fechasDiarias[i].comentariosGenerales.push(el);
+									}
 
-								break;
+									break;
 							}
 						});
 					}
@@ -1632,7 +1642,7 @@ sap.ui.define([
 						var fechaActual = fechasDiarias[i];
 						var fechaDia = fechas[i];
 						if (!(fechaActual.forzadas.length || fechaActual.programadas.length ||
-								fechaActual.recierres.length || fechaActual.comentariosGenerales.length)) {
+							fechaActual.recierres.length || fechaActual.comentariosGenerales.length)) {
 							continue;
 						}
 						var numeroDia = new Date(fechaDia).getDay();
@@ -2668,30 +2678,30 @@ sap.ui.define([
 
 				/* BOOK 3 CONTENT */
 				var dataBook3 = [{
-						"nombre": "Eusebio",
-						"apellido": "Labriola",
-						"documento": "14895655",
-						"telefono": "1166666666",
-						"email": "eulab@xx.lc",
-						"direccion": "Carabobo 3214",
-						"empresa": "AAA"
-					}, {
-						"nombre": "Juana",
-						"apellido": "Giralt",
-						"documento": "18999999",
-						"telefono": "1122222222",
-						"email": "jaltgi@cc.cc",
-						"direccion": "Nuñez	196",
-						"empresa": "BBB"
-					}, {
-						"nombre": "Martin",
-						"apellido": "Palermo",
-						"documento": "12345678",
-						"telefono": "1111111111",
-						"email": "palermo.martin@tt.yy",
-						"direccion": "Carlos Calvo 1250",
-						"empresa": "CCC"
-					}
+					"nombre": "Eusebio",
+					"apellido": "Labriola",
+					"documento": "14895655",
+					"telefono": "1166666666",
+					"email": "eulab@xx.lc",
+					"direccion": "Carabobo 3214",
+					"empresa": "AAA"
+				}, {
+					"nombre": "Juana",
+					"apellido": "Giralt",
+					"documento": "18999999",
+					"telefono": "1122222222",
+					"email": "jaltgi@cc.cc",
+					"direccion": "Nuñez	196",
+					"empresa": "BBB"
+				}, {
+					"nombre": "Martin",
+					"apellido": "Palermo",
+					"documento": "12345678",
+					"telefono": "1111111111",
+					"email": "palermo.martin@tt.yy",
+					"direccion": "Carlos Calvo 1250",
+					"empresa": "CCC"
+				}
 
 				];
 				var otherDataBook3 = [{
@@ -2757,30 +2767,30 @@ sap.ui.define([
 
 				/* BOOK 4 CONTENT */
 				var dataBook4 = [{
-						"nombre": "Irving",
-						"apellido": "Saenz",
-						"documento": "7894562",
-						"telefono": "1133333333",
-						"email": "masaenz@rr.tt",
-						"direccion": "San Martin 3214",
-						"empresa": "DDD"
-					}, {
-						"nombre": "Ana",
-						"apellido": "Barilari",
-						"documento": "12456789",
-						"telefono": "1198765432",
-						"email": "barilari.ana@cc.xs",
-						"direccion": "Alberti 1236",
-						"empresa": "EEE"
-					}, {
-						"nombre": "Carolina",
-						"apellido": "Rosso",
-						"documento": "15896654",
-						"telefono": "1133333333",
-						"email": "roscaro@lk.oi",
-						"direccion": "Echeverria 1235",
-						"empresa": "GGG"
-					}
+					"nombre": "Irving",
+					"apellido": "Saenz",
+					"documento": "7894562",
+					"telefono": "1133333333",
+					"email": "masaenz@rr.tt",
+					"direccion": "San Martin 3214",
+					"empresa": "DDD"
+				}, {
+					"nombre": "Ana",
+					"apellido": "Barilari",
+					"documento": "12456789",
+					"telefono": "1198765432",
+					"email": "barilari.ana@cc.xs",
+					"direccion": "Alberti 1236",
+					"empresa": "EEE"
+				}, {
+					"nombre": "Carolina",
+					"apellido": "Rosso",
+					"documento": "15896654",
+					"telefono": "1133333333",
+					"email": "roscaro@lk.oi",
+					"direccion": "Echeverria 1235",
+					"empresa": "GGG"
+				}
 
 				];
 				var otherDataBook4 = [{
@@ -2846,30 +2856,30 @@ sap.ui.define([
 
 				/* BOOK 5 CONTENT */
 				var dataBook5 = [{
-						"nombre": "Andres",
-						"apellido": "Rodriguez",
-						"documento": "94223456",
-						"telefono": "1144444444",
-						"email": "arodri@hg.jh",
-						"direccion": "Estados Unidos 3214",
-						"empresa": "HHH"
-					}, {
-						"nombre": "Jose",
-						"apellido": "Suarez",
-						"documento": "95988789",
-						"telefono": "1177777777",
-						"email": "jsuarez@sd.cc",
-						"direccion": "Rivadavia 1236",
-						"empresa": "III"
-					}, {
-						"nombre": "Maria Angelica",
-						"apellido": "Ambrosio",
-						"documento": "95666222",
-						"telefono": "1155588899",
-						"email": "mangbrosio@gf.hg",
-						"direccion": "Peru 356",
-						"empresa": "JJJ"
-					}
+					"nombre": "Andres",
+					"apellido": "Rodriguez",
+					"documento": "94223456",
+					"telefono": "1144444444",
+					"email": "arodri@hg.jh",
+					"direccion": "Estados Unidos 3214",
+					"empresa": "HHH"
+				}, {
+					"nombre": "Jose",
+					"apellido": "Suarez",
+					"documento": "95988789",
+					"telefono": "1177777777",
+					"email": "jsuarez@sd.cc",
+					"direccion": "Rivadavia 1236",
+					"empresa": "III"
+				}, {
+					"nombre": "Maria Angelica",
+					"apellido": "Ambrosio",
+					"documento": "95666222",
+					"telefono": "1155588899",
+					"email": "mangbrosio@gf.hg",
+					"direccion": "Peru 356",
+					"empresa": "JJJ"
+				}
 
 				];
 				var otherDataBook5 = [{
@@ -3203,18 +3213,18 @@ sap.ui.define([
 							var filtersData = ModelHelper.getModel("InformeFiltersJsonModel").getData();
 
 							switch (filtersData.Reporte) {
-							case "R01":
-								that.reportePDFENRESalidas(that);
-								break;
-							case "R02":
-								that.reportePDFENRECapacidadTransporte(that);
-								break;
-							case "R03":
-								that.reportePDFENREPotenciaReactiva(that);
-								break;
-							case "R04":
-								that.reportePDFENRETransformacion(that);
-								break;
+								case "R01":
+									that.reportePDFENRESalidas(that);
+									break;
+								case "R02":
+									that.reportePDFENRECapacidadTransporte(that);
+									break;
+								case "R03":
+									that.reportePDFENREPotenciaReactiva(that);
+									break;
+								case "R04":
+									that.reportePDFENRETransformacion(that);
+									break;
 							}
 							//this.dialogReportesPDF.close();
 							//this.dialogReportes.open();
@@ -3300,11 +3310,11 @@ sap.ui.define([
 
 				function reflect(promise) {
 					return promise.then(function (res) {
-							return {
-								res: res,
-								status: "resolved"
-							}
-						},
+						return {
+							res: res,
+							status: "resolved"
+						}
+					},
 						function (err) {
 							return {
 								err: err,
@@ -3335,8 +3345,8 @@ sap.ui.define([
 						});
 					}
 					zip.generateAsync({
-							type: "blob"
-						})
+						type: "blob"
+					})
 						.then(function (content) {
 							// see FileSaver.js
 
@@ -3572,11 +3582,11 @@ sap.ui.define([
 
 				function reflect(promise) {
 					return promise.then(function (res) {
-							return {
-								res: res,
-								status: "resolved"
-							}
-						},
+						return {
+							res: res,
+							status: "resolved"
+						}
+					},
 						function (err) {
 							return {
 								err: err,
@@ -3607,8 +3617,8 @@ sap.ui.define([
 						});
 					}
 					zip.generateAsync({
-							type: "blob"
-						})
+						type: "blob"
+					})
 						.then(function (content) {
 							// see FileSaver.js
 							that.globalBusyDialog.close();
@@ -3865,11 +3875,11 @@ sap.ui.define([
 
 				function reflect(promise) {
 					return promise.then(function (res) {
-							return {
-								res: res,
-								status: "resolved"
-							}
-						},
+						return {
+							res: res,
+							status: "resolved"
+						}
+					},
 						function (err) {
 							return {
 								err: err,
@@ -3900,8 +3910,8 @@ sap.ui.define([
 						});
 					}
 					zip.generateAsync({
-							type: "blob"
-						})
+						type: "blob"
+					})
 						.then(function (content) {
 							// see FileSaver.js
 							that.globalBusyDialog.close();
@@ -4146,11 +4156,11 @@ sap.ui.define([
 
 				function reflect(promise) {
 					return promise.then(function (res) {
-							return {
-								res: res,
-								status: "resolved"
-							}
-						},
+						return {
+							res: res,
+							status: "resolved"
+						}
+					},
 						function (err) {
 							return {
 								err: err,
@@ -4181,8 +4191,8 @@ sap.ui.define([
 						});
 					}
 					zip.generateAsync({
-							type: "blob"
-						})
+						type: "blob"
+					})
 						.then(function (content) {
 							// see FileSaver.js
 							that.globalBusyDialog.close();
@@ -4538,111 +4548,111 @@ sap.ui.define([
 				);
 			}
 			this.dialogReporteDBF = new sap.m.Dialog({
-					type: sap.m.DialogType.Message,
-					title: "Informe a CAMMESA",
-					escapeHandler: function (oPromise) {
-						oPromise.reject();
-					},
-					content: [
-						new sap.m.VBox({
-							items: [
-								new sap.m.HBox({
-									alignItems: "Center",
-									items: [
-										new sap.m.Label({
-											text: "Empresa",
-											width: "100px"
-										}).addStyleClass("CustomLabel"),
-										new sap.m.ComboBox({
-											selectedKey: "{InformeFiltersJsonModel>/Empresa}",
-											items: {
-												path: "NSEmpresasSet>/Empresas",
-												template: new sap.ui.core.Item({
-													key: "{NSEmpresasSet>CodEmpresa}",
-													text: "{NSEmpresasSet>CodEmpresa}"
-												})
-											},
-											layoutData: new sap.m.FlexItemData({
-												growFactor: 1
-											}),
-											width: "120px"
+				type: sap.m.DialogType.Message,
+				title: "Informe a CAMMESA",
+				escapeHandler: function (oPromise) {
+					oPromise.reject();
+				},
+				content: [
+					new sap.m.VBox({
+						items: [
+							new sap.m.HBox({
+								alignItems: "Center",
+								items: [
+									new sap.m.Label({
+										text: "Empresa",
+										width: "100px"
+									}).addStyleClass("CustomLabel"),
+									new sap.m.ComboBox({
+										selectedKey: "{InformeFiltersJsonModel>/Empresa}",
+										items: {
+											path: "NSEmpresasSet>/Empresas",
+											template: new sap.ui.core.Item({
+												key: "{NSEmpresasSet>CodEmpresa}",
+												text: "{NSEmpresasSet>CodEmpresa}"
+											})
+										},
+										layoutData: new sap.m.FlexItemData({
+											growFactor: 1
 										}),
-										new sap.m.ComboBox({
-											selectedKey: "{InformeFiltersJsonModel>/Empresa}",
-											items: {
-												path: "NSEmpresasSet>/Empresas",
-												template: new sap.ui.core.Item({
-													key: "{NSEmpresasSet>CodEmpresa}",
-													text: "{NSEmpresasSet>Descripcion}"
-												})
-											},
-											layoutData: new sap.m.FlexItemData({
-												growFactor: 6
-											}),
-											width: "100%"
-										})
-									]
-								}),
-								new sap.m.HBox({
-									alignItems: "Center",
-									items: [
-										new sap.m.HBox({
+										width: "120px"
+									}),
+									new sap.m.ComboBox({
+										selectedKey: "{InformeFiltersJsonModel>/Empresa}",
+										items: {
+											path: "NSEmpresasSet>/Empresas",
+											template: new sap.ui.core.Item({
+												key: "{NSEmpresasSet>CodEmpresa}",
+												text: "{NSEmpresasSet>Descripcion}"
+											})
+										},
+										layoutData: new sap.m.FlexItemData({
+											growFactor: 6
+										}),
+										width: "100%"
+									})
+								]
+							}),
+							new sap.m.HBox({
+								alignItems: "Center",
+								items: [
+									new sap.m.HBox({
 
-											items: [
-												new sap.m.Label({
-													text: "Desde",
-													width: "100px"
-												}).addStyleClass("CustomLabel"),
-												new sap.m.DatePicker({
-													dateValue: "{InformeFiltersJsonModel>/desde}",
-												})
-											]
-										}),
-										new sap.m.HBox({
-											items: [
-												new sap.m.Label({
-													text: "Hasta",
-													width: "100px"
-												}).addStyleClass("CustomLabel"),
-												new sap.m.DatePicker({
-													dateValue: "{InformeFiltersJsonModel>/hasta}",
-												})
-											]
-										})
-									]
-								})
-							]
-						})
-					],
-					buttons: [
-						new sap.m.Button({
-							//icon: "sap-icon://save",
-							type: sap.m.ButtonType.Emphasized,
-							text: "Exportar Excel",
-							press: [function () {
-								exportData(true);
-								//this.dialogReporteDBF.close();
-							}, this]
-						}),
-						new sap.m.Button({
-							//icon: "sap-icon://save",
-							type: sap.m.ButtonType.Emphasized,
-							text: "Exportar",
-							press: [function () {
-								exportData();
-								//this.dialogReporteDBF.close();
-							}, this]
-						}),
-						new sap.m.Button({
-							//icon: "sap-icon://save",
-							type: sap.m.ButtonType.Emphasized,
-							text: "Cerrar",
-							press: [function () {
-								this.dialogReporteDBF.close();
-							}, this]
-						})
-					]
-				}),
+										items: [
+											new sap.m.Label({
+												text: "Desde",
+												width: "100px"
+											}).addStyleClass("CustomLabel"),
+											new sap.m.DatePicker({
+												dateValue: "{InformeFiltersJsonModel>/desde}",
+											})
+										]
+									}),
+									new sap.m.HBox({
+										items: [
+											new sap.m.Label({
+												text: "Hasta",
+												width: "100px"
+											}).addStyleClass("CustomLabel"),
+											new sap.m.DatePicker({
+												dateValue: "{InformeFiltersJsonModel>/hasta}",
+											})
+										]
+									})
+								]
+							})
+						]
+					})
+				],
+				buttons: [
+					new sap.m.Button({
+						//icon: "sap-icon://save",
+						type: sap.m.ButtonType.Emphasized,
+						text: "Exportar Excel",
+						press: [function () {
+							exportData(true);
+							//this.dialogReporteDBF.close();
+						}, this]
+					}),
+					new sap.m.Button({
+						//icon: "sap-icon://save",
+						type: sap.m.ButtonType.Emphasized,
+						text: "Exportar",
+						press: [function () {
+							exportData();
+							//this.dialogReporteDBF.close();
+						}, this]
+					}),
+					new sap.m.Button({
+						//icon: "sap-icon://save",
+						type: sap.m.ButtonType.Emphasized,
+						text: "Cerrar",
+						press: [function () {
+							this.dialogReporteDBF.close();
+						}, this]
+					})
+				]
+			}),
 
 				this.getView().addDependent(this.dialogReporteDBF);
 
@@ -4765,9 +4775,9 @@ sap.ui.define([
 			var allProperties = [];
 			//lineas
 			allProperties.push(["Idnovedad", "Nombre", "Tension", "Km", "Cat", {
-					path: "Fs",
-					formatter: this.formatDateTime
-				}, {
+				path: "Fs",
+				formatter: this.formatDateTime
+			}, {
 					path: "Es",
 					formatter: this.formatDateTime
 				},
@@ -4775,9 +4785,9 @@ sap.ui.define([
 			]);
 			//transformadores
 			allProperties.push(["Idnovedad", "Estacion", "Equipo", "Mva", "Tension", {
-					path: "Fs",
-					formatter: this.formatDateTime
-				}, {
+				path: "Fs",
+				formatter: this.formatDateTime
+			}, {
 					path: "Es",
 					formatter: this.formatDateTime
 				},
@@ -4786,9 +4796,9 @@ sap.ui.define([
 
 			//equiposReactivos
 			allProperties.push(["Idnovedad", "Estacion", "Equipo", "Mvar", "vacio", {
-					path: "Fs",
-					formatter: this.formatDateTime
-				}, {
+				path: "Fs",
+				formatter: this.formatDateTime
+			}, {
 					path: "Es",
 					formatter: this.formatDateTime
 				},
@@ -4796,9 +4806,9 @@ sap.ui.define([
 			]);
 			//conexiones
 			allProperties.push(["Idnovedad", "Estacion", "Equipo", "Tension", "vacio", {
-					path: "Fs",
-					formatter: this.formatDateTime
-				}, {
+				path: "Fs",
+				formatter: this.formatDateTime
+			}, {
 					path: "Es",
 					formatter: this.formatDateTime
 				},
@@ -5053,25 +5063,25 @@ sap.ui.define([
 			var sTableId;
 			var sModel;
 			switch (sSelectedKey) {
-			case "General":
-				sTableId = "generalTable";
-				sModel = "filtered"
-				break;
-			case "Novedades":
-				sTableId = "tableNovedades";
-				sModel = "oNovedadesModel"
-				break;
-			case "Perturbaciones":
-				sTableId = "tablePerturbaciones";
-				sModel = "oPerturbacionesModel"
-				break;
-			case "TrabajosProgramados":
-				sTableId = "tableProgramadas";
-				sModel = "oTProgramadasModel"
-				break;
-			default:
-				sap.m.MessageToast.show("No se ha seleccionado una pestaña válida");
-				return;
+				case "General":
+					sTableId = "generalTable";
+					sModel = "filtered"
+					break;
+				case "Novedades":
+					sTableId = "tableNovedades";
+					sModel = "oNovedadesModel"
+					break;
+				case "Perturbaciones":
+					sTableId = "tablePerturbaciones";
+					sModel = "oPerturbacionesModel"
+					break;
+				case "TrabajosProgramados":
+					sTableId = "tableProgramadas";
+					sModel = "oTProgramadasModel"
+					break;
+				default:
+					sap.m.MessageToast.show("No se ha seleccionado una pestaña válida");
+					return;
 			}
 
 			// Obtener la tabla
@@ -5099,6 +5109,86 @@ sap.ui.define([
 			// Mostrar un mensaje de éxito
 			sap.m.MessageToast.show("Todas las filas se han actualizado correctamente");
 
-		}
+		},
+
+		onComboBoxChange: function (oEvent) {
+			var sSelectedKey = oEvent.getSource().getSelectedKey();
+			var sFragmentPath;
+			if (sSelectedKey) {
+				sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sSelectedKey;
+			}
+
+
+			Fragment.load({
+				id: this.getView().getId() + "-newFragment",
+				name: sFragmentPath,
+				controller: this,
+			})
+				.then(
+					function (oNewFragment) {
+						// Remove previously loaded fragments from the new fragment VBox
+						this._oVBoxNewFragment.removeAllItems();
+
+						// Add the new fragment to the new VBox
+						this._oVBoxNewFragment.addItem(oNewFragment);
+					}.bind(this)
+				)
+				.catch(function () {
+					MessageToast.show("Fragment not found: " + sFragmentPath);
+				});
+		},
+		onOpenDialogNovedades: function () {
+			// Crear el diálogo si no existe
+			if (!this._oDialog) {
+				// Crear VBox para los fragments
+				this._oVBoxFormNovelties = new VBox("formNoveltiesContainer");
+				this._oVBoxNewFragment = new VBox("newFragmentContainer");
+
+				// Crear el Dialog
+				this._oDialog = new Dialog({
+					title: "Novedades",
+					content: [this._oVBoxFormNovelties, this._oVBoxNewFragment],
+
+					beginButton: new sap.m.Button({
+						text: "Guardar",
+						press: function () {
+							this.onSaveNovedad();
+						}.bind(this),
+					}),
+					endButton: new sap.m.Button({
+						text: "Cerrar",
+						press: function () {
+							this._oDialog.close();
+						}.bind(this),
+					}),
+
+					afterClose: function () {
+						this._oDialog.destroy();
+						this._oDialog = null;
+					}.bind(this),
+				});
+
+				// Cargar el fragmento formNovelties y añadirlo al VBox
+				Fragment.load({
+					id: this.getView().getId() + "-formNovelties",
+					name: "transener.registrocronologicoeventos.fragments.forms.formNovelties",
+					controller: this,
+				})
+					.then(function (oFragment) {
+						// Añadir fragmento a la VBox
+						this._oVBoxFormNovelties.addItem(oFragment);
+
+						// Abrir el dialog solo cuando el fragmento haya sido cargado
+						this._oDialog.open();
+					}.bind(this))
+					.catch(function (oError) {
+						MessageToast.show("Failed to load formNovelties fragment: " + oError);
+					});
+			} else {
+				// Si el diálogo ya fue creado, simplemente ábrelo
+				this._oDialog.open();
+			}
+		},
+
 	});
 });

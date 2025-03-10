@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
-	<t:Table id="tableNovedades" rows="{ path: 'oNovedadesModel>/', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
+	<t:Table id="tableNovedades" rows="{ path: 'oNovedadesModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
 		<t:columns>
 			<!--<t:Column width="50px">-->
 			<!--	<Label/>-->

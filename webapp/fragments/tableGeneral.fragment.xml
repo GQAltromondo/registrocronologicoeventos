@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
-	<t:Table id="generalTable" rows="{ path: 'filtered>/', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
+	<t:Table id="generalTable" rows="{ path: 'oFilteredModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
 		<!--<t:Column width="50px">-->
 		<!--	<Label/>-->
 		<!--	<t:template>-->
@@ -12,42 +12,42 @@
 			<t:Column sortProperty="FhFormat">
 				<Label text="{i18n>dateTime}"/>
 				<t:template>
-					<!--<Text text="{filtered>FhFormat}"/>-->
-					<DatePicker change="handleTableChanges" value="{filtered>FhFormat}"/>
+					<!--<Text text="{oFilteredModel>FhFormat}"/>-->
+					<DatePicker change="handleTableChanges" value="{oFilteredModel>FhFormat}"/>
 				</t:template>
 			</t:Column>
 			<t:Column width="95px" sortProperty="LugarFormat" filterProperty="LugarFormat">
 				<Label text="{i18n>place}"/>
 				<t:template>
-					<!--<Text text="{filtered>LugarFormat}"/>-->
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
-						selectedKey="{filtered>Lugar}">
-						<core:Item key="{Estaciones>Estacion}" text="{Estaciones>Codigo}"/>
+					<!--<Text text="{oFilteredModel>LugarFormat}"/>-->
+					<ComboBox selectionChange="handleTableChanges" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }"
+						selectedKey="{oFilteredModel>Lugar}">
+						<core:Item key="{EstacionesJsonModel>Estacion}" text="{EstacionesJsonModel>Codigo}"/>
 					</ComboBox>
 				</t:template>
 			</t:Column>
 			<t:Column width="95px" filterProperty="Equipo">
 				<Label text="{i18n>team}"/>
 				<t:template>
-					<Text text="{filtered>Equipo}"/>
+					<Text text="{oFilteredModel>Equipo}"/>
 				</t:template>
 			</t:Column>
 			<t:Column sortProperty="Tiponovedad" filterProperty="Tiponovedad">
 				<Label text="{i18n>noveltyType}"/>
 				<t:template>
-					<Text text="{filtered>Tiponovedad}"/>
+					<Text text="{oFilteredModel>Tiponovedad}"/>
 				</t:template>
 			</t:Column>
 			<t:Column width="320px">
 				<Label text="{i18n>novelty}"/>
 				<t:template>
-					<Text text="{filtered>Novedad}"/>
+					<Text text="{oFilteredModel>Novedad}"/>
 				</t:template>
 			</t:Column>
 			<t:Column sortProperty="Creado_Por" filterProperty="Creado_Por">
 				<Label text="{i18n>operator}"/>
 				<t:template>
-					<Text text="{path:'filtered>Creado_Por', formatter: '.formatter.uppercase'}"/>
+					<Text text="{path:'oFilteredModel>Creado_Por', formatter: '.formatter.uppercase'}"/>
 				</t:template>
 			</t:Column>
 			<t:Column width="180px">

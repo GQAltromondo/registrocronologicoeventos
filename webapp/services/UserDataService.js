@@ -1,1 +1,88 @@
-sap.ui.define([],function(){"use strict";return{_servicePathPrefix:"/services/userapi",_servicePath:"/attributes",getModel:function(){var e=sap.ui.getCore().getModel("UserData");if(!e){e=new sap.ui.model.json.JSONModel;e.setSizeLimit(9999);sap.ui.getCore().setModel(e,"UserData");e.setData({})}return e},loadModel:function(e){var s=this;this.callback=e;var r=this._servicePathPrefix+this._servicePath;console.log(r);jQuery.ajax(r+"?multiValuesAsArrays=true",{method:"GET",success:jQuery.proxy(s.onReadUserApiSuccess,s),error:jQuery.proxy(s.onReadUserApiError,s)})},onReadUserApiSuccess:function(e,s,r){console.log(e);var t=this.getModel();t.setData(e);if(this.callback){this.callback(e);this.callback=null}},onReadUserApiError:function(e,s,r){console.log(e,s,r);var t=503;if(r.status===t){return}var a=r.response.body;var o=r.response.headers["Content-Type"];if(o.indexOf("text/html")>=0){a=$(r.response.body).text()}else if(o.indexOf("application/json")>=0){try{var i=JSON.parse(a);a=i.error.message.value}catch(e){a=r.response.body}}}}});
+sap.ui.define([
+	//helpers
+], function() {
+	"use strict";
+
+	return {
+		
+		_servicePathPrefix: "/services/userapi",
+		_servicePath: "/attributes",
+		
+		getModel: function() {
+			//gets component
+			//gets model
+			var jsonModel = sap.ui.getCore().getModel("UserData");
+			//checks if the model exists
+			if (!jsonModel) {
+				jsonModel = new sap.ui.model.json.JSONModel();
+				jsonModel.setSizeLimit(9999);
+				sap.ui.getCore().setModel(jsonModel, "UserData");
+				//initilializing
+				jsonModel.setData({});
+			}
+			return jsonModel;
+		},
+		
+		loadModel: function(callback) {
+			var UserDataService = this;
+			this.callback = callback;
+			//reads user api
+			var path = this._servicePathPrefix + this._servicePath;
+			
+			console.log(path)
+			jQuery.ajax(path + "?multiValuesAsArrays=true", {
+				method: "GET",
+				success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
+				error: jQuery.proxy(UserDataService.onReadUserApiError, UserDataService)
+			});
+		},
+		
+		onReadUserApiSuccess: function(data, textStatus, jqXHR) {
+			//creates model
+			
+			console.log(data)
+			var jsonModel = this.getModel();
+			//sets data
+			jsonModel.setData(data);
+			if(this.callback) {
+				this.callback(data);
+				this.callback = null;
+			}
+		},
+				
+		onReadUserApiError: function(jqXHR, textStatus, error) {
+			//verifies if session is still active
+					console.log(jqXHR,textStatus,error)
+			var sessionTimeoutResponseCode = 503;
+			if (error.status === sessionTimeoutResponseCode) {
+				//session timeout
+				//FioriHelper.showSessionTimeoutMessageBox();
+				return;
+			}
+
+			//gets error
+			var errorText = error.response.body;
+			//parses error
+			var contentType = error.response.headers["Content-Type"];
+			if (contentType.indexOf("text/html") >= 0) {
+				//HTML
+				errorText = $(error.response.body).text();
+			}
+			else if (contentType.indexOf("application/json") >= 0) {
+				//JSON
+				try {
+					var oError = JSON.parse(errorText);
+					errorText = oError.error.message.value;
+				} catch (ex) {
+					//error in parsing
+					errorText = error.response.body;
+				}
+			}
+			
+			//error message
+			//errorText = i18nTranslationHelper.getTranslation("ErrorLoadingAssignedTaxNumbers") + ". \n\n" + errorText;
+			//MessageBoxHelper.showAlert("Error", errorText);
+		}
+
+	};
+});

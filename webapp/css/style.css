@@ -2,16 +2,47 @@
     text-align: center;
 }
 
+/* Enter your custom styles here */
+.border {
+    border: 1px solid orange
+}
+
+.border2 {
+    border: 1px solid green
+}
+
+.labels {
+    min-width: 120px
+}
+
+.separador {
+    border: 1px black solid;
+    background-color: #fff;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.mainFrame {
+    padding-bottom: 5px;
+    border-bottom: 1px solid black;
+}
+
+.separadorSimple {
+    border: 1px black solid;
+    margin-bottom: 10px;
+}
+
 .btn {
     min-width: 80px;
 }
 
 .HBoxContainer {
-    width:100%;
-    align-items:center;
+    width: 100%;
+    align-items: center;
     gap: 5px;
 }
-.HBoxWrapper{
+
+.HBoxWrapper {
     width: 50%;
     align-items: center;
     justify-content: space-between;
@@ -41,7 +72,7 @@
 
 /* Enter your custom styles here */
 /* Enter your custom styles here */
-.tabbedBar .sapMITBHead {
+.tabbedBar .sapMITBHead .sapMITH {
     text-align: center;
 }
 

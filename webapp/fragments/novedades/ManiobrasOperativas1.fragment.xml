@@ -1,0 +1,76 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
+        <VBox width="100%" class="sapUiSmallMarginBotton FlexForm " justifyContent="Start">
+            <HBox justifyContent="Start" alignItems="Center">
+                <Label text="Se transfiere carga Desde" class="sapUiSmallMarginEnd labels" showColon="true" />
+                <HBox justifyContent="SpaceBetween">
+                    <ComboBox selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
+                        <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                    </ComboBox>
+                    <ComboBox selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
+                        <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                    </ComboBox>
+                </HBox>
+                  <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                <Label text="Potencia transferida" showColon="true" class="sapUiSmallMarginEnd labels" />
+                <Input />
+                <Label text="MW" showColon="false" class="sapUiSmallMarginEnd labels" />
+            </HBox>
+            </HBox>
+          
+     
+      
+            <VBox >
+                <Label text="Motivo" showColon="true" class="sapUiSmallMarginEnd labels" />
+             
+                    <TextArea width="100%"/>
+             
+            </VBox>
+        
+        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+            <Label text="Se Informo a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <HBox>
+                <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+                    <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                </ComboBox>
+            </HBox>
+        </HBox>
+      
+            <VBox >
+                <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+               
+                    <TextArea width="100%" />
+                
+            </VBox>
+   
+       
+        <VBox width="100%" alignItems="Center" class="separador">
+            <Title text="Normalización de la Instalación" />
+        </VBox>
+        <VBox>
+            <HBox width="100%" justifyContent="Start">
+                <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                    <Label text="Fecha/Hora" showColon="true" class="sapUiSmallMarginEnd labels" />
+                    <DatePicker />
+                </HBox>
+                <HBox alignItems="Center">
+                    <Label text="Se Informo a Empresa" class="sapUiSmallMarginEnd labels" showColon="true" />
+                    <HBox>
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodTipo}" items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
+                            <core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}" />
+                        </ComboBox>
+                    </HBox>
+                </HBox>
+            </HBox>
+            
+                <VBox>
+                    <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+                  
+                        <TextArea  width="100%"/>
+                 
+                </VBox>
+           
+        </VBox>
+            </VBox>
+    </FlexBox>
+</core:FragmentDefinition>

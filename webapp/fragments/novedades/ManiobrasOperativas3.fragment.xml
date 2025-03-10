@@ -1,0 +1,64 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <FlexBox class="sapUiSmallMargin containerDialog FlexForm" direction="Column">
+        <HBox width="100%" class="sapUiSmallMarginBotton " justifyContent="SpaceBetween">
+            <HBox justifyContent="Start" alignItems="Center">
+                <Label text="En paralelo en el nivel de" class="sapUiSmallMarginEnd labels" showColon="true" />
+                <HBox>
+                    <CheckBox text="33 kV" />
+                    <CheckBox text="13.2 kV" />
+                </HBox>
+            </HBox>
+            <HBox justifyContent="Start" alignItems="Center">
+                <Label text="Motivo" class="sapUiSmallMarginEnd labels" showColon="true" />
+                <HBox>
+                    <CheckBox text="Carga" />
+                    <CheckBox text="Operativo" />
+                </HBox>
+            </HBox>
+        </HBox>
+        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+            <Label text="Se Informo a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <HBox>
+                <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+                    <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                </ComboBox>
+            </HBox>
+        </HBox>
+        <VBox>
+            <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <TextArea width="100%" />
+        </VBox>
+        <VBox width="100%" alignItems="Center" class="separador">
+            <Title text="Normalización de la Instalación" />
+        </VBox>
+        <HBox justifyContent="SpaceBetween">
+            <HBox justifyContent="Start" alignItems="Center">
+                <Label text="Fuera de paralelo en el nivel de" class="sapUiSmallMarginEnd labels" showColon="true" />
+                <HBox>
+                    <CheckBox text="33 kV" />
+                    <CheckBox text="13.2 kV" />
+                </HBox>
+            </HBox>
+            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                <Label text="Fecha/Hora" showColon="true" class="sapUiSmallMarginEnd labels" />
+                <DatePicker />
+            </HBox>
+        </HBox>
+        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+            <Label text="Configuracion habitual" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <CheckBox />
+        </HBox>
+        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+            <Label text="Se Informo a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <HBox>
+                <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+                    <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                </ComboBox>
+            </HBox>
+        </HBox>
+        <VBox>
+            <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <TextArea width="100%" />
+        </VBox>
+    </FlexBox>
+</core:FragmentDefinition>

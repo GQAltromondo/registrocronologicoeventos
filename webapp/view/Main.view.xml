@@ -1,5 +1,8 @@
-<mvc:View controllerName="transener.registrocronologicoeventos.controller.Main" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
-	displayBlock="true" xmlns="sap.m" xmlns:custom="transener.registrocronologicoeventos.components">
+<mvc:View controllerName="transener.registrocronologicoeventos.controller.Main"
+	xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m"
+	xmlns:custom="transener.registrocronologicoeventos.components">
 	<Shell id="shell">
 		<App id="app">
 			<pages>
@@ -10,23 +13,22 @@
 								<VBox width="40%">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>place} / {i18n>ET}:"/>
-										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
-											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText= "{Estaciones>Descripcion}"/>
+										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
+											<core:ListItem key="{EstacionesJsonModel>Estacion}" text="{EstacionesJsonModel>Codigo}" additionalText= "{EstacionesJsonModel>Descripcion}"/>
 										</ComboBox>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>team}:"/>
-										<!--<ComboBox id="EquipoFilter" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">-->
-										<!--	<core:Item key="{EquiposModel>CodEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>-->
-										<!--</ComboBox>-->
-										<ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
-											<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo} - {TipoModel>Descripcion}"/>
+										<ComboBox id="EquipoFilter" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">
+											<core:Item key="{EquiposModel>CodigoEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>
 										</ComboBox>
+										<!-- <ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
+											<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo} - {TipoModel>Descripcion}"/>
+										</ComboBox> -->
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>noveltiesType}:"/>
-										<MultiComboBox id="NovedadesFilter" name="type" width="250px" selectionChange=".onSelectionChange"
-											items="{ path: 'Novedades>/novs', templateShareable: true }">
+										<MultiComboBox id="NovedadesFilter" name="type" width="250px" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
 											<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
 										</MultiComboBox>
 									</HBox>
@@ -38,13 +40,11 @@
 								<VBox width="40%">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>fromDate}"/>
-										<DateTimePicker id="FromDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}"
-											change="handleChange" class="sapUiSmallMarginBottom"/>
+										<DateTimePicker id="FromDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>toDate}"/>
-										<DateTimePicker id="ToDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}"
-											change="handleChange" class="sapUiSmallMarginBottom"/>
+										<DateTimePicker id="ToDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>initialDate}"/>
@@ -61,16 +61,16 @@
 						</Panel>
 						<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" select="onTabSelect" class=" tabbedBar">
 							<items>
-								<IconTabFilter id="TabGeneral" text="{i18n>generalView}" key="General">
+								<IconTabFilter id="TabGeneral" text="{= ${oFilteredModel>/count} ? ${i18n>generalView} + ' ( ' + ${oFilteredModel>/count} + ' )' : ${i18n>generalView} }" key="General">
 									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableGeneral" type="XML"/>
 								</IconTabFilter>
-								<IconTabFilter id="TabNovedades" text="{i18n>news}" key="Novedades">
+								<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>news} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>news} }" key="Novedades">
 									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovelties" type="XML"/>
 								</IconTabFilter>
-								<IconTabFilter id="TabDisturbances" text="{i18n>disturbances}" key="Perturbaciones">
+								<IconTabFilter id="TabDisturbances" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>disturbances} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>disturbances}}" key="Perturbaciones">
 									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableDisturbances" type="XML"/>
 								</IconTabFilter>
-								<IconTabFilter id="TabScheduled" text="{i18n>scheduledTask}" key="TrabajosProgramados">
+								<IconTabFilter id="TabScheduled" text="{= ${oTProgramadasModel>/count} ? ${i18n>scheduledTask} + ' ( ' + ${oTProgramadasModel>/count} + ' )' : ${i18n>scheduledTask}}" key="TrabajosProgramados">
 									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableTask" type="XML"/>
 								</IconTabFilter>
 							</items>
@@ -80,10 +80,9 @@
 						<OverflowToolbar>
 							<ToolbarSpacer/>
 							<Button type="Ghost" text="{i18n>disturbances}" press="onDisturbancesPress"/>
-							<Button type="Ghost" text="{i18n>novelties}" press="onNoveltiesPress"/>
+							<Button type="Ghost" text="{i18n>novelties}" press="onOpenDialogNovedades"/>
 							<Button type="Ghost" text="{i18n>scheduled}" press="onScheduledPress"/>
-							<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted"
-								menuPosition="RightBottom">
+							<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted" menuPosition="RightBottom">
 								<menu>
 									<Menu itemSelected="onMenuAction">
 										<items>
@@ -105,7 +104,7 @@
 								</menu>
 							</MenuButton>
 							<ToolbarSpacer/>
-								<Button type="Emphasized" id="saveTableChanges" text="{i18n>save}" visible="false" press="onSaveTableChange"/>
+							<Button type="Emphasized" id="saveTableChanges" text="{i18n>save}" visible="false" press="onSaveTableChange"/>
 						</OverflowToolbar>
 					</footer>
 				</Page>

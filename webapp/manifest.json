@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -69,7 +69,7 @@
       "id": "Main"
     },
     "dependencies": {
-      "minUI5Version": "1.65.6",
+      "minUI5Version": "1.98.0",
       "libs": {
         "sap.ui.layout": {},
         "sap.ui.core": {},

@@ -1,0 +1,89 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
+        <HBox width="100%" class="sapUiSmallMarginBottom">
+            <HBox width="100%" class="sapUiSmallMarginBotton FlexForm">
+                <VBox width="100%">
+                    <HBox justifyContent="Start" alignItems="Center">
+                        <Label text="LLTT asociadas" class="sapUiSmallMarginEnd labels" showColon="true" />
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
+                            <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
+                        </ComboBox>
+                        <Label text="SubIndice" class="sapUiSmallMarginEnd" showColon="true" />
+                        <Input width="20px" class="sapUiSmallMarginEnd" />
+                        <Label text="Referencia" class="sapUiSmallMarginBeginEnd" showColon="true" />
+                        <Input class="sapUiSmallMarginEnd" enabled="false" />
+                    </HBox>
+                    <HBox width="100%" justifyContent="Start">
+                        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                            <Label text="Fuera de Servicio desde" showColon="true" class="sapUiSmallMarginEnd labels" />
+
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                        </HBox>
+                        <HBox alignItems="Center">
+                            <Label text="En Servicio (E/S)" class="sapUiSmallMarginEnd labels" showColon="true" />
+
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                        </HBox>
+                    </HBox>
+                    <HBox width="100%" justifyContent="Start">
+                        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                            <Label text="Indisponible desde" showColon="true" class="sapUiSmallMarginEnd labels" />
+
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                        </HBox>
+                        <HBox alignItems="Center">
+                            <Label text="Disponible desde" class="sapUiSmallMarginEnd labels" showColon="true" />
+
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                        </HBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </HBox>
+        <VBox>
+            <VBox width="100%" alignItems="Center" class="separadorSimple" />
+            <VBox width="100%" class="FlexForm">
+                <HBox width="100%" justifyContent="Start">
+                    <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                        <Label text="Causa" showColon="true" class="sapUiSmallMarginEnd labels" />
+                        <HBox>
+                            	<ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}"
+												items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+												<core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
+											</ComboBox>
+                        </HBox>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="Motivo" class="sapUiSmallMarginEnd labels" showColon="true" />
+                        <HBox>
+                          <ComboBox width="300px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
+												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+												<core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}" additionalText="{MotivosJsonModel>CodigoMotivo}"/>
+											</ComboBox>
+                        </HBox>
+                    </HBox>
+                </HBox>
+                <HBox width="100%">
+                    <VBox alignItems="Start">
+                        <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+                        <HBox>
+                            <TextArea width="600px" />
+                        </HBox>
+                    </VBox>
+                </HBox>
+                <HBox alignItems="Center" justifyContent="End">
+                    <Label text="La indisponibilidad se informa a CAMMESA" class="sapUiSmallMarginEnd labels" showColon="true" />
+                    <CheckBox text="SI" />
+                </HBox>
+                <HBox width="100%">
+                    <VBox alignItems="Start">
+                        <Label text="Comentarios Generales" showColon="true" class="sapUiSmallMarginEnd labels" />
+                        <HBox>
+                            <TextArea width="600px" />
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </FlexBox>
+</core:FragmentDefinition>
