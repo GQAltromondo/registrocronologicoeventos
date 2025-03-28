@@ -257,7 +257,32 @@ sap.ui.define([
 			PersonalHabilitadoService.getPersonalPromise('100');
 
 		},
-		// Controller
+		onComboBoxChange: function (oEvent) {
+			var sSelectedKey = oEvent.getSource().getSelectedKey();
+			var sFragmentPath;
+			if (sSelectedKey) {
+				sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sSelectedKey;
+			}
+
+
+			Fragment.load({
+				id: this.getView().getId() + "-newFragment",
+				name: sFragmentPath,
+				controller: this,
+			})
+				.then(
+					function (oNewFragment) {
+						// Remove previously loaded fragments from the new fragment VBox
+						this._oVBoxNewFragment.removeAllItems();
+
+						// Add the new fragment to the new VBox
+						this._oVBoxNewFragment.addItem(oNewFragment);
+					}.bind(this)
+				)
+				.catch(function () {
+					MessageToast.show("Fragment not found: " + sFragmentPath);
+				});
+		},
 		onSelectionChange: function (oEvent) {
 			console.log("enter")
 			var oSource = oEvent.getSource();
@@ -344,7 +369,7 @@ sap.ui.define([
 		loadTipoNovedades: function () {
 			var that = this;
 			var filters = [];
-			filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, this.society));
+			filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, '100'));
 			var oModeld = this.getView().getModel("LGuardias");
 			oModeld.read("/TipoNovedadSet", {
 				/*urlParameters: {
@@ -353,15 +378,16 @@ sap.ui.define([
 				filters: filters,
 				success: function (data) {
 
-					var model = new sap.ui.model.json.JSONModel({
-						novs: data.results
-					});
-					model.setSizeLimit(99999);
-					that.getView().setModel(model, "Novedades");
-					sap.ui.getCore().setModel(model, "Novedades");
+					// var model = new sap.ui.model.json.JSONModel({
+					// 	novs: data.results
+					// });
+					// model.setSizeLimit(99999);
+					// that.getView().setModel(model, "Novedades");
+					// sap.ui.getCore().setModel(model, "Novedades");
 
-					var oData = that.getView().getModel('Novedades')
-					console.log(oData.getData())
+					// var oData = that.getView().getModel('Novedades')
+					// console.log(oData.getData())
+					ModelHelper.getModel("Novedades", that.getView()).setData({ novs: data.results })
 
 				},
 				error: function (err) {
@@ -668,7 +694,7 @@ sap.ui.define([
 					new Filter("Equipo", FilterOperator.EQ, tipoEquipoFilter)
 				);
 				NSFilters.push(
-					new Filter("CodTipo", FilterOperator.EQ, tipoEquipoFilter)
+					new Filter("Equnr", FilterOperator.EQ, tipoEquipoFilter)
 				);
 			}
 
@@ -767,12 +793,17 @@ sap.ui.define([
 			this.getView().byId("tableNovedades").setShowOverlay(true);
 			this.getView().byId("tablePerturbaciones").setShowOverlay(true);
 			this.getView().byId("tableProgramadas").setShowOverlay(true);
+
+
+
 		},
+
 		onClearFilters: function () {
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
 			oView.byId("TipoEquipoFilter").setSelectedKey("");
 			oView.byId("NovedadesFilter").setSelectedKeys("");
+			oView.byId("EquipoFilter").setSelectedKey("");
 			oView.byId("FromDateFilter").setValue(null);
 			oView.byId("ToDateFilter").setValue(null);
 		},
@@ -5111,32 +5142,70 @@ sap.ui.define([
 
 		},
 
-		onComboBoxChange: function (oEvent) {
+		onNovedadSelected: function (oEvent) {
+			var empresa = "100";
+
+			var oMappingTRA = {
+				PantallaGeneral: ["AUTR", "NAUT", "ADAP", "NADA", "DFOR", "FORZ", "DISP", "INDI", "ENER", "ESPO", "FINA", "INIC", "HABI", "INHI", "INFO", "REAN", "RMON", "RTRI", "SUSP", "CREC", "SREC", "AUTO", "MANU", "R495", "R500", "R5005", "SOLI", "SULI"],
+				Alarma: ["ALAR", "RTNA"],
+				CargaDeEquipos: ["VANO", "INTF", "CNOM", "NRLI", "SULI", "CMAX", "SNOR"],
+				VinculadoSinTension: ["otro1", "otro2"],
+				EnBandaFueraDeBanda: ["EBAN", "FBAN"],
+				IndisponibilidadesSubindice: ["otro1", "otro2"],
+				ManiobrasOperativas1: ["DESC", "DENE", "ESER", "FSER", "FSPO", "ABTR", "CBAR", "AACO", "ESSP", "AINT", "CNOR", "AACO"],
+				ManiobrasOperativas2: ["otro1", "otro2"],
+				ManiobrasOperativas3: ["otro1", "otro2"]
+			};
+
+			var oMappingTBA = {
+				PantallaGeneral: ["DI", "IN", "HABI", "INHI", "COM", "RH", "RA", "APADECSUB", "ACT SUB V", "GUI", "MIN FREC", "NGUI", "NFORM", "PT", "RESTR", "RSSP"],
+				Alarma: ["ALARMA", "FT", "FTP", "IFUIM", "NT", "RTNA"],
+				CargaDeEquipos: ["INTF", "CNOM", "NRESTR"],
+				VinculadoSinTension: ["otro1", "otro2"],
+				EnBandaFueraDeBanda: ["EB", "FB"],
+				IndisponibilidadesSubindice: ["otro1", "otro2"],
+				ManiobrasOperativas1: ["CR", "DF", "DG", "EP", "FP", "PFIH", "PFII", "SOLGEN", "SPG", "SSG", "TORET", "TORS", "TORT", "U10%", "U5%", "UNORM"],
+				ManiobrasOperativas2: ["otro1", "otro2"],
+				ManiobrasOperativas3: ["otro1", "otro2"]
+			};
+
+			// Determinar qué mapeo usar
+			var oMapping = empresa === "100" ? oMappingTRA : oMappingTBA;
+
 			var sSelectedKey = oEvent.getSource().getSelectedKey();
-			var sFragmentPath;
-			if (sSelectedKey) {
-				sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sSelectedKey;
+			var sFragmentName = null;
+
+			// Buscar la categoría correspondiente en el mapeo seleccionado
+			Object.keys(oMapping).forEach(function (sCategory) {
+				if (oMapping[sCategory].includes(sSelectedKey)) {
+					sFragmentName = sCategory;
+				}
+			});
+
+			if (!sFragmentName) {
+				MessageToast.show("No existe un fragmento para la opción seleccionada.");
+				return;
 			}
 
+			var sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sFragmentName;
 
+
+
+			// Cargar el fragmento dinámicamente
 			Fragment.load({
 				id: this.getView().getId() + "-newFragment",
 				name: sFragmentPath,
-				controller: this,
+				controller: this
 			})
-				.then(
-					function (oNewFragment) {
-						// Remove previously loaded fragments from the new fragment VBox
-						this._oVBoxNewFragment.removeAllItems();
-
-						// Add the new fragment to the new VBox
-						this._oVBoxNewFragment.addItem(oNewFragment);
-					}.bind(this)
-				)
+				.then(function (oNewFragment) {
+					this._oVBoxNewFragment.removeAllItems();
+					this._oVBoxNewFragment.addItem(oNewFragment);
+				}.bind(this))
 				.catch(function () {
-					MessageToast.show("Fragment not found: " + sFragmentPath);
+					MessageToast.show("Fragmento no encontrado: " + sFragmentPath);
 				});
 		},
+
 		onOpenDialogNovedades: function () {
 			// Crear el diálogo si no existe
 			if (!this._oDialog) {

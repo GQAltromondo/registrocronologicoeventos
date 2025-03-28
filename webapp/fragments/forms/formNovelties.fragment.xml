@@ -8,10 +8,10 @@
                     <HBox justifyContent="Start" alignItems="Center">
                         <Label text="Tipo de Novedad" class="sapUiSmallMarginEnd labels" />
                         <HBox>
-                            <ComboBox  width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
+                            <ComboBox  width="90px" selectionChange=".onNovedadSelected" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
                                 <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}" />
                             </ComboBox>
-                            <ComboBox  width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
+                            <ComboBox  width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
                                 <core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}" />
                             </ComboBox>
                         </HBox>

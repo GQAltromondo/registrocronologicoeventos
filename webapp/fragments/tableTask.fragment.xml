@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
-	<t:Table id="tableProgramadas" rows="{ path: 'oTProgramadasModel>/', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
+	<t:Table id="tableProgramadas" rows="{ path: 'oTProgramadasModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None">
 		<t:columns>
 			<!--	<t:Column width="50px">-->
 			<!--	<Label/>-->
@@ -29,9 +29,9 @@
 				<Label text="{i18n>place}"/>
 				<t:template>
 					<!--<Text text="{oNovedadesModel>Tplnr}"/>-->
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
+					<ComboBox selectionChange="handleTableChanges" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }"
 						selectedKey="{oTProgramadasModel>Tplnr}">
-						<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
+						<core:Item key="{EstacionesJsonModel>Codigo}" text="{EstacionesJsonModel>Codigo}"/>
 					</ComboBox>
 				</t:template>
 			</t:Column>
