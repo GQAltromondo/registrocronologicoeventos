@@ -41,11 +41,11 @@
 							<HBox width="50%" alignItems="Center">
 								<Label text="LLTT asociadas:"/>
 								<HBox>
-									<ComboBox id="cmbNoveltiesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
+									<ComboBox id="cmbNovedadesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
 										items="{ path: 'Novedades>/novs', templateShareable: true }">
 										<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}"/>
 									</ComboBox>
-									<ComboBox id="cmbNovelties" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
+									<ComboBox id="cmbNovedades" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
 										items="{ path: 'Novedades>/novs', templateShareable: true }">
 										<core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}"/>
 									</ComboBox>
@@ -413,11 +413,11 @@
 			<!--				<HBox width="50%" alignItems="Center">-->
 			<!--					<Label text="LLTT asociadas:"/>-->
 			<!--					<HBox>-->
-			<!--						<ComboBox id="cmbNoveltiesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
+			<!--						<ComboBox id="cmbNovedadesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
 			<!--							items="{ path: 'Novedades>/novs', templateShareable: true }">-->
 			<!--							<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}"/>-->
 			<!--						</ComboBox>-->
-			<!--						<ComboBox id="cmbNovelties" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
+			<!--						<ComboBox id="cmbNovedades" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
 			<!--							items="{ path: 'Novedades>/novs', templateShareable: true }">-->
 			<!--							<core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}"/>-->
 			<!--						</ComboBox>-->

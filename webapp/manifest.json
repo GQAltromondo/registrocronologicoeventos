@@ -92,7 +92,8 @@
         "settings": {
           "defaultOperationMode": "Server",
           "defaultBindingMode": "OneWay",
-          "defaultCountMode": "Request"
+          "defaultCountMode": "Request",
+          "useBatch": false
         },
         "dataSource": "Z_SCP_LIBRO_GUARDIAS_SRV",
         "preload": true
@@ -102,7 +103,8 @@
         "settings": {
           "defaultOperationMode": "Server",
           "defaultBindingMode": "OneWay",
-          "defaultCountMode": "Request"
+          "defaultCountMode": "Request",
+          "useBatch": false
         },
         "dataSource": "Z_SCP_OPERACIONES_SRV",
         "preload": true

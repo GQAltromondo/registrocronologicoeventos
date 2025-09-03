@@ -20,6 +20,7 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/ClimasService",
 	"transener/registrocronologicoeventos/services/CausasService",
 	"transener/registrocronologicoeventos/services/NovedadesService",
+	"transener/registrocronologicoeventos/services/TiposNovedadesService",
 	"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
 	"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
 	"transener/registrocronologicoeventos/services/EquiposService",
@@ -34,7 +35,7 @@ sap.ui.define([
 ], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
-	NovedadesService, EmpresaTramitacionService,
+	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
 	PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
 	FormatHelper) {
@@ -105,139 +106,6 @@ sap.ui.define([
 
 		},
 
-		// loadUserDataModel: function (callback) {
-
-
-		// 	debugger;
-
-		// 	var UserDataService = this;
-		// 	this.callback = callback;
-		// 	//reads user api
-		// 	/* var path = this._servicePathPrefix + this._servicePath;
-		// 	jQuery.ajax(path + "?multiValuesAsArrays=true", {
-		// 		method: "GET",
-		// 		success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
-		// 		error: jQuery.proxy(UserDataService.onReadUserApiError, UserDataService)
-		// 	});
-		// 	*/
-
-		// 	const url = sap.ui.getCore().getModel("appCurrentInfo").appUrl + "/user-api/currentUser";
-		// 	var oModel = new sap.ui.model.json.JSONModel();
-		// 	var mock = {
-		// 		firstname: "Dummy",
-		// 		lastname: "User",
-		// 		email: "dummy.user@com",
-		// 		name: "dummy.user@com",
-		// 		displayName: "Dummy User (dummy.user@com)",
-		// 		groups: ["Mantenimiento_GerRegional",
-		// 			"Examinadores_PT15",
-		// 			"Selector_evaluadores_PT15",
-		// 			"seguridadH_PT15",
-		// 			"Rep_Direccion_PT15",
-		// 			"MedicinaLaboral_PT15",
-		// 			"Gestion_Calidad_PT152",
-		// 			"Direccion_TecnicaPT15",
-		// 			"Auditor_Externo",
-		// 			"Gestion_habilitaciones",
-		// 			"Solicitante_PT15",
-		// 			"Mantenimiento_Secretaria",
-		// 			"Director_Tecnico",
-		// 			"Ger_Operaciones",
-		// 			"Aprobacion_Habilitaciones"
-		// 		]
-
-
-		// 	};
-
-		// 	oModel.loadData(url);
-		// 	var that = this;
-		// 	oModel.dataLoaded()
-		// 		.then(() => {
-		// 			//check if data has been loaded
-		// 			//for local testing, set mock data
-		// 			if (oModel.getData().email) {
-
-		// 				var cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl + '/IAS/scim/Users?filter=emails.value eq "' + oModel.getData().email + '"'
-
-		// 				//Llamar a API del IAS
-		// 				$.ajax({
-
-		// 					type: "GET",
-		// 					contentType: "application/scim+json",
-		// 					url: cUrl,
-		// 					xhrFields: { withCredentials: false },
-		// 					dataType: "json",
-		// 					async: false,
-
-		// 					success: function (data, textStatus, jqXHR) {
-
-		// 						//window.alert("success");
-		// 						console.log("It works");
-		// 						var oModelUser = new sap.ui.model.json.JSONModel();
-		// 						oModelUser.setData(data.Resources);
-
-		// 						debugger;
-		// 						var aDatosUsuario = that.armarDatos(data.Resources);
-
-		// 						oModel.setData(aDatosUsuario);
-		// 						//								oView.getView().setModel(oModel, "users");
-
-		// 					},
-		// 					error: function (data, xhr, textStatus) {
-		// 						console.log(data);
-		// 						console.log(xhr);
-		// 						console.log(textStatus);
-		// 						debugger;
-		// 						window.alert("error");
-		// 					}
-		// 				});
-
-
-		// 				// Fin llamar a API del IAS
-		// 			}
-		// 			else {
-		// 				oModel.setData(mock);
-		// 			}
-
-
-		// 			// this.setModel(oModel, "userInfo");
-
-		// 		})
-		// 		.catch(() => {
-		// 			oModel.setData(mock);
-
-
-		// 		});
-
-
-
-
-		// },
-
-		// armarDatos: function (datos) {
-
-		// 	debugger;
-
-		// 	var aGroupsTemporal = datos[0].groups;
-
-		// 	var aGroups = aGroupsTemporal.map(function (fila) {
-		// 		return fila.display;
-		// 	});
-
-		// 	var aUserData = {
-		// 		firstname: datos[0].displayName,
-		// 		lastname: datos[0].displayName,
-		// 		email: datos[0].emails[0].value,
-		// 		name: datos[0].emails[0].value,
-		// 		displayName: datos[0].displayName,
-		// 		groups: aGroups
-
-
-		// 	};
-
-		// 	return aUserData;
-
-		// },
 		onAfterRendering: function () {
 			this.loadSociety();
 
@@ -247,14 +115,15 @@ sap.ui.define([
 			EstadoTiempoService.loadModel();
 			TipificacionesFallasService.loadModel();
 			//TODO cambiar a empresa seleccionada
-			EstacionesService.loadEstaciones('100')
-			EquiposService.loadNSEquipos('100');
+			this.loadTipoNovedades();
+			this.loadEstaciones();
+
+			this.loadTipoEquipo();
+			TiposNovedadesService.loadModel()
 
 			EmpresaTramitacionService.loadTramitacion('100')
-			var oModel = sap.ui.getCore().getModel("NovedadesFormJsonModel");
-			var oData = oModel.loadData("model/NovedadesFormJsonModel.json");
-			console.log("Novedades", oModel, oData);
-			PersonalHabilitadoService.getPersonalPromise('100');
+
+			PersonalHabilitadoService.getPersonalPromise("100");
 
 		},
 		onComboBoxChange: function (oEvent) {
@@ -341,18 +210,19 @@ sap.ui.define([
 							utilsModel.setProperty("/empresa", "Transba")
 							utilsModel.setProperty("/CodEmpresa", "300")
 						}
-						var canCreate = true;
-						if (that.currentUser.groups.includes("Programacion_COT_COTDT") ||
-							that.currentUser.groups.includes("Visualizador")) {
-							canCreate = false;
-						}
-						that.getView().setModel(new sap.ui.model.json.JSONModel({
-							canCreate: canCreate
-						}), "specialModel");
+						// var canCreate = true;
+						// if (that.currentUser.groups.includes("ope_programacion_cot") ||
+						// that.currentUser.groups.includes("ope_programacion_cotdt") ||
+						// 	that.currentUser.groups.includes("ope_visualizador")) {
+						// 	canCreate = false;
+						// }
+						// that.getView().setModel(new sap.ui.model.json.JSONModel({
+						// 	canCreate: canCreate
+						// }), "specialModel");
 						that.society = empresa;
 
-						// that.byId("dpFromDate").setDateValue(that.dateWeekAgo());
-						// that.byId("smartFilterBar").search();
+						that.byId("dpFromDate").setDateValue(that.dateWeekAgo());
+						that.byId("smartFilterBar").search();
 
 					}
 					// if (that.currentUser.groups ? .includes("Jefe_COT") ||
@@ -528,66 +398,7 @@ sap.ui.define([
 			}
 			return equiposModel;
 		},
-		// handleChangeF: function (evt) {
-		// 	var sValue = evt.getParameter("value");
-		// 	var estacion = evt.getSource().getSelectedKey();
-		// 	//var tipo = this.byId("TipoEquipoFilter").getSelectedKey();
-		// 	var equiposModel = this.getEquiposModel();
-		// 	equiposModel.setData({
-		// 		Equipos: [],
-		// 		busy: true
-		// 	});
-		// 	var filters = [];
-		// 	if (!estacion) {
-		// 		onSuccessCallback({
-		// 			results: []
-		// 		});
-		// 		return;
-		// 	}
-		// 	filters.push(new sap.ui.model.Filter("Estacion", sap.ui.model.FilterOperator.EQ, estacion));
-		// 	// EquiposServices.LoadEquipos(estacion,
-		// 	// 	jQuery.proxy(this.onSuccessEquipos, this),
-		// 	// 	jQuery.proxy(this.onErrorEquipos, this));
 
-		// 	var odataModel = this.getView().getModel("Operaciones")
-		// 	odataModel.read("/EquiposSet", {
-		// 		filters: filters,
-		// 		success: (data) => {
-		// 			this.onSuccessEquipos(data)
-		// 		},
-		// 		error: (error) => {
-		// 			this.onErrorEquipos()
-		// 		}
-		// 	})
-		// 	if (!sValue) {
-		// 		this.getView().byId("EquipoFilter").setEnabled(true);
-		// 	}
-
-		// },
-		// onSuccessEquipos: function (data) {
-		// 	var Equipos = []
-		// 	if (data.results.lentgh > 0) {
-		// 		Equipos = data.results;
-		// 	} else {
-		// 		Equipos = [{
-		// 			CodEquipo: "NoData",
-		// 			CodigoEquipo: "Sin datos disponibles"
-		// 		}]
-		// 	}
-		// 	console.log(Equipos)
-
-		// 	var equiposModel = this.getView().getModel("EquiposModel");
-		// 	if (!equiposModel) {
-		// 		equiposModel = new sap.ui.model.json.JSONModel();
-		// 		equiposModel.setSizeLimit(10000);
-		// 		this.getView().setModel(equiposModel, "EquiposModel");
-		// 	}
-		// 	equiposModel.setData({
-		// 		Equipos: Equipos,
-		// 		busy: false
-		// 	});
-		// },
-		// onErrorEquipos: function () {},
 		ValidateCombo: function (oEvent) {
 			var society = this.dialogSociety.getModel("Society").getData().Code;
 			if (society !== "") {
@@ -617,7 +428,40 @@ sap.ui.define([
 			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad) {
 				formPerturbaciones.chkEmergencia = true
 			}
+
+			MotivosService.loadModel(oSelectedData.CodNovedad, this.society)
+
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
+		},
+		onEditProg: function (oEvent) {
+			var oButton = oEvent.getSource();
+			var oColumnListItem = oButton.getParent();
+
+
+			var oContext = oColumnListItem.getBindingContext("oTProgramadasModel");
+			var oSelectedData = oContext.getObject();
+
+			// Guarda los datos seleccionados en el modelo
+			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
+			console.log(oSelectedData);
+
+
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
+		},
+		onEditNove: function (oEvent) {
+			var oButton = oEvent.getSource();
+			var oColumnListItem = oButton.getParent();
+
+
+			var oContext = oColumnListItem.getBindingContext("oNovedadesModel");
+			var oSelectedData = oContext.getObject();
+
+			// Guarda los datos seleccionados en el modelo
+			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
+			console.log(oSelectedData);
+
+
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovedades")
 		},
 
 		onCloseDialog: function () {
@@ -647,6 +491,7 @@ sap.ui.define([
 			oTableTP.setBusy(true)
 
 			var oGuardiasSetModel = this.getView().getModel('LGuardias')
+
 			var oOperacionesSetModel = this.getView().getModel('Operaciones')
 
 			ModelHelper.getModel('oNovedadesModel')
@@ -793,11 +638,22 @@ sap.ui.define([
 			this.getView().byId("tableNovedades").setShowOverlay(true);
 			this.getView().byId("tablePerturbaciones").setShowOverlay(true);
 			this.getView().byId("tableProgramadas").setShowOverlay(true);
-
-
-
 		},
+		onUbicacionChange: function (evt) {
+			// Obtener el item seleccionado
+			var oSelectedItem = evt.getParameter("selectedItem");
 
+			if (oSelectedItem) {
+				// Sacar el key del item seleccionado
+				var sKey = oSelectedItem.getKey();
+
+				// Llamar a tu servicio con el key y la empresa
+				EquiposService.LoadEquipos(sKey, this.society);
+			} else {
+				sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
+			}
+		}
+		,
 		onClearFilters: function () {
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
@@ -972,7 +828,7 @@ sap.ui.define([
 			const oModel = ModelHelper.getModel('NovedadesFormJsonModel')
 			var oData = oModel.loadData("model/NovedadesFormJsonModel.json");
 		},
-		onDisturbancesPress: function () {
+		onPerturbacionesPress: function () {
 			// var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			// 		oRouter.navTo("Perturbaciones");
 			this.resetNovedadesModel()
@@ -982,9 +838,9 @@ sap.ui.define([
 			this.resetNovedadesModel()
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas");
 		},
-		onNoveltiesPress: function () {
+		onNovedadesPress: function () {
 			this.resetNovedadesModel()
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovelties");
+			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovedades");
 		},
 		//Reporte informe Diario
 		filtersInformeDiario: function () {
@@ -5210,13 +5066,13 @@ sap.ui.define([
 			// Crear el diálogo si no existe
 			if (!this._oDialog) {
 				// Crear VBox para los fragments
-				this._oVBoxFormNovelties = new VBox("formNoveltiesContainer");
+				this._oVBoxFormNovedades = new VBox("formNovedadesContainer");
 				this._oVBoxNewFragment = new VBox("newFragmentContainer");
 
 				// Crear el Dialog
 				this._oDialog = new Dialog({
 					title: "Novedades",
-					content: [this._oVBoxFormNovelties, this._oVBoxNewFragment],
+					content: [this._oVBoxFormNovedades, this._oVBoxNewFragment],
 
 					beginButton: new sap.m.Button({
 						text: "Guardar",
@@ -5237,21 +5093,21 @@ sap.ui.define([
 					}.bind(this),
 				});
 
-				// Cargar el fragmento formNovelties y añadirlo al VBox
+				// Cargar el fragmento formNovedades y añadirlo al VBox
 				Fragment.load({
-					id: this.getView().getId() + "-formNovelties",
-					name: "transener.registrocronologicoeventos.fragments.forms.formNovelties",
+					id: this.getView().getId() + "-formNovedades",
+					name: "transener.registrocronologicoeventos.fragments.forms.formNovedades",
 					controller: this,
 				})
 					.then(function (oFragment) {
 						// Añadir fragmento a la VBox
-						this._oVBoxFormNovelties.addItem(oFragment);
+						this._oVBoxFormNovedades.addItem(oFragment);
 
 						// Abrir el dialog solo cuando el fragmento haya sido cargado
 						this._oDialog.open();
 					}.bind(this))
 					.catch(function (oError) {
-						MessageToast.show("Failed to load formNovelties fragment: " + oError);
+						MessageToast.show("Failed to load formNovedades fragment: " + oError);
 					});
 			} else {
 				// Si el diálogo ya fue creado, simplemente ábrelo

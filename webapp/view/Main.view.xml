@@ -6,7 +6,7 @@
 	<Shell id="shell">
 		<App id="app">
 			<pages>
-				<Page id="page" title="{i18n>title}">
+				<Page id="page" title="{i18n>title}" class="sapUiNoContentPadding">
 					<content>
 						<Panel headerText="Filtrar" expandable="true" expanded="true">
 							<FlexBox justifyContent="SpaceBetween">
@@ -27,7 +27,7 @@
 										</ComboBox> -->
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>noveltiesType}:"/>
+										<Label text="{i18n>NovedadesType}:"/>
 										<MultiComboBox id="NovedadesFilter" name="type" width="250px" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
 											<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
 										</MultiComboBox>
@@ -65,13 +65,13 @@
 									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableGeneral" type="XML"/>
 								</IconTabFilter>
 								<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>news} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>news} }" key="Novedades">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovelties" type="XML"/>
+									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovedades" type="XML"/>
 								</IconTabFilter>
-								<IconTabFilter id="TabDisturbances" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>disturbances} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>disturbances}}" key="Perturbaciones">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableDisturbances" type="XML"/>
+								<IconTabFilter id="TabPerturbaciones" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>Perturbaciones} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>Perturbaciones}}" key="Perturbaciones">
+									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablePerturbaciones" type="XML"/>
 								</IconTabFilter>
 								<IconTabFilter id="TabScheduled" text="{= ${oTProgramadasModel>/count} ? ${i18n>scheduledTask} + ' ( ' + ${oTProgramadasModel>/count} + ' )' : ${i18n>scheduledTask}}" key="TrabajosProgramados">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableTask" type="XML"/>
+									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableProgramadas" type="XML"/>
 								</IconTabFilter>
 							</items>
 						</IconTabBar>
@@ -79,8 +79,8 @@
 					<footer>
 						<OverflowToolbar>
 							<ToolbarSpacer/>
-							<Button type="Ghost" text="{i18n>disturbances}" press="onDisturbancesPress"/>
-							<Button type="Ghost" text="{i18n>novelties}" press="onOpenDialogNovedades"/>
+							<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress"/>
+							<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress"/>
 							<Button type="Ghost" text="{i18n>scheduled}" press="onScheduledPress"/>
 							<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted" menuPosition="RightBottom">
 								<menu>

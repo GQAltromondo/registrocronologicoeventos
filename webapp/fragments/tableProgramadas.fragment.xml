@@ -65,7 +65,7 @@
 					<HBox justifyContent="SpaceAround" wrap="Wrap">
 						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
 						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
-						<Button type="Transparent" press="onEdit" icon="sap-icon://edit"/>
+						<Button type="Transparent" press="onEditProg" icon="sap-icon://edit"/>
 						<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 					</HBox>
 				</t:template>
