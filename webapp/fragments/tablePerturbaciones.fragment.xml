@@ -27,9 +27,9 @@
 			<t:Column>
 				<Label text="{i18n>place}"/>
 				<t:template>
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }"
+					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
 						selectedKey="{oPerturbacionesModel>Tplnr}">
-						<core:Item key="{EstacionesJsonModel>Codigo}" text="{EstacionesJsonModel>Codigo}"/>
+						<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
 					</ComboBox>
 				</t:template>
 			</t:Column>
