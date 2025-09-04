@@ -52,7 +52,7 @@
                                                     <Button text="Agregar otra ET" type="Transparent" />
                                                 </HBox>
                                                 <FlexBox class="FlexForm" width="100%">
-                                                    <VBox class="FlexForm">
+                                                    <VBox class="FlexForm" width="100%">
                                                         <ScrollContainer>
                                                             <Table width="130%" class="no-padding-header-table">
                                                                 <columns>
@@ -229,7 +229,7 @@
                                                     </VBox>
                                                 </FlexBox>
                                                 <FlexBox class="FlexForm" width="100%">
-                                                    <VBox class="FlexForm">
+                                                    <VBox class="FlexForm" width="100%">
                                                         <ScrollContainer>
                                                             <Table width="130%" class="no-padding-header-table">
                                                                 <columns>
@@ -410,7 +410,7 @@
                                     </IconTabBar>
                                     <HBox justifyContent="SpaceBetween">
                                         <HBox alignItems="Center">
-                                            <Label text="Otras Actuaciones" />
+                                            <Label text="Otras Actuaciones" class="sapUiMediumMarginEnd"/>
                                             <ComboBox />
                                         </HBox>
                                         <HBox alignItems="Center">
@@ -580,10 +580,11 @@
                                     <HBox justifyContent="SpaceBetween">
                                         <VBox>
                                             <Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd" />
-                                            <ComboBox />
+                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/NormPersonal}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true">
+                                                <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+                                            </ComboBox>
                                         </VBox>
                                         <VBox>
-                                            <Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd" />
                                             <DatePicker />
                                         </VBox>
                                     </HBox>
@@ -595,7 +596,7 @@
                                                     <Button text="Agregar otra ET" type="Transparent" />
                                                 </HBox>
                                                 <FlexBox class="FlexForm" width="100%">
-                                                    <VBox >
+                                                    <VBox width="100%">
                                                         <ScrollContainer width="100%">
                                                             <Table class="no-padding-header-table">
                                                                 <columns>

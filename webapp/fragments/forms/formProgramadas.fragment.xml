@@ -29,12 +29,12 @@
 								<Label text="Equipo CAMMESA:" wrapping="true" class="sapUiMediumMarginEnd"/>
 								<HBox>
 									<ComboBox id="cmbEquipoId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
-										items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
-										<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo}"/>
+										items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+									    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
 									</ComboBox>
 									<ComboBox id="cmbEquipo" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
-										items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
-										<core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}"/>
+										items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+								    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
 									</ComboBox>
 								</HBox>
 							</HBox>
@@ -183,12 +183,12 @@
 											<Label text="Causa" class="sapUiTinyMarginEnd"/>
 											<HBox>
 												<ComboBox width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-													items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
-													<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+													items="{CausasJsonModel>/Causas}">
+													<core:Item key="{CausasJsonModel>CodigoCausa}" text="{MotivosJsonModel>CodigoCausa}"/>
 												</ComboBox>
 												<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-													items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
-													<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
+														items="{CausasJsonModel>/Causas}">
+													<core:Item key="{MotivosJsonModel>CodigoCausa}" text="{MotivosJsonModel>DescCausa}"/>
 												</ComboBox>
 											</HBox>
 										</HBox>
