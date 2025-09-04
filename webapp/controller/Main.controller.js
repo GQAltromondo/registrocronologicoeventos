@@ -425,10 +425,10 @@ sap.ui.define([
 				formPerturbaciones.chkRecierre = true
 			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
 				formPerturbaciones.chkDeseng = true
-			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad) {
+			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
 				formPerturbaciones.chkEmergencia = true
 			}
-
+			EquiposService.LoadEquipos(oSelectedData.Tplnr, this.society)
 			MotivosService.loadModel(oSelectedData.CodNovedad, this.society)
 
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
