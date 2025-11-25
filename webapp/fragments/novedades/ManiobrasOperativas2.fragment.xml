@@ -1,116 +1,152 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-    <FlexBox class="sapUiSmallMargin containerDialog FlexForm" direction="Column">
-        <HBox width="100%" class="sapUiSmallMarginBotton " justifyContent="SpaceBetween">
-            <HBox justifyContent="Start" alignItems="Start">
-                <Label text="Equipo E/S a traves de" class="sapUiSmallMarginEnd labels" showColon="true" />
-                <VBox>
-                    <CheckBox text="Barra de Transferencia" />
-                    <CheckBox text="Seccionador de paso" />
-                    <CheckBox text="Acoplador" />
-                </VBox>
-                <HBox>
-                    <Label />
-                </HBox>
-            </HBox>
-            <HBox alignItems="Start" justifyContent="Center" class="sapUiLargeMarginEnd">
-                <Label text="Interruptor F/S" showColon="true" class="sapUiSmallMarginEnd labels" />
-                <Input />
-            </HBox>
+ <Dialog id="ManiobrasOperativas2" title="Perturbaciones / Desconexiones" titleAlignment="Start">
+        <content>
+      <FlexBox class="sapUiSmallMargin containerDialog FlexForm" direction="Column">
+        <HBox width="100%" class="sapUiSmallMarginBottom" justifyContent="SpaceBetween">
+          <HBox justifyContent="Start" alignItems="Start">
+            <Label text="Equipo E/S a través de" class="sapUiSmallMarginEnd labels" showColon="true" />
+            <VBox>
+              <CheckBox text="Barra de Transferencia" />
+              <CheckBox text="Seccionador de paso" />
+              <CheckBox text="Acoplador" />
+            </VBox>
+          </HBox>
+
+          <HBox alignItems="Start" justifyContent="Center" class="sapUiLargeMarginEnd">
+            <Label text="Interruptor F/S" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <Input />
+          </HBox>
         </HBox>
+
         <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
-            <items>
-                <IconTabFilter text="Cambio de barra" design="Horizontal" showAll="true">
-                    <VBox justifyContent="SpaceBetween">
-                        <VBox>
-                            <Label text=" Se pasan los siguientes campos" />
-                            <TextArea width="100%" />
-                        </VBox>
-                        <HBox justifyContent="SpaceBetween">
-                            <HBox alignItems="Center">
-                                <Label text="De Barra" class="sapUiSmallMarginEnd labels" />
-                                <ComboBox />
-                            </HBox>
-                            <HBox alignItems="Center">
-                                <Label text="A Barra" class="sapUiSmallMarginEnd labels" />
-                                <ComboBox />
-                            </HBox>
-                        </HBox>
-                        <VBox>
-                            <Label text="Fallo de equipo durante la maniobra" />
-                            <ComboBox />
-                        </VBox>
+          <items>
+            <IconTabFilter text="Cambio de barra" showAll="true">
+              <VBox justifyContent="SpaceBetween">
+                <VBox>
+                  <Label text="Se pasan los siguientes campos" />
+                  <TextArea width="100%" />
+                </VBox>
 
-                        <VBox>
-                            <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
-                            <TextArea width="100%" />
-                        </VBox>
+                <HBox justifyContent="SpaceBetween">
+                  <HBox alignItems="Center">
+                    <Label text="De Barra" class="sapUiSmallMarginEnd labels" />
+                    <ComboBox />
+                  </HBox>
+                  <HBox alignItems="Center">
+                    <Label text="A Barra" class="sapUiSmallMarginEnd labels" />
+                    <ComboBox />
+                  </HBox>
+                </HBox>
 
-                        <HBox justifyContent="SpaceBetween">
-                            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                                <Label text="Se Informo a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
-                                <HBox>
-                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                        <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
-                                    </ComboBox>
-                                </HBox>
-                            </HBox>
-                            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                                <Label text="Se Informo a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
-                                <HBox>
-                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                        <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
-                                    </ComboBox>
-                                </HBox>
-                            </HBox>
-                        </HBox>
-                    </VBox>
-                </IconTabFilter>
-            </items>
+                <VBox>
+                  <Label text="Fallo de equipo durante la maniobra" />
+                  <ComboBox />
+                </VBox>
+
+                <VBox>
+                  <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
+                  <TextArea width="100%" />
+                </VBox>
+
+                <HBox justifyContent="SpaceBetween">
+                  <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                    <Label text="Se Informó a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
+                    <HBox>
+                      <ComboBox
+                        width="300px"
+                        selectionChange=".onSelectionChange"
+                        selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+                        items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
+                        <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}" />
+                      </ComboBox>
+                    </HBox>
+                  </HBox>
+
+                  <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+                    <Label text="Se Informó a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
+                    <HBox>
+                      <ComboBox
+                        width="300px"
+                        selectionChange=".onSelectionChange"
+                        selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+                        items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
+                        <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}" />
+                      </ComboBox>
+                    </HBox>
+                  </HBox>
+                </HBox>
+              </VBox>
+            </IconTabFilter>
+          </items>
         </IconTabBar>
-        <VBox width="100%" alignItems="Center" class="separador">
-            <Title text="Normalización de la Instalación" />
-        </VBox>
-        <VBox>
-            <HBox width="100%" justifyContent="SpaceBetween">
-                <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                    <Label text="Fecha/Hora" showColon="true" class="sapUiSmallMarginEnd labels" />
-                    <DatePicker />
-                </HBox>
-                <HBox alignItems="Center">
-                    <Label text="Se Normaliza configuración" class="sapUiSmallMarginEnd labels" showColon="true" />
-                    <HBox>
-                        <CheckBox text="SI" />
-                        <CheckBox text="NO" />
-                    </HBox>
-                </HBox>
-            </HBox>
-            <VBox>
-                <Label text="Fallo de equipo durante la maniobra" />
-                <ComboBox />
-            </VBox>
 
-            <HBox justifyContent="SpaceBetween">
-                <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                    <Label text="Se Informo a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
-                    <HBox>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                            <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
-                        </ComboBox>
-                    </HBox>
-                </HBox>
-                <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                    <Label text="Se Informo a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
-                    <HBox>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                            <core:Item key="{Estaciones>Estacion}" text="{path: 'Estaciones>Descripcion'}" />
-                        </ComboBox>
-                    </HBox>
-                </HBox>
-            </HBox>
-            <VBox>
-                <Label text="Comentarios referente a la normalización"  showColon="true" class="sapUiSmallMarginEnd labels" />
-                <TextArea width="100%" />
-            </VBox>
+        <VBox width="100%" alignItems="Center" class="separador">
+          <Title text="Normalización de la Instalación" />
         </VBox>
-    </FlexBox>
+
+        <VBox>
+          <HBox width="100%" justifyContent="SpaceBetween">
+            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+              <Label text="Fecha/Hora" showColon="true" class="sapUiSmallMarginEnd labels" />
+              <DatePicker />
+            </HBox>
+
+            <HBox alignItems="Center">
+              <Label text="Se Normaliza configuración" class="sapUiSmallMarginEnd labels" showColon="true" />
+              <HBox>
+                <!-- Si es exclusivo, usa RadioButton con mismo groupName -->
+                <RadioButton text="SI" groupName="normConfig" />
+                <RadioButton text="NO" groupName="normConfig" />
+              </HBox>
+            </HBox>
+          </HBox>
+
+          <VBox>
+            <Label text="Fallo de equipo durante la maniobra" />
+            <ComboBox />
+          </VBox>
+
+          <HBox justifyContent="SpaceBetween">
+            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+              <Label text="Se Informó a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
+              <HBox>
+                <ComboBox
+                  width="300px"
+                  selectionChange=".onSelectionChange"
+                  selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+                  items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
+                  <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}" />
+                </ComboBox>
+              </HBox>
+            </HBox>
+
+            <HBox alignItems="Center" class="sapUiLargeMarginEnd">
+              <Label text="Se Informó a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
+              <HBox>
+                <ComboBox
+                  width="300px"
+                  selectionChange=".onSelectionChange"
+                  selectedKey="{NovedadesFormJsonModel>/Tplnr}"
+                  items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
+                  <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}" />
+                </ComboBox>
+              </HBox>
+            </HBox>
+          </HBox>
+
+          <VBox>
+            <Label text="Comentarios referente a la normalización" showColon="true" class="sapUiSmallMarginEnd labels" />
+            <TextArea width="100%" />
+          </VBox>
+        </VBox>
+      </FlexBox>
+    </content>
+
+  <beginButton>
+			<Button text="Guardar" press="onSaveNovedad"/>
+		</beginButton>
+		<endButton>
+			<Button text="Cerrar" press="closeDialog"/>
+		</endButton>
+  </Dialog>
 </core:FragmentDefinition>

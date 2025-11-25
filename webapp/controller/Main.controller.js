@@ -133,24 +133,8 @@ sap.ui.define([
 				sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sSelectedKey;
 			}
 
+			this.openDialog(sFragmentPath)
 
-			Fragment.load({
-				id: this.getView().getId() + "-newFragment",
-				name: sFragmentPath,
-				controller: this,
-			})
-				.then(
-					function (oNewFragment) {
-						// Remove previously loaded fragments from the new fragment VBox
-						this._oVBoxNewFragment.removeAllItems();
-
-						// Add the new fragment to the new VBox
-						this._oVBoxNewFragment.addItem(oNewFragment);
-					}.bind(this)
-				)
-				.catch(function () {
-					MessageToast.show("Fragment not found: " + sFragmentPath);
-				});
 		},
 		onSelectionChange: function (oEvent) {
 			console.log("enter")
@@ -201,7 +185,7 @@ sap.ui.define([
 							canCreate: false
 						}), "specialModel");
 					} else {
-
+						let empresa = data.results[0].Empresa;
 						var utilsModel = that.getView().getModel("utilsModel");
 						if (empresa == 100) {
 							utilsModel.setProperty("/empresa", "Transener")
@@ -428,8 +412,8 @@ sap.ui.define([
 			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
 				formPerturbaciones.chkEmergencia = true
 			}
-			EquiposService.LoadEquipos(oSelectedData.Tplnr, this.society)
-			MotivosService.loadModel(oSelectedData.CodNovedad, this.society)
+			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
+			MotivosService.loadModel(oSelectedData.CodNovedad, "100")
 
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
 		},
@@ -441,11 +425,12 @@ sap.ui.define([
 			var oContext = oColumnListItem.getBindingContext("oTProgramadasModel");
 			var oSelectedData = oContext.getObject();
 
-			// Guarda los datos seleccionados en el modelo
+
 			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
 			console.log(oSelectedData);
 
-
+			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
+			MotivosService.loadModel(oSelectedData.CodNovedad, "100")
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
 		},
 		onEditNove: function (oEvent) {
@@ -648,7 +633,7 @@ sap.ui.define([
 				var sKey = oSelectedItem.getKey();
 
 				// Llamar a tu servicio con el key y la empresa
-				EquiposService.LoadEquipos(sKey, this.society);
+				EquiposService.LoadEquipos(sKey, "100");
 			} else {
 				sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
 			}
@@ -671,6 +656,7 @@ sap.ui.define([
 			return Fragment.load({
 				name: fragment,
 				controller: this,
+				type: "XML"
 			}).then(
 				function (oFragment) {
 					oDialog = oFragment;
@@ -5048,18 +5034,7 @@ sap.ui.define([
 
 
 			// Cargar el fragmento dinámicamente
-			Fragment.load({
-				id: this.getView().getId() + "-newFragment",
-				name: sFragmentPath,
-				controller: this
-			})
-				.then(function (oNewFragment) {
-					this._oVBoxNewFragment.removeAllItems();
-					this._oVBoxNewFragment.addItem(oNewFragment);
-				}.bind(this))
-				.catch(function () {
-					MessageToast.show("Fragmento no encontrado: " + sFragmentPath);
-				});
+			this.openDialog(sFragmentPath)
 		},
 
 		onOpenDialogNovedades: function () {

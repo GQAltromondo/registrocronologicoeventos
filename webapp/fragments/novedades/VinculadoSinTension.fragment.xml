@@ -1,4 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+<Dialog id="VinculadoSinTension" title="Perturbaciones / Desconexiones" titleAlignment="Start">
+        <content>
     <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
         <HBox width="100%" class="sapUiSmallMarginBottom FlexForm">
             <HBox width="100%" class="sapUiSmallMarginBotton ">
@@ -167,4 +169,12 @@
             </VBox>
         </VBox>
     </FlexBox>
+    </content>
+    <beginButton>
+			<Button text="Guardar" press="onSaveNovedad"/>
+		</beginButton>
+		<endButton>
+			<Button text="Cerrar" press="closeDialog"/>
+		</endButton>
+    </Dialog>
 </core:FragmentDefinition>

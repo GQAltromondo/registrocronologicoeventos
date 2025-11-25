@@ -1,4 +1,7 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:layout="sap.ui.layout"
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:layout="sap.ui.layout"
 	xmlns:core="sap.ui.core">
 	<Dialog id="formProgramadas" title="Tareas Programadas" titleAlignment="Start">
 		<content>
@@ -9,12 +12,10 @@
 							<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">
 								<Label text="{i18n>estacion}:" class="sapUiTinyMarginEnd"/>
 								<HBox>
-									<ComboBox id="cmbLugarId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"
-										items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+									<ComboBox id="cmbLugarId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
 										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
 									</ComboBox>
-									<ComboBox id="cmbLugar" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"
-										items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+									<ComboBox id="cmbLugar" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
 										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
 									</ComboBox>
 								</HBox>
@@ -28,25 +29,21 @@
 							<HBox width="50%" alignItems="Center">
 								<Label text="Equipo CAMMESA:" wrapping="true" class="sapUiMediumMarginEnd"/>
 								<HBox>
-									<ComboBox id="cmbEquipoId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
-										items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-									    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
+									<ComboBox id="cmbEquipoId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+										<core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
 									</ComboBox>
-									<ComboBox id="cmbEquipo" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"
-										items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-								    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
+									<ComboBox id="cmbEquipo" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+										<core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
 									</ComboBox>
 								</HBox>
 							</HBox>
 							<HBox width="50%" alignItems="Center">
 								<Label text="LLTT asociadas:"/>
 								<HBox>
-									<ComboBox id="cmbNovedadesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
-										items="{ path: 'Novedades>/novs', templateShareable: true }">
+									<ComboBox id="cmbNovedadesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
 										<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}"/>
 									</ComboBox>
-									<ComboBox id="cmbNovedades" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"
-										items="{ path: 'Novedades>/novs', templateShareable: true }">
+									<ComboBox id="cmbNovedades" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}" items="{ path: 'Novedades>/novs', templateShareable: true }">
 										<core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}"/>
 									</ComboBox>
 								</HBox>
@@ -55,29 +52,25 @@
 						<HBox class="HBoxContainer">
 							<HBox width="50%" alignItems="Center">
 								<Label text="Se descargo desde" wrapping="true" class="sapUiTinyMarginEnd"/>
-								<ComboBox id="cmbExtId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
-									selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+								<ComboBox id="cmbExtId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 									<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 								</ComboBox>
 							</HBox>
 							<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">
 								<Label text="Fecha/Hora"/>
-								<DateTimePicker
-									value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+								<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 							</HBox>
 						</HBox>
 						<HBox class="HBoxContainer">
 							<HBox width="50%" alignItems="Center">
 								<Label text="Fuera de Servicio desde" wrapping="true" class="sapUiTinyMarginEnd"/>
-								<ComboBox id="cmbFueraId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
-									selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+								<ComboBox id="cmbFueraId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 									<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 								</ComboBox>
 							</HBox>
 							<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">
 								<Label text="Fecha/Hora"/>
-								<DateTimePicker
-									value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+								<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 							</HBox>
 						</HBox>
 						<HBox class="HBoxContainer">
@@ -106,43 +99,37 @@
 						<HBox class="HBoxContainer">
 							<HBox class="HBoxWrapper">
 								<Label text="Se Energizó desde" wrapping="true" class="sapUiTinyMarginEnd"/>
-								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-									items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 									<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 								</ComboBox>
 							</HBox>
 							<HBox class="HBoxWrapper">
 								<Label text="Fecha/Hora"/>
-								<DateTimePicker
-									value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+								<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 							</HBox>
 						</HBox>
 						<HBox class="HBoxContainer">
 							<HBox class="HBoxWrapper">
 								<Label text="En Servicio (E/S)" wrapping="true" class="sapUiTinyMarginEnd"/>
-								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-									items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 									<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 								</ComboBox>
 							</HBox>
 							<HBox class="HBoxWrapper">
 								<Label text="Fecha/Hora"/>
-								<DateTimePicker
-									value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+								<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 							</HBox>
 						</HBox>
 						<HBox class="HBoxContainer">
 							<HBox class="HBoxWrapper">
 								<Label text="E/S a través de Interruptor propio" wrapping="true" class="sapUiTinyMarginEnd"/>
-								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-									items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+								<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 									<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 								</ComboBox>
 							</HBox>
 							<HBox class="HBoxWrapper">
 								<Label text="Fecha/Hora"/>
-								<DateTimePicker
-									value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+								<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 							</HBox>
 						</HBox>
 						<IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
@@ -161,11 +148,15 @@
 									<HBox class="HBoxContainer">
 										<VBox width="100%">
 											<Label text="Se informó a Empresa"/>
-											<Select width="100%"/>
+											<ComboBox selectedKey="{NovedadesFormJsonModel>/InfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+												<core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+											</ComboBox>
 										</VBox>
 										<VBox width="100%">
 											<Label text="Se informó al Técnico"/>
-											<Select width="100%"/>
+											<ComboBox selectedKey="{NovedadesFormJsonModel>/PruebaPersonalTec}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
+												<core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+											</ComboBox>
 										</VBox>
 									</HBox>
 								</IconTabFilter>
@@ -182,12 +173,10 @@
 										<HBox class="HBoxWrapper">
 											<Label text="Causa" class="sapUiTinyMarginEnd"/>
 											<HBox>
-												<ComboBox width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-													items="{CausasJsonModel>/Causas}">
+												<ComboBox width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{CausasJsonModel>/Causas}">
 													<core:Item key="{CausasJsonModel>CodigoCausa}" text="{MotivosJsonModel>CodigoCausa}"/>
 												</ComboBox>
-												<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"
-														items="{CausasJsonModel>/Causas}">
+												<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{CausasJsonModel>/Causas}">
 													<core:Item key="{MotivosJsonModel>CodigoCausa}" text="{MotivosJsonModel>DescCausa}"/>
 												</ComboBox>
 											</HBox>
@@ -200,19 +189,16 @@
 									<HBox class="HBoxContainer">
 										<Label text="Motivo" class="sapUiTinyMarginEnd"/>
 										<HBox>
-											<ComboBox id="cmbMotivoId" width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
-												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+											<ComboBox id="cmbMotivoId" width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 												<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
 											</ComboBox>
-											<ComboBox id="cmbMotivo" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
-												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+											<ComboBox id="cmbMotivo" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 												<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
 											</ComboBox>
 										</HBox>
 										<HBox class="HBoxWrapper">
 											<Label text="Indisponible desde" class="sapUiTinyMarginEnd"/>
-											<DateTimePicker
-												value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+											<DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 										</HBox>
 									</HBox>
 									<VBox width="100%">
@@ -226,11 +212,15 @@
 									<HBox class="HBoxContainer">
 										<VBox width="100%">
 											<Label text="Se informó a Empresa"/>
-											<Select width="100%"/>
+											<ComboBox selectedKey="{NovedadesFormJsonModel>/InfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+												<core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+											</ComboBox>
 										</VBox>
 										<VBox width="100%">
 											<Label text="Se informó al Técnico"/>
-											<Select width="100%"/>
+											<ComboBox selectedKey="{NovedadesFormJsonModel>/PruebaPersonalTec}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
+												<core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+											</ComboBox>
 										</VBox>
 									</HBox>
 								</IconTabFilter>
@@ -265,7 +255,9 @@
 										</HBox>
 										<HBox width="60%" alignItems="Center" justifyContent="SpaceBetween">
 											<Label text="Ubicacion" class="sapUiTinyMarginEnd"/>
-											<Select class="sapUiTinyMarginEnd"/>
+												<ComboBox  selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
+									</ComboBox>
 											<DatePicker/>
 										</HBox>
 									</HBox>
@@ -279,7 +271,9 @@
 										</HBox>
 										<HBox width="60%" alignItems="Center" justifyContent="SpaceBetween">
 											<Label text="Ubicacion" class="sapUiTinyMarginEnd"/>
-											<Select class="sapUiTinyMarginEnd"/>
+												<ComboBox  selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
+									</ComboBox>
 											<DatePicker/>
 										</HBox>
 									</HBox>
@@ -313,15 +307,13 @@
 									<HBox class="HBoxContainer">
 										<HBox class="HBoxWrapper">
 											<Label text="De Barra"/>
-											<ComboBox width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}"
-												items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+											<ComboBox width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
 												<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
 											</ComboBox>
 										</HBox>
 										<HBox class="HBoxWrapper">
 											<Label text="A Barra"/>
-											<ComboBox width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}"
-												items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+											<ComboBox width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
 												<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
 											</ComboBox>
 										</HBox>
@@ -342,7 +334,9 @@
 										</HBox>
 										<HBox width="60%" alignItems="Center" justifyContent="SpaceBetween">
 											<Label text="Ubicacion" class="sapUiTinyMarginEnd"/>
-											<Select class="sapUiTinyMarginEnd"/>
+												<ComboBox  selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
+									</ComboBox>
 											<DatePicker/>
 										</HBox>
 									</HBox>
@@ -353,10 +347,12 @@
 												<CheckBox text="SI"/>
 												<CheckBox text="NO"/>
 											</HBox>
-										</HBox>
+ 										</HBox>
 										<HBox width="60%" alignItems="Center" justifyContent="SpaceBetween">
 											<Label text="Ubicacion" class="sapUiTinyMarginEnd"/>
-											<Select class="sapUiTinyMarginEnd"/>
+												<ComboBox  selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+										<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
+									</ComboBox>
 											<DatePicker/>
 										</HBox>
 									</HBox>
@@ -374,325 +370,7 @@
 					</VBox>
 				</HBox>
 			</FlexBox>
-			<!--<FlexBox class="sapUiSmallMargin containerDialog" direction="Column">-->
-			<!--	<HBox width="100%">-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="{i18n>estacion}:" class="sapUiTinyMarginEnd"/>-->
-			<!--					<HBox>-->
-			<!--						<ComboBox id="cmbLugarId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"-->
-			<!--							items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">-->
-			<!--							<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>-->
-			<!--						</ComboBox>-->
-			<!--						<ComboBox id="cmbLugar" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}"-->
-			<!--							items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">-->
-			<!--							<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>-->
-			<!--						</ComboBox>-->
-			<!--					</HBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="End" alignItems="Center">-->
-			<!--					<Label text="Referencia" class="sapUiTinyMarginEnd"/>-->
-			<!--					<Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label text="Equipo CAMMESA:" wrapping="true" class="sapUiMediumMarginEnd"/>-->
-			<!--					<HBox>-->
-			<!--						<ComboBox id="cmbEquipoId" width="80px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"-->
-			<!--							items="{ path: 'TipoModel>/Tipo', templateShareable: true }">-->
-			<!--							<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo}"/>-->
-			<!--						</ComboBox>-->
-			<!--						<ComboBox id="cmbEquipo" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}"-->
-			<!--							items="{ path: 'TipoModel>/Tipo', templateShareable: true }">-->
-			<!--							<core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}"/>-->
-			<!--						</ComboBox>-->
-			<!--					</HBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label text="LLTT asociadas:"/>-->
-			<!--					<HBox>-->
-			<!--						<ComboBox id="cmbNovedadesId" width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
-			<!--							items="{ path: 'Novedades>/novs', templateShareable: true }">-->
-			<!--							<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}"/>-->
-			<!--						</ComboBox>-->
-			<!--						<ComboBox id="cmbNovedades" width="120px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodNovedad}"-->
-			<!--							items="{ path: 'Novedades>/novs', templateShareable: true }">-->
-			<!--							<core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}"/>-->
-			<!--						</ComboBox>-->
-			<!--					</HBox>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label text="Se descargo desde" wrapping="true" class="sapUiTinyMarginEnd"/>-->
-			<!--					<ComboBox id="cmbExtId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"-->
-			<!--						selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Fecha/Hora"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label text="Fuera de Servicio desde" wrapping="true" class="sapUiTinyMarginEnd"/>-->
-			<!--					<ComboBox id="cmbFueraId" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"-->
-			<!--						selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Fecha/Hora"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%">-->
-			<!--					<Label text="Equipo E/S a través de" wrapping="true"/>-->
-			<!--					<VBox>-->
-			<!--						<CheckBox text="Barra de transferencia"/>-->
-			<!--						<CheckBox text="Seleccionador de paso"/>-->
-			<!--						<CheckBox text="Acoplador"/>-->
-			<!--					</VBox>-->
-			<!--				</HBox>-->
-			<!--				<VBox width="50%">-->
-			<!--					<HBox>-->
-			<!--							<Label text="Interruptor F/S"/>-->
-			<!--					<Input/>-->
-			<!--					</HBox>-->
-			<!--						<HBox>-->
-			<!--							<Label text="Fecha/Hora"/>-->
-			<!--							<DatePicker/>-->
-			<!--					<Input/>-->
-			<!--					</HBox>-->
-			<!--				</VBox>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<Input value="Normalizacion de la instalación" enabled="false"></Input>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label width="50%" text="Se Energizó desde" wrapping="true" class="sapUiTinyMarginEnd"/>-->
-			<!--					<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"-->
-			<!--						items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Fecha/Hora"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label width="50%" text="En Servicio (E/S)" wrapping="true" class="sapUiTinyMarginEnd"/>-->
-			<!--					<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"-->
-			<!--						items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Fecha/Hora"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox width="50%" alignItems="Center">-->
-			<!--					<Label width="50%" text="E/S a través de Interruptor propio" wrapping="true" class="sapUiTinyMarginEnd"/>-->
-			<!--					<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"-->
-			<!--						items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Fecha/Hora"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--	</HBox>-->
-			<!--	<HBox width="100%">-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<HBox justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Causa" class="sapUiTinyMarginEnd"/>-->
-			<!--					<HBox>-->
-			<!--						<ComboBox width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"-->
-			<!--							items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--							<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--						</ComboBox>-->
-			<!--						<ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}"-->
-			<!--							items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--							<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>-->
-			<!--						</ComboBox>-->
-			<!--					</HBox>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Motivo" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox id="cmbMotivoId" width="80px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"-->
-			<!--						selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--					<ComboBox id="cmbMotivo" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"-->
-			<!--						selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">-->
-			<!--						<core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--				<HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">-->
-			<!--					<Label text="Indisponible desde" class="sapUiTinyMarginEnd"/>-->
-			<!--					<DateTimePicker-->
-			<!--						value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Comentarios" class="sapUiTinyMarginEnd"></Label>-->
-			<!--				<Input width="100%"></Input>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Empresa"/>-->
-			<!--				<ComboBox fieldWidth="90%" width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoEmpresa}"-->
-			<!--					items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">-->
-			<!--					<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"-->
-			<!--						text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Tecnico"/>-->
-			<!--				<ComboBox fieldWidth="90%" width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}"-->
-			<!--					items="{ path: 'PersonalHabilitadoModel>/TecnicosEt', templateShareable: true }">-->
-			<!--					<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Personal"/>-->
-			<!--				<ComboBox fieldWidth="90%" width="250px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoTecnico}"-->
-			<!--					items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">-->
-			<!--					<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Prueba a solicitud de:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se energizó desde:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se cargó desde:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--	</HBox>-->
-			<!--	<HBox width="100%">-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Empresa"/>-->
-			<!--				<ComboBox id="informoEmpresa" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--					selectedKey="{NovedadesFormJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">-->
-			<!--					<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"-->
-			<!--						text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Tecnico"/>-->
-			<!--				<ComboBox id="informoTecnico" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--					selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/TecnicosEt', templateShareable: true }">-->
-			<!--					<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informo a Personal"/>-->
-			<!--				<ComboBox id="informoPersonal" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--					selectedKey="{NovedadesFormJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">-->
-			<!--					<core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>-->
-			<!--				</ComboBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Prueba a solicitud de:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se energizó desde:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se cargó desde:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<ComboBox></ComboBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--		<VBox width="50%" class="FlexForm">-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Comentarios:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<Input/>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informó a Empresa:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--					<ComboBox id="informoPruebaEmpresa" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--						selectedKey="{PruebasListJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">-->
-			<!--						<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"-->
-			<!--							text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informó a Técnico:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--					<ComboBox id="informoPruebaTecnico" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--						selectedKey="{PruebasListJsonModel>/InformoTecnico}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">-->
-			<!--						<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"-->
-			<!--							text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--			<HBox class="HBoxContainer">-->
-			<!--				<Label text="Se informó a Personal:" class="sapUiTinyMarginEnd"/>-->
-			<!--				<HBox>-->
-			<!--					<DatePicker></DatePicker>-->
-			<!--					<ComboBox id="informoPruebaPersonal" fieldWidth="90%" width="250px" selectionChange=".onSelectionChange"-->
-			<!--						selectedKey="{PruebasListJsonModel>/InformoPersonal}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">-->
-			<!--						<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"-->
-			<!--							text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>-->
-			<!--					</ComboBox>-->
-			<!--				</HBox>-->
-			<!--			</HBox>-->
-			<!--		</VBox>-->
-			<!--	</HBox>-->
-			<!--</FlexBox>-->
+
 		</content>
 		<beginButton>
 			<Button text="Guardar" press="onSaveNovedad"/>

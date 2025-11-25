@@ -13,8 +13,8 @@
 								<VBox width="40%">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>place} / {i18n>ET}:"/>
-										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
-											<core:ListItem key="{EstacionesJsonModel>Estacion}" text="{EstacionesJsonModel>Codigo}" additionalText= "{EstacionesJsonModel>Descripcion}"/>
+										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
+											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText= "{Estaciones>Descripcion}"/>
 										</ComboBox>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">

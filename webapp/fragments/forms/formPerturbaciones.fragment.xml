@@ -18,13 +18,13 @@
                                         <CheckBox id="chkDeseng" text="Deseng" selected="{formPerturbacionesModel>/chkDeseng}" select=".onCheckBoxSelect" />
                                         <CheckBox id="chkEmergencia" text="F/ SEmergencia" selected="{formPerturbacionesModel>/chkEmergencia}" select=".onCheckBoxSelect" />
                                     </HBox>
-                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                        <Label text="{i18n>estacion}:" class="sapUiMediumMarginEnd" />
-                                        <HBox>
-                                            <ComboBox selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}" additionalText="{Estaciones>Codigo}" />
-                                            </ComboBox>
-                                        </HBox>
+                                    <HBox justifyContent="Start" alignItems="Center">
+                                        <Label text="{i18n>estacion}:" class="sapUiSmallMarginEnd" />
+
+                                        <ComboBox selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
+                                            <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}" additionalText="{Estaciones>Codigo}" />
+                                        </ComboBox>
+
                                         <HBox alignItems="Center" justifyContent="End">
                                             <Label text="Referencia" class="sapUiSmallMarginEnd" />
                                             <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px" id="d" />
@@ -32,11 +32,11 @@
                                     </HBox>
                                     <HBox justifyContent="Start" alignItems="Center">
                                         <Label text="{i18n>team}:" class="sapUiMediumMarginEnd" />
-                                        <HBox>
-                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-                                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
-                                            </ComboBox>
-                                        </HBox>
+
+                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
+                                        </ComboBox>
+
                                     </HBox>
                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
                                         <Label text="Fecha/Hora" />
@@ -45,7 +45,7 @@
                                         <Label text="Indisponible Desde" />
                                         <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                     </HBox>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Protecciones Actuantes" design="Horizontal" showAll="true">
                                                 <HBox justifyContent="End">
@@ -424,23 +424,23 @@
                                     </HBox>
                                     <VBox justifyContent="Start">
                                         <Label text="Comentarios" />
-                                        <Input value="{NovedadesFormJsonModel>Comentarios}" fieldWidth="90%" width="400px" />
+                                        <Input value="{NovedadesFormJsonModel>/Comentarios}" fieldWidth="90%" width="400px" />
                                     </VBox>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Afectaciones" design="Horizontal" showAll="true">
                                                 <VBox class="FlexForm">
                                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
                                                         <Label text="Pot. Cortada [MW]" class="sapUiSmallMarginEnd" />
-                                                        <Input value="{NovedadesFormJsonModel>Potenafect}" />
-                                                        <Label text="Perdida de aporte [MW]" class="sapUiSmallMarginEnd" />
-                                                        <Input value="{NovedadesFormJsonModel>Perdidatotalmw}"/>
+                                                        <Input value="{NovedadesFormJsonModel>/Potenafect}" />
+                                                        <Label text="Perd. de aporte [MW]" class="sapUiSmallMarginEnd" />
+                                                        <Input value="{NovedadesFormJsonModel>/Perdidatotalmw}"/>
                                                     </HBox>
                                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
                                                         <Label text="Reposicion [hh:mm]" class="sapUiSmallMarginEnd" />
-                                                        <Input />
-                                                        <Label text="Factor de Reduccion" class="sapUiSmallMarginEnd" />
-                                                        <Input />
+                                                        <Input value="{NovedadesFormJsonModel>/Perdidatotalmw}"/>
+                                                        <Label text="Factor de Reduc." class="sapUiSmallMarginEnd" />
+                                                        <Input value="{NovedadesFormJsonModel>/Factred}"/>
                                                     </HBox>
                                                     <HBox justifyContent="Start" alignItems="Center">
                                                         <Label text="ENS[MWh]" class="sapUiSmallMarginEnd" />
@@ -450,7 +450,7 @@
                                             </IconTabFilter>
                                         </items>
                                     </IconTabBar>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Motivo/Causa" design="Horizontal" showAll="true">
                                                 <VBox class="FlexForm">
@@ -482,10 +482,10 @@
                                             </IconTabFilter>
                                         </items>
                                     </IconTabBar>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Avisos (Prueba)" design="Horizontal" showAll="true">
-                                                <HBox justifyContent="SpaceBetween">
+                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <VBox>
                                                         <Label text="Se informó a Empresa" />
                                                         <ComboBox selectedKey="{NovedadesFormJsonModel>/InfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
@@ -530,10 +530,10 @@
                                         <Input value="{NovedadesFormJsonModel>Comentarios}" />
                                     </VBox>
 
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Aviso Normalización" design="Horizontal" showAll="true">
-                                                <HBox justifyContent="SpaceBetween">
+                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <VBox>
                                                         <Label text="Se informó a Empresa" />
                                                         <ComboBox selectedKey="{NovedadesFormJsonModel>/NormEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
@@ -550,7 +550,7 @@
                                             </IconTabFilter>
                                         </items>
                                     </IconTabBar>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Parte Indisponibilidad" design="Horizontal" showAll="true">
                                                 <VBox >
@@ -570,14 +570,14 @@
                                             </IconTabFilter>
                                         </items>
                                     </IconTabBar>
-                                    <VBox width="100%" alignItems="Center" class="separador">
-                                        <Title text="Pruebas Relizadas" />
+                                    <VBox width="100%" alignItems="Center" class="separador sapUiSmallMarginTop">
+                                        <Title text="Pruebas Realizadas" />
                                     </VBox>
                                     <HBox justifyContent="End">
                                         <Button text="Agregar otra prueba" type="Transparent" />
                                     </HBox>
 
-                                    <HBox justifyContent="SpaceBetween">
+                                    <HBox justifyContent="SpaceBetween" alignItems="End">
                                         <VBox>
                                             <Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd" />
                                             <ComboBox selectedKey="{NovedadesFormJsonModel>/NormPersonal}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true">
@@ -585,11 +585,11 @@
                                             </ComboBox>
                                         </VBox>
                                         <VBox>
-                                            <DatePicker />
+                                             <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaNormPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                         </VBox>
                                     </HBox>
 
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Protecciones Actuantes" design="Horizontal" showAll="true">
                                                 <HBox justifyContent="End">
@@ -777,7 +777,7 @@
                                     </IconTabBar>
                                     <HBox justifyContent="SpaceBetween">
                                         <HBox alignItems="Center">
-                                            <Label text="Otras Actuaciones" />
+                                            <Label text="Otras Actuaciones" class="sapUiMediumMarginEnd"/>
                                             <ComboBox />
                                         </HBox>
                                         <HBox alignItems="Center">
@@ -793,19 +793,21 @@
                                         <Label text="Comentarios" />
                                         <Input value="{NovedadesFormJsonModel>Comentarios}" />
                                     </VBox>
-                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
+                                    <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                         <items>
                                             <IconTabFilter text="Avisos (Prueba)" design="Horizontal" showAll="true">
-                                                <HBox justifyContent="SpaceBetween">
+                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <VBox>
                                                         <Label text="Se informó a Empresa" />
-                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/InfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/PruebasInfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
                                                             <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
                                                         </ComboBox>
                                                     </VBox>
                                                     <VBox>
                                                         <Label text="Se informó al Técnico" />
-                                                        <ComboBox />
+                                                      <ComboBox selectedKey="{NovedadesFormJsonModel>/PruebaPersonalTec}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
+                                                            <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+                                                        </ComboBox>
                                                     </VBox>
                                                 </HBox>
                                             </IconTabFilter>
