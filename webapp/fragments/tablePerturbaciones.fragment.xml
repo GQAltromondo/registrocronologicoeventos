@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
 	<t:Table id="tablePerturbaciones" rows="{ path: 'oPerturbacionesModel>/data', sorter: { path: 'FhFormat', descending: true }}"
-		selectionMode="None">
+		selectionMode="None" alternateRowColors="true">
 		<t:columns>
 			<!--<t:Column width="50px">-->
 			<!--	<Label/>-->

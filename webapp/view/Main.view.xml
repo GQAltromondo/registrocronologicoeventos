@@ -13,13 +13,13 @@
 								<VBox width="40%">
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>place} / {i18n>ET}:"/>
-										<ComboBox id="LugarFilter" change="handleChangeF" width="250px" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues= "true">
-											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText= "{Estaciones>Descripcion}"/>
+										<ComboBox id="LugarFilter" width="16rem" change="handleChangeF" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues="true">
+											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText="{Estaciones>Descripcion}"/>
 										</ComboBox>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>team}:"/>
-										<ComboBox id="EquipoFilter" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">
+										<ComboBox id="EquipoFilter" width="16rem" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">
 											<core:Item key="{EquiposModel>CodigoEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>
 										</ComboBox>
 										<!-- <ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
@@ -28,13 +28,13 @@
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>NovedadesType}:"/>
-										<MultiComboBox id="NovedadesFilter" name="type" width="250px" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
+										<MultiComboBox id="NovedadesFilter" width="16rem" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
 											<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
 										</MultiComboBox>
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>fastSearch}:"/>
-										<Input name="fastSearch"/>
+										<Input name="fastSearch" width="16rem"/>
 									</HBox>
 								</VBox>
 								<VBox width="40%">
