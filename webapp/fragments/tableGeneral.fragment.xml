@@ -1,5 +1,15 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
 	<t:Table id="generalTable" rows="{ path: 'oFilteredModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
+		<t:extension>
+			<OverflowToolbar style="Clear">
+				<ToolbarSpacer/>
+				<ToolbarSeparator/>
+				<Button
+					icon="sap-icon://refresh"
+					tooltip="Refrescar"
+					press="clearAllFilters"/>
+			</OverflowToolbar>
+		</t:extension>
 		<!--<t:Column width="50px">-->
 		<!--	<Label/>-->
 		<!--	<t:template>-->
@@ -38,7 +48,7 @@
 					<Text text="{oFilteredModel>Tiponovedad}"/>
 				</t:template>
 			</t:Column>
-			<t:Column width="320px">
+			<t:Column width="320px" sortProperty="novelty" filterProperty="novelty">
 				<Label text="{i18n>novelty}"/>
 				<t:template>
 					<Text text="{oFilteredModel>Novedad}"/>

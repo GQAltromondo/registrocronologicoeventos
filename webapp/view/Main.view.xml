@@ -54,7 +54,6 @@
 										<Button class="btn" text="{i18n>search}" press="onSearchLGuard"/>
 										<Button class="btn" text="{i18n>cleanFilters}" press="onClearFilters"/>
 										<Button class="btn" text="{i18n>advancedFilters}"/>
-										<Button icon="sap-icon://undo"/>
 									</HBox>
 								</VBox>
 							</FlexBox>
