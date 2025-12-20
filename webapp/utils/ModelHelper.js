@@ -90,7 +90,15 @@ sap.ui.define([], function (FioriComponentHelper) {
 			this.getModel("FileListJsonModel").setData({
 				Files: oObject.AttachmentXLicencia_nav
 			});
-		}
+		},
+		deleteNavigationProperties: function (oObject) {
+			delete oObject.ConsecuentesSet;
+			delete oObject.InformeCammesaSet;
+			delete oObject.ComentariosSet;
+			delete oObject.ENSRegXNS_NAV;
+			delete oObject.SenialXNS_nav;
+			delete oObject.PruebasXNS_nav;
+		},
 
 	};
 });

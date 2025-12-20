@@ -77,7 +77,7 @@ sap.ui.define([
 			var model = this._getMotivos();
 			model.setProperty("/Busy", true);
 			model.setProperty("/Motivos", []);
-			oDataService.getModel("TransenerOperaciones").read("/MotivosSet", {
+			oDataService.getModel("").read("/MotivosSet", {
 				filters: filters,
 				success: $.proxy(this._readODataOnSuccess, this),
 				error: $.proxy(this._readODataOnError, this)

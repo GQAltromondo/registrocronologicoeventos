@@ -25,7 +25,7 @@ sap.ui.define([
 			})
 		],
 		loadModel: function () {
-			oDataService.getModel("TransenerOperaciones").read(this._entitySet, {
+			oDataService.getModel("").read(this._entitySet, {
 				filters: this._filters,
 				success: function (data) {
 					var model = ModelHelper.getModel("DispActuantesJsonModel");

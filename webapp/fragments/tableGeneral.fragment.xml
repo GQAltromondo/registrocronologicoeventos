@@ -1,76 +1,74 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+	xmlns:t="sap.ui.table">
 	<t:Table id="generalTable" rows="{ path: 'oFilteredModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 		<t:extension>
 			<OverflowToolbar style="Clear">
 				<ToolbarSpacer/>
 				<ToolbarSeparator/>
-				<Button
-					icon="sap-icon://refresh"
-					tooltip="Refrescar"
-					press="clearAllFilters"/>
+				<Button icon="sap-icon://refresh" tooltip="Refrescar" press="clearAllFilters"/>
 			</OverflowToolbar>
 		</t:extension>
-		<!--<t:Column width="50px">-->
-		<!--	<Label/>-->
-		<!--	<t:template>-->
-		<!--		<HBox >-->
-		<!--			<Button type="Transparent" press="onSee" icon="sap-icon://show"/>-->
-		<!--		</HBox>-->
-		<!--	</t:template>-->
-		<!--</t:Column>-->
-		<t:columns>
-			<t:Column sortProperty="FhFormat">
-				<Label text="{i18n>dateTime}"/>
-				<t:template>
-					<!--<Text text="{oFilteredModel>FhFormat}"/>-->
-					<DatePicker change="handleTableChanges" value="{oFilteredModel>FhFormat}"/>
-				</t:template>
-			</t:Column>
-			<t:Column width="95px" sortProperty="LugarFormat" filterProperty="LugarFormat">
-				<Label text="{i18n>place}"/>
-				<t:template>
-					<!--<Text text="{oFilteredModel>LugarFormat}"/>-->
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }"
-						selectedKey="{oFilteredModel>Lugar}">
-						<core:Item key="{EstacionesJsonModel>Estacion}" text="{EstacionesJsonModel>Codigo}"/>
-					</ComboBox>
-				</t:template>
-			</t:Column>
-			<t:Column width="95px" filterProperty="Equipo">
-				<Label text="{i18n>team}"/>
-				<t:template>
-					<Text text="{oFilteredModel>Equipo}"/>
-				</t:template>
-			</t:Column>
-			<t:Column sortProperty="Tiponovedad" filterProperty="Tiponovedad">
-				<Label text="{i18n>noveltyType}"/>
-				<t:template>
-					<Text text="{oFilteredModel>Tiponovedad}"/>
-				</t:template>
-			</t:Column>
-			<t:Column width="320px" sortProperty="novelty" filterProperty="novelty">
-				<Label text="{i18n>novelty}"/>
-				<t:template>
-					<Text text="{oFilteredModel>Novedad}"/>
-				</t:template>
-			</t:Column>
-			<t:Column sortProperty="Creado_Por" filterProperty="Creado_Por">
-				<Label text="{i18n>operator}"/>
-				<t:template>
-					<Text text="{path:'oFilteredModel>Creado_Por', formatter: '.formatter.uppercase'}"/>
-				</t:template>
-			</t:Column>
-			<t:Column width="180px">
-				<Label/>
-				<t:template>
-					<HBox justifyContent="SpaceAround" wrap="Wrap">
-						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
-						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
-						<Button type="Transparent" press="goToEdit" icon="sap-icon://edit"/>
-						<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
-					</HBox>
-				</t:template>
-			</t:Column>
-		</t:columns>
+
+		<t:Column width='150px'>
+			<Label text="{i18n>fromDate}"/>
+			<t:template>
+				<!--<Text text="{parts: [{path: 'oFilteredModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
+				<DateTimePicker change="handleTableChanges" value="{ 'path': 'oFilteredModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>toDate}"/>
+			<t:template>
+				<!--<Text text="{parts: [{path: 'oFilteredModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
+				<DateTimePicker change="handleTableChanges" value="{ 'path': 'oFilteredModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>place}"/>
+			<t:template>
+				<!--<Text text="{oFilteredModel>Tplnr}"/>-->
+				<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" selectedKey="{oFilteredModel>Tplnr}">
+					<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
+				</ComboBox>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>team}"/>
+			<t:template>
+				<Text text="{oFilteredModel>Equnr}"/>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>noveltyType}"/>
+			<t:template>
+				<Text text="{parts:[{path:'oFilteredModel>CodNovedad'}],formatter:'.formatter.novedadType'}"/>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>novelty}"/>
+			<t:template>
+				<Text text="{oFilteredModel>CodUbFalla}"/>
+			</t:template>
+		</t:Column>
+		<t:Column>
+			<Label text="{i18n>operator}"/>
+			<t:template>
+				<Text text="{oFilteredModel>fromDate}"/>
+			</t:template>
+		</t:Column>
+		<t:Column width="180px">
+			<Label/>
+			<t:template>
+				<HBox justifyContent="SpaceAround" wrap="Wrap">
+					<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
+					<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
+					<Button type="Transparent" press="onEditNove" icon="sap-icon://edit"/>
+					<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
+				</HBox>
+			</t:template>
+		</t:Column>
 	</t:Table>
 </core:FragmentDefinition>

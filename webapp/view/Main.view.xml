@@ -34,7 +34,7 @@
 									</HBox>
 									<HBox justifyContent="SpaceBetween" alignItems="Center">
 										<Label text="{i18n>fastSearch}:"/>
-										<Input name="fastSearch" width="16rem"/>
+										<Input id="fastSearch" name="fastSearch" width="16rem"/>
 									</HBox>
 								</VBox>
 								<VBox width="40%">

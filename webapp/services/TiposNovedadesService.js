@@ -90,7 +90,7 @@ sap.ui.define([
 			model.setProperty("/Busy", true);
 			model.setProperty("/", []);
 			//gets master Firmantes
-			var odataModel = oDataService.getModel("TransenerOperaciones");
+			var odataModel = oDataService.getModel("");
 			odataModel.setUseBatch(false);
 			odataModel.read(this._entitySet, {
 				filters: filters,

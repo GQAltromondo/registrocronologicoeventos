@@ -14,7 +14,7 @@ sap.ui.define([
 		//_entitySet: "/NSEquiposSet", //muchos entity set
 		getInformeCammesa: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSInformeCammesaSet", {
+				oDataService.getModel("").read("/NSInformeCammesaSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data.results);
@@ -26,7 +26,7 @@ sap.ui.define([
 		
 		getInformeDiario: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSInformeDiarioSet", {
+				oDataService.getModel("").read("/NSInformeDiarioSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data.results);
@@ -38,7 +38,7 @@ sap.ui.define([
 		
 		getNovedadesPorTipoEquipo: function(filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSInformeNovedadesxTipoSet", {
+				oDataService.getModel("").read("/NSInformeNovedadesxTipoSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data.results);
@@ -50,7 +50,7 @@ sap.ui.define([
 		
 		getDestinatarios: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSDestinatariosSet", {
+				oDataService.getModel("").read("/NSDestinatariosSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data.results);
@@ -62,7 +62,7 @@ sap.ui.define([
 		
 		getEnreSalidas: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSEnreSalidasSet", {
+				oDataService.getModel("").read("/NSEnreSalidasSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -74,7 +74,7 @@ sap.ui.define([
 		
 		getEnreTransformaciones: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSEnreTransformacionesSet", {
+				oDataService.getModel("").read("/NSEnreTransformacionesSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -86,7 +86,7 @@ sap.ui.define([
 		
 		getEnrePotReactiva: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSEnrePotReactivaSet", {
+				oDataService.getModel("").read("/NSEnrePotReactivaSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -98,7 +98,7 @@ sap.ui.define([
 		
 		getEnreCapacidadTransp: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSEnreCapacidadTranspSet", {
+				oDataService.getModel("").read("/NSEnreCapacidadTranspSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -110,7 +110,7 @@ sap.ui.define([
 		
 		getEns: function (filters) {
 			return new Promise(function (resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/NSInformeENSSet", {
+				oDataService.getModel("").read("/NSInformeENSSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -122,7 +122,7 @@ sap.ui.define([
 		//LN 220 Y 132
 		getEnre390LN220: function(filters) {
 			return new Promise(function(resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/Enre390Ln220132Set", {
+				oDataService.getModel("").read("/Enre390Ln220132Set", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -134,7 +134,7 @@ sap.ui.define([
 		
 		getEnre390LN500: function(filters) {
 			return new Promise(function(resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/Enre390Ln500Set", {
+				oDataService.getModel("").read("/Enre390Ln500Set", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -146,7 +146,7 @@ sap.ui.define([
 		
 		getEnre390TrafoTR: function(filters) {
 			return new Promise(function(resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/Enre390TrafoTRSet", {
+				oDataService.getModel("").read("/Enre390TrafoTRSet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -158,7 +158,7 @@ sap.ui.define([
 		
 		getEnre390TrafoTRTI: function(filters) {
 			return new Promise(function(resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/Enre390TrafoTRTISet", {
+				oDataService.getModel("").read("/Enre390TrafoTRTISet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);
@@ -170,7 +170,7 @@ sap.ui.define([
 		
 		getEnre390Ln500TI: function(filters) {
 			return new Promise(function(resolve, reject) {
-				oDataService.getModel("TransenerOperaciones").read("/Enre390Ln500TISet", {
+				oDataService.getModel("").read("/Enre390Ln500TISet", {
 					filters: filters,
 					success: function (data) {
 						resolve(data);

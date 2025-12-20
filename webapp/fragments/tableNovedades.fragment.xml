@@ -50,7 +50,7 @@
 			<t:Column>
 				<Label text="{i18n>novelty}"/>
 				<t:template>
-					<Text text="{oNovedadesModel>CodUbFalla}"/>
+					<Text text="{oNovedadesModel>IdNovedad}"/>
 				</t:template>
 			</t:Column>
 			<t:Column>

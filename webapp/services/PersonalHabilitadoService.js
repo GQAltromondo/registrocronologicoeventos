@@ -78,7 +78,7 @@ sap.ui.define([
 		getPersonalHabilitadoTecnicosEt: function (sSociedad) {
 			var that = this;
 			return new Promise(function (resolve, reject) {
-				oDataServices.getModel("TransenerOperaciones").read("/PersonalHabilitadoTecnicosEtSet", {
+				oDataServices.getModel("").read("/PersonalHabilitadoTecnicosEtSet", {
 					filters: that.getFiltersPersonalHabilitado("", sSociedad),
 					success: resolve,
 					error: reject
@@ -89,7 +89,7 @@ sap.ui.define([
 		getJefeTrabajoPromise: function (sSociedad) {
 			var that = this;
 			return new Promise(function (resolve, reject) {
-				oDataServices.getModel("TransenerOperaciones").read(that._entitySet, {
+				oDataServices.getModel("").read(that._entitySet, {
 
 					filters: that.getFiltersPersonalHabilitado("JT", sSociedad, "H0001", ""),
 					success: resolve,
@@ -101,7 +101,7 @@ sap.ui.define([
 		getJefeTrabajoTctPromise: function (sSociedad) {
 			var that = this;
 			return new Promise(function (resolve, reject) {
-				oDataServices.getModel("TransenerOperaciones").read(that._entitySet, {
+				oDataServices.getModel("").read(that._entitySet, {
 
 					filters: that.getFiltersPersonalHabilitado("", sSociedad, "H0002", "J", "JN"),
 
@@ -114,7 +114,7 @@ sap.ui.define([
 		getSolicitantePromise: function (sSociedad) {
 			var that = this;
 			return new Promise(function (resolve, reject) {
-				oDataServices.getModel("TransenerOperaciones").read(that._entitySet, {
+				oDataServices.getModel("").read(that._entitySet, {
 					filters: that.getFiltersPersonalHabilitado("SO", sSociedad),
 					success: resolve,
 					error: reject
@@ -125,7 +125,7 @@ sap.ui.define([
 		getPromise: function (sSociedad) {
 			var that = this;
 			return new Promise(function (resolve, reject) {
-				oDataServices.getModel("TransenerOperaciones").read(that._entitySet, {
+				oDataServices.getModel("").read(that._entitySet, {
 					filters: that.getFiltersPersonalHabilitado("", sSociedad),
 					success: resolve,
 					error: reject
@@ -140,7 +140,7 @@ sap.ui.define([
 				operator: sap.ui.model.FilterOperator.EQ,
 				value1: society
 			}));
-			oDataServices.getModel("TransenerOperaciones").read(this._entitySet, {
+			oDataServices.getModel("").read(this._entitySet, {
 				filters: aFilters,
 				success: function (data) {
 					var oModel = ModelHelper.getModel("PersonalHabilitadoModel");

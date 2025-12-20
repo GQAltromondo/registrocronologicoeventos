@@ -24,7 +24,7 @@ sap.ui.define([
 			var that = this;
 			return new Promise((resolve, reject) => {
 				let entity = that._entitySet;
-				oDataService.getModel("TransenerOperaciones").read(entity, {
+				oDataService.getModel("").read(entity, {
 					filters: aFilter,
 					success: function (data) {
 						console.log("Estaciones",data)

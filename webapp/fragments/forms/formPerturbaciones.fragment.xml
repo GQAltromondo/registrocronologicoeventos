@@ -824,7 +824,7 @@
             </IconTabBar>
         </content>
         <beginButton>
-            <Button text="Guardar" press="onSaveNovedad"/>
+            <Button text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad"/>
         </beginButton>
         <endButton>
             <Button text="Cerrar" press="onCloseDialog"/>

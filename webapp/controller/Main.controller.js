@@ -53,12 +53,11 @@ sap.ui.define([
 
 			this.globalBusyDialog = new sap.m.BusyDialog();
 			UserService.loadModel()
-			//this.loadUserDataModel();
 			this.getView().setModel();
 			this.getView().getModel('LGuardias')
-			this.loadModels()
-			this.loadTipoNovedades();
+
 		},
+
 		loadModels: function () {
 			var oView = this.getView()
 			ModelHelper.getModel("utilsModel", oView)
@@ -73,6 +72,7 @@ sap.ui.define([
 			ModelHelper.getModel("NovedadesPorEquiposJsonModel", oView)
 			ModelHelper.getModel("EstacionesJsonModel", oView)
 			ModelHelper.getModel("RegionesEnsJsonModel", oView)
+			ModelHelper.getModel("editModel", oView).setData({ "isEdit": false })
 			ModelHelper.getModel("formPerturbacionesModel", oView).setData({
 				"chkRecierre": false,
 				"chkRecDeseng": false,
@@ -83,6 +83,26 @@ sap.ui.define([
 			ModelHelper.getModel('oPerturbacionesModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oTProgramadasModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oFilteredModel', oView).setData({ data: [], count: 0 })
+
+			this.loadModelsData()
+		},
+		loadModelsData: function () {
+			var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+			ClimasService.loadModel()
+			CausasService.loadModel()
+			DispActuantesService.loadModel();
+			EstadoTiempoService.loadModel();
+			TipificacionesFallasService.loadModel();
+			//TODO cambiar a empresa seleccionada
+			this.loadTipoNovedades(this.society);
+			this.loadEstaciones();
+
+			this.loadTipoEquipo();
+			TiposNovedadesService.loadModel()
+
+			EmpresaTramitacionService.loadTramitacion(Empresa)
+
+			PersonalHabilitadoService.getPersonalPromise(Empresa);
 		},
 		getBaseURL: function () {
 
@@ -109,21 +129,7 @@ sap.ui.define([
 		onAfterRendering: function () {
 			this.loadSociety();
 
-			ClimasService.loadModel()
-			CausasService.loadModel()
-			DispActuantesService.loadModel();
-			EstadoTiempoService.loadModel();
-			TipificacionesFallasService.loadModel();
-			//TODO cambiar a empresa seleccionada
-			this.loadTipoNovedades();
-			this.loadEstaciones();
 
-			this.loadTipoEquipo();
-			TiposNovedadesService.loadModel()
-
-			EmpresaTramitacionService.loadTramitacion('100')
-
-			PersonalHabilitadoService.getPersonalPromise("100");
 
 		},
 		onComboBoxChange: function (oEvent) {
@@ -170,60 +176,68 @@ sap.ui.define([
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
 		},
-		loadSociety: function () {
-			var that = this;
-			var oModeld = this.getView().getModel("Operaciones");
-			oModeld.read("/EmpresaUsuarioSet", {
-				success: function (data) {
-					console.log(data)
-					var empresa = data.results[0].Empresa;
-					that.currentUser.Legajo = data.results[0].Legajo;
-					that.currentUser.login_name = data.results[0].Usuario;
-					if (empresa == 999) {
-						that.InitSociety();
-						that.getView().setModel(new sap.ui.model.json.JSONModel({
-							canCreate: false
-						}), "specialModel");
-					} else {
-						let empresa = data.results[0].Empresa;
-						var utilsModel = that.getView().getModel("utilsModel");
-						if (empresa == 100) {
-							utilsModel.setProperty("/empresa", "Transener")
-							utilsModel.setProperty("/CodEmpresa", "100")
-						} else {
-							utilsModel.setProperty("/empresa", "Transba")
-							utilsModel.setProperty("/CodEmpresa", "300")
+		loadSociety: async function () {
+			const that = this;
+			let oBusyDialog = that.crearDialogoBusy();
+			that.abrirDialogoBusy(oBusyDialog);
+
+			const bIsLocal = window.location.hostname.includes("applicationstudio.cloud.sap");
+
+			if (bIsLocal) {
+				that.InitSociety();
+				that.cerrarDialogoBusy(oBusyDialog);
+				return;
+			}
+
+			let oModelOperaciones = this.getView().getModel("Operaciones");
+
+			try {
+				await new Promise((resolve, reject) => {
+					oModelOperaciones.read("/EmpresaUsuarioSet", {
+						success: function (data) {
+							resolve(data);
+							let empresa = data.results[0].Empresa;
+							if (empresa == 999) {
+								that.InitSociety();
+							} else {
+								ModelHelper.getModel("Empresa", that.getView()).setProperty("/selectedSociety", empresa)
+								that.society = empresa;
+
+								that.loadModels()
+							}
+							that.cerrarDialogoBusy(oBusyDialog);
+						},
+						error: function (oError) {
+							reject(oError);
+							that.cerrarDialogoBusy(oBusyDialog);
 						}
-						// var canCreate = true;
-						// if (that.currentUser.groups.includes("ope_programacion_cot") ||
-						// that.currentUser.groups.includes("ope_programacion_cotdt") ||
-						// 	that.currentUser.groups.includes("ope_visualizador")) {
-						// 	canCreate = false;
-						// }
-						// that.getView().setModel(new sap.ui.model.json.JSONModel({
-						// 	canCreate: canCreate
-						// }), "specialModel");
-						that.society = empresa;
+					});
+				});
+			} catch (err) {
+				console.log(err);
+				throw err;
+			}
 
-						that.byId("dpFromDate").setDateValue(that.dateWeekAgo());
-						that.byId("smartFilterBar").search();
 
-					}
-					// if (that.currentUser.groups ? .includes("Jefe_COT") ||
-					// 	that.currentUser.groups ? .includes("Jefe_COTDT")) {
-					// 	that.testOperators.push(that.currentUser.login_name);
-					// }
-
-				},
-				error: function (err) {
-					//do something;
-				}
-			});
 		},
-		loadTipoNovedades: function () {
+		crearDialogoBusy: function () {
+			let oDialogoBusy = new sap.m.BusyDialog({
+				title: "Actualizando datos...",
+				text: "Espere un momento por favor",
+				showCancelButton: false
+			});
+			return oDialogoBusy;
+		},
+		abrirDialogoBusy: function (data) {
+			data.open();
+		},
+		cerrarDialogoBusy: function (data) {
+			data.close();
+		},
+		loadTipoNovedades: function (Empresa) {
 			var that = this;
 			var filters = [];
-			filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, '100'));
+			filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, Empresa));
 			var oModeld = this.getView().getModel("LGuardias");
 			oModeld.read("/TipoNovedadSet", {
 				/*urlParameters: {
@@ -231,16 +245,6 @@ sap.ui.define([
 				},*/
 				filters: filters,
 				success: function (data) {
-
-					// var model = new sap.ui.model.json.JSONModel({
-					// 	novs: data.results
-					// });
-					// model.setSizeLimit(99999);
-					// that.getView().setModel(model, "Novedades");
-					// sap.ui.getCore().setModel(model, "Novedades");
-
-					// var oData = that.getView().getModel('Novedades')
-					// console.log(oData.getData())
 					ModelHelper.getModel("Novedades", that.getView()).setData({ novs: data.results })
 
 				},
@@ -250,71 +254,74 @@ sap.ui.define([
 			});
 		},
 		InitSociety: function () {
-			this.dialogSociety = new sap.m.Dialog({
-				type: sap.m.DialogType.Message,
-				title: "Selección de Empresa",
-				escapeHandler: function (oPromise) {
-					oPromise.reject();
-				},
-				content: [
-					new sap.m.VBox({
-						items: [
-							new sap.m.Label({
-								text: "Debe seleccionar la empresa:"
-							}),
-							new sap.m.Select({
-								change: [this.ValidateCombo, this],
-								selectedKey: "{Society>/Code}",
-								items: [
-									new sap.ui.core.Item({
-										key: "",
-										text: "Elija Uno"
-									}),
-									new sap.ui.core.Item({
-										key: "100",
-										text: "TRANSENER S.A."
-									}),
-									new sap.ui.core.Item({
-										key: "300",
-										text: "TRANSBA S.A."
-									})
-								]
-							})
-						]
-					})
+			var oNavigation = performance.getEntriesByType("navigation")[0];
+			if (!sessionStorage.getItem("empresa") || (oNavigation && oNavigation.type !== "reload")) {
+				this.dialogSociety = new sap.m.Dialog({
+					type: sap.m.DialogType.Message,
+					title: "Selección de Empresa",
+					escapeHandler: function (oPromise) {
+						oPromise.reject();
+					},
+					content: [
+						new sap.m.VBox({
+							items: [
+								new sap.m.Label({ text: "Debe seleccionar la empresa:" }),
+								new sap.m.Select({
+									selectedKey: "{Society>/Code}",
+									change: [this.ValidateCombo, this],
+									items: {
+										path: "Society>/Empresas",
+										template: new sap.ui.core.Item({
+											key: "{Society>Code}",
+											text: "{Society>Name}"
+										})
+									}
+								})
+							]
+						})
+					],
+					buttons: [
+						new sap.m.Button({
+							icon: "sap-icon://save",
+							type: sap.m.ButtonType.Emphasized,
+							text: "Guardar",
+							press: [this.onSelectedSociety, this]
+						})
+					]
+				});
 
-				],
-				buttons: [
-					new sap.m.Button({
-						icon: "sap-icon://save",
-						type: sap.m.ButtonType.Emphasized,
-						text: "Guardar",
-						press: [this.onSelectedSociety, this]
-					})
-				]
-			});
-			var oModel = new sap.ui.model.json.JSONModel();
-			this.dialogSociety.setModel(oModel, "Society");
-			this.dialogSociety.open();
-		},
+
+				var oModel = new sap.ui.model.json.JSONModel({
+					Code: "",
+					Empresas: [
+						{ Code: "", Name: "Elija Uno" },
+						{ Code: "100", Name: "TRANSENER S.A." },
+						{ Code: "300", Name: "TRANSBA S.A." }
+					]
+				});
+
+				this.dialogSociety.setModel(oModel, "Society");
+				this.dialogSociety.open();
+			} else {
+				this.society = sessionStorage.getItem("empresa");
+
+			}
+		}
+		,
 		onSelectedSociety: function () {
-			var society = this.dialogSociety.getModel("Society").getData().Code;
-			if (society !== "" && typeof society !== "undefined") {
-				this.society = society;
-				var utilsModel = this.getView().getModel("utilsModel");
-				if (society == 100) {
-					utilsModel.setProperty("/empresa", "Transener")
-					utilsModel.setProperty("/CodEmpresa", "100")
-				} else {
-					utilsModel.setProperty("/empresa", "Transba")
-					utilsModel.setProperty("/CodEmpresa", "300")
-				}
-				this.loadTipoNovedades();
-				this.loadEstaciones();
+			var empresa = this.dialogSociety.getModel("Empresa").getData().Code;
+
+			if (empresa !== "" && typeof empresa !== "undefined") {
+
+				ModelHelper.getModel("Empresa", this.getView()).setProperty("/selectedSociety", empresa);
+
+
+				// this.loadTipoNovedades();
+				// this.loadEstaciones();
 				//	this.getEquiposModel();
 				// //this.loadLineas();
-				this.loadTipoEquipo();
-
+				//this.loadTipoEquipo();
+				this.loadModels()
 				//	this.byId("FromDateFilter").setDateValue(this.dateWeekAgo());
 
 				// this.byId("smartFilterBar").search();
@@ -385,6 +392,7 @@ sap.ui.define([
 
 		ValidateCombo: function (oEvent) {
 			var society = this.dialogSociety.getModel("Society").getData().Code;
+			//  sessionStorage.setItem("empresa", society);
 			if (society !== "") {
 				oEvent.getSource().setValueState("None");
 			} else {
@@ -392,6 +400,7 @@ sap.ui.define([
 			}
 		},
 		onEditP: function (oEvent) {
+			ModelHelper.getModel("editModel").setProperty("/editableMode", true);
 			var oButton = oEvent.getSource();
 			var oColumnListItem = oButton.getParent();
 			const formPerturbaciones = ModelHelper.getModel("formPerturbacionesModel").getData()
@@ -594,7 +603,7 @@ sap.ui.define([
 					ModelHelper.getModel('oNovedadesModel').setData({ data: novedades, count: novedades.length })
 					ModelHelper.getModel('oPerturbacionesModel').setData({ data: perturbaciones, count: perturbaciones.length })
 					ModelHelper.getModel('oTProgramadasModel').setData({ data: trabajosProgramados, count: trabajosProgramados.length })
-					ModelHelper.getModel('oFilteredModel').setData({ data: generales, count: generales.length });
+					ModelHelper.getModel('oFilteredModel').setData({ data: data.results, count: data.results.length });
 
 					console.log(novedades)
 					oTableNS.setBusy(false)
@@ -642,11 +651,12 @@ sap.ui.define([
 		onClearFilters: function () {
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
-			oView.byId("TipoEquipoFilter").setSelectedKey("");
-			oView.byId("NovedadesFilter").setSelectedKeys("");
 			oView.byId("EquipoFilter").setSelectedKey("");
+			oView.byId("NovedadesFilter").setSelectedItems("");
 			oView.byId("FromDateFilter").setValue(null);
 			oView.byId("ToDateFilter").setValue(null);
+			oView.byId("InitialDate").setValue(null);
+			oView.byId("fastSearch").setValue(null);
 		},
 		openDialog: function (fragment) {
 			if (oDialog) {
@@ -684,8 +694,10 @@ sap.ui.define([
 			// 		MessageBox.show("Existen campos de novedad vacios");
 			// 		return;
 			// 	}
+			const oView = this.getView()
+			var promises = [];
+			var data = ModelHelper.getModel("NovedadesFormJsonModel").getData()
 
-			var data = ModelHelper.getModel("NovedadesFormJsonModel").getData();
 			console.log(data)
 			var bool = data.InicioNove <= data.EntIndis;
 			if (data.EntDispo && data.EntServicio) {
@@ -709,7 +721,52 @@ sap.ui.define([
 				return;
 			}
 
-			NovedadesService.POST();
+			//NovedadesService.POST();
+			promises.push(NovedadesService.PUTPromise(oView));
+			//promises.push(CammesaService.PUTCammesaPromise());
+			//promises.push(ParametrosSistemaService.PUTPromise());
+
+			// var oComentario = AppManagementHelper.getModel("CommentsFormJsonModel").getData();
+			// if (oComentario.Comentario !== "") {
+			// 	promises.push(ComentariosService.PUTCommentsPromise());
+			// }
+
+			this.updateCounts = promises.length;
+
+			Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this))).then(function (results) {
+				console.log(results, "finales");
+				var message = "";
+				var count = 0;
+				if (!results[0].resolved) {
+					message += "Error al guardar la novedad \n";
+					count++;
+				}
+
+				if (count) {
+					if (count != 3) message += "Todos los demas cambios se han guardado satisfactoriamente";
+					MessageBox.alert(message);
+				} else {
+					var sPath = FioriHelper.getAppPath();
+					//	that.cleanFormsByTab();
+					MessageBox.alert("Los cambios se han guardado satisfactoriamente");
+					NovedadesService.unblockNovedad(data.IdNovedad);
+				}
+				//cerrar progress bar y otros TODO
+			});
+
+		},
+		reflectProgress: function (promise) {
+			var that = this;
+			return promise.then(data => ({
+				resolved: true,
+				data: data
+			}), err => ({
+				resolved: false,
+				err: err
+			})).finally(() => {
+				var advance = 100 / that.updateCounts;
+				//avanzar progress bar TODO
+			});
 		},
 		onDelete: function () {
 			MessageToast.show("Delete Pressed");
@@ -815,6 +872,7 @@ sap.ui.define([
 			var oData = oModel.loadData("model/NovedadesFormJsonModel.json");
 		},
 		onPerturbacionesPress: function () {
+			ModelHelper.getModel("editModel").setProperty("/editableMode", false);
 			// var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			// 		oRouter.navTo("Perturbaciones");
 			this.resetNovedadesModel()
@@ -1330,7 +1388,7 @@ sap.ui.define([
 
 				var novedadesPromise = [];
 
-				var service = oDataService.getModel("TransenerOperaciones");
+				var service = oDataService.getModel("");
 				/*var lineaPromise = new Promise(function (resolve, reject) {
 					service.read("/InfPnlzLineasSet", {
 						filters: filters,
@@ -3133,7 +3191,7 @@ sap.ui.define([
 			if (reporte) {
 				filters.push(new sap.ui.model.Filter("Reporte", sap.ui.model.FilterOperator.EQ, reporte));
 			}
-			var oModeld = oDataService.getModel("TransenerOperaciones");
+			var oModeld = oDataService.getModel("");
 			oModeld.read("/NSEmpresasSet", {
 				/*urlParameters: {
 					$expand: "TurnoUsuarioSet"
@@ -4688,7 +4746,7 @@ sap.ui.define([
 				"Tiposal", "vacio", "vacio", "Autorizada", "Observaciones", "Terceros", "Nemo", "Region", "Descripcion"
 			]);
 			/*oModeld.read("/EmpresaUsuarioSet";*/
-			var service = oDataService.getModel("TransenerOperaciones");
+			var service = oDataService.getModel("");
 			this.globalBusyDialog.open();
 			var lineaPromise = new Promise(function (resolve, reject) {
 				service.read("/InfPnlzLineasSet", {

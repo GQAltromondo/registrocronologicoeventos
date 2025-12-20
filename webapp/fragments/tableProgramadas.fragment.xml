@@ -50,7 +50,8 @@
 			<t:Column>
 				<Label text="{i18n>novelty}"/>
 				<t:template>
-					<Text text="{oTProgramadasModel>CodUbFalla}"/>
+						<Text text="{oTProgramadasModel>IdNovedad}"/>
+					<!-- <Text text="{oTProgramadasModel>CodUbFalla}"/> -->
 				</t:template>
 			</t:Column>
 			<t:Column>
