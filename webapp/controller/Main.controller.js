@@ -746,8 +746,7 @@ sap.ui.define([
 					if (count != 3) message += "Todos los demas cambios se han guardado satisfactoriamente";
 					MessageBox.alert(message);
 				} else {
-					var sPath = FioriHelper.getAppPath();
-					//	that.cleanFormsByTab();
+			
 					MessageBox.alert("Los cambios se han guardado satisfactoriamente");
 					NovedadesService.unblockNovedad(data.IdNovedad);
 				}
