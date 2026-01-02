@@ -77,7 +77,9 @@
 					</content>
 					<footer>
 						<OverflowToolbar>
+						   <Text text="V{appCurrentInfo>/version}" />
 							<ToolbarSpacer/>
+							
 							<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress"/>
 							<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress"/>
 							<Button type="Ghost" text="{i18n>scheduled}" press="onScheduledPress"/>

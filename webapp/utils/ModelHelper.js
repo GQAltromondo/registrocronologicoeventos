@@ -9,18 +9,32 @@ sap.ui.define([], function (FioriComponentHelper) {
 			this._oApp = oApp;
 		},
 
-		getModel: function (sModelName, oView) {
-			var jsonModel = sap.ui.getCore().getModel(sModelName);
-			if (!jsonModel) {
-				jsonModel = new sap.ui.model.json.JSONModel();
-				jsonModel.setSizeLimit(9999);
-				sap.ui.getCore().setModel(jsonModel, sModelName);
-			}
-			if (oView) {
-				oView.setModel(jsonModel, sModelName);
-			}
-			return jsonModel;
-		},
+getModel: function (sModelName, oView) {
+  if (!sModelName) {
+    throw new Error("ModelHelper.getModel: sModelName es obligatorio");
+  }
+
+  // 1️⃣ Siempre busco el modelo global
+  let oModel = sap.ui.getCore().getModel(sModelName);
+
+  // 2️⃣ Si no existe, lo creo y lo registro en el Core
+  if (!oModel) {
+    oModel = new sap.ui.model.json.JSONModel();
+    oModel.setSizeLimit(9999);
+    sap.ui.getCore().setModel(oModel, sModelName);
+  }
+
+  // 3️⃣ Compatibilidad hacia atrás:
+  //     si me pasan una vista, lo seteo ahí también
+  if (oView && typeof oView.setModel === "function") {
+    // Evito setearlo dos veces innecesariamente
+    if (oView.getModel(sModelName) !== oModel) {
+      oView.setModel(oModel, sModelName);
+    }
+  }
+
+  return oModel;
+},
 
 		getApp: function () {
 			return this._oApp;

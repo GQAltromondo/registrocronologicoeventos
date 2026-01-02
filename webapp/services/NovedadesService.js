@@ -36,7 +36,7 @@ sap.ui.define([
 			else
 				entity = "/NovedadesServicioSet";
 			return new Promise((resolve, reject) => {
-				oDataService.getModel("").read(entity, {
+				oDataServices.getModel("").read(entity, {
 					urlParameters: {
 						"$expand": this._expandProperties
 					},
@@ -48,7 +48,7 @@ sap.ui.define([
 		},
 		SearchNovedad: function (data, successCallback, ErrorCallback) {
 			var entity = "/NovedadesServicioSet(IdNovedad='" + data.NroNovedad + "',Empresa='" + data.Empresa + "')";
-			var oDataModel = oDataService.getModel("");
+			var oDataModel = oDataServices.getModel("");
 			oDataModel.read(entity, {
 				urlParameters: {
 					"$expand": this._expandProperties
@@ -68,8 +68,8 @@ sap.ui.define([
 			}, this)).catch($.proxy(this.errorFindNovedad, this));
 		},
 
-		PUT: function () {
-			this.PUTPromise().then($.proxy(this.successPUT, this)).catch(this.errorPUT, this)
+		PUT: function (oView) {
+			this.PUTPromise(oView).then($.proxy(this.successPUT, this)).catch(this.errorPUT, this)
 		},
 
 		PUTPromise: function (oView) {
@@ -124,127 +124,128 @@ sap.ui.define([
 		,
 
 
-	successPUT: function (sNovedadId) {
-		MessageBox.alert("Alerta", "Se ha modificado la novedad de manera exitosa");
-	},
+		successPUT: function (sNovedadId) {
+			MessageBox.success("Se ha modificado la novedad " + sNovedadId + " de manera exitosa");
+		},
 
-	errorPUT: function (error) {
-		MessageBox.alert("Alerta", "Se ha producido un error al modificar la novedad");
-	},
+		errorPUT: function (error) {
+			MessageBox.error("Alerta", "Se ha producido un error al modificar la novedad");
+		},
 
-	successFindNovedad: function (data) {
-		var oNovedadesModel = ModelHelper.getModel("NovedadesListJsonModel");
-		var aData = FormatHelper.removeResults(data);
-		if (aData.constructor === Array) {
-			oNovedadesModel.setData({
-				Novedades: aData
+		successFindNovedad: function (data) {
+			var oNovedadesModel = ModelHelper.getModel("NovedadesListJsonModel");
+			var aData = FormatHelper.removeResults(data);
+			if (aData.constructor === Array) {
+				oNovedadesModel.setData({
+					Novedades: aData
+				});
+			} else {
+				var aArray = [];
+				aArray.push(aData);
+				oNovedadesModel.setData({
+					Novedades: aArray
+				});
+			}
+			BusyDialogHelper.close();
+		},
+
+		errorFindNovedad: function (error) {
+			BusyDialogHelper.close();
+			console.log(error);
+		},
+
+		POSTNovedad: function () {
+			return new Promise((resolve, reject) => {
+				let oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData();
+				let empresa = ModelHelper.getModel("Empresa").getProperty("/selectedSociety")
+				//le saco los segundos y los milisegundos a las fechas para poder compararlas correctamente en caso que sea necesario
+				for (var prop in oNovedad) {
+					var data = oNovedad[prop];
+					if (data && data.setSeconds) {
+						data.setSeconds(0, 0);
+					}
+				}
+				//TODO ESPERAR QUE DEMIAN ME AGREGUE EL NULLABLE
+				oNovedad.Cantidadtorrescaidas = oNovedad.Cantidadtorrescaidas || 0;
+				let entity = "/NovedadesServicioSet";
+				oNovedad.Empresa = empresa;
+				oNovedad.Subindice += "";
+				oNovedad.Consecuente = oNovedad.Consecuente || "";
+				oDataServices.getModel().create(entity, oNovedad, {
+					success: function (data) {
+						resolve(data);
+					},
+					error: function (error) {
+						reject(error)
+					}
+				});
+			})
+		},
+
+		POST: function () {
+			OperationErrorsHelper.cleanMessages();
+			// var oPercentModel = ModelHelper.getModel("ProgressBarJsonModel");
+			// ProgressDialogHelper.setPercentValues(0, "0");
+			// ProgressDialogHelper.getDialog().setModel(oPercentModel, "ProgressBarJsonModel");
+			// ProgressDialogHelper.openDialog();
+			return this.POSTNovedad().then($.proxy(this.successPOST, this)).catch($.proxy(this.errorPOST, this));
+		},
+
+		successPOST: function (data) {
+
+			var sPath = FioriHelper.getAppPath();
+			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/CodNovedad"),
+				ModelHelper.getModel("NovedadesFormJsonModel").getProperty("/CodNovedad");
+			ModelHelper.getModel("NovedadesFormJsonModel").loadData(sPath + "model/NovedadesFormJsonModel.json", "", false);
+			ModelHelper.getModel("utilsModel").setProperty("/editableDate", true);
+			//	ProgressDialogHelper.setPercentValues(25, "25%");
+			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/novedadId", data.IdNovedad);
+			var sNovedadId = ModelHelper.getModel("SelectedNovedadJsonModel").getProperty("/novedadId");
+			OperationErrorsHelper.addMessage("Novedad con id Nº " + sNovedadId, "Novedad: ");
+			MessageBox.success("Novedad de Servicio Nº " + sNovedadId + " creada exitosamente")
+			//	LicenciaService.saveMultipleLicences(ModelHelper.getModel("LicencesListJsonModel").getData().Licences);
+			//	ConsecuenteService.POST();
+		},
+
+		errorPOST: function (error) {
+			//	ProgressDialogHelper.closeDialog();
+			OperationErrorsHelper.addMessage("Se ha producido un error al crear novedad", "Novedad:");
+			var oContent = OperationErrorsHelper.generateMessageContent();
+			MessageBox.error(oContent);
+		},
+
+		deleteNovedad: function (idNovedad) {
+			return new Promise(function (resolve, reject) {
+				var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
+				var entity = "/NovedadesServicioSet(IdNovedad='" + idNovedad + "',Empresa='" + empresa + "')";
+				oDataServices.getModel("").remove(entity, {
+					success: resolve,
+					error: reject
+				});
 			});
-		} else {
-			var aArray = [];
-			aArray.push(aData);
-			oNovedadesModel.setData({
-				Novedades: aArray
+		},
+
+		blockNovedad: function (idNovedad) {
+			return new Promise(function (resolve, reject) {
+				var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
+				var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
+				oDataServices.getModel("").read(entity, {
+					success: resolve,
+					error: reject
+				});
+			});
+		},
+
+		unblockNovedad: function (idNovedad,oView) {
+			return new Promise(function (resolve, reject) {
+				var empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+				var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
+				oDataServices.getModel("").remove(entity, {
+					success: resolve,
+					error: reject
+				});
 			});
 		}
-		BusyDialogHelper.close();
-	},
 
-	errorFindNovedad: function (error) {
-		BusyDialogHelper.close();
-		console.log(error);
-	},
-
-	POSTNovedad: function () {
-		return new Promise((resolve, reject) => {
-			let oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData();
-			let empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
-			//le saco los segundos y los milisegundos a las fechas para poder compararlas correctamente en caso que sea necesario
-			for (var prop in oNovedad) {
-				var data = oNovedad[prop];
-				if (data && data.setSeconds) {
-					data.setSeconds(0, 0);
-				}
-			}
-			//TODO ESPERAR QUE DEMIAN ME AGREGUE EL NULLABLE
-			oNovedad.Cantidadtorrescaidas = oNovedad.Cantidadtorrescaidas || 0;
-			let entity = "/NovedadesServicioSet";
-			oNovedad.Empresa = empresa;
-			oNovedad.Subindice += "";
-			oNovedad.Consecuente = oNovedad.Consecuente || "";
-			oDataServices.getModel().create(entity, oNovedad, {
-				success: function (data) {
-					resolve(data);
-				},
-				error: function (error) {
-					reject(error)
-				}
-			});
-		})
-	},
-
-	POST: function () {
-		OperationErrorsHelper.cleanMessages();
-		// var oPercentModel = ModelHelper.getModel("ProgressBarJsonModel");
-		// ProgressDialogHelper.setPercentValues(0, "0");
-		// ProgressDialogHelper.getDialog().setModel(oPercentModel, "ProgressBarJsonModel");
-		// ProgressDialogHelper.openDialog();
-		this.POSTNovedad().then($.proxy(this.successPOST, this)).catch($.proxy(this.errorPOST, this));
-	},
-
-	successPOST: function (data) {
-		console.log(data)
-		var sPath = FioriHelper.getAppPath();
-		ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/CodNovedad"),
-			ModelHelper.getModel("NovedadesFormJsonModel").getProperty("/CodNovedad");
-		ModelHelper.getModel("NovedadesFormJsonModel").loadData(sPath + "model/NovedadesFormJsonModel.json", "", false);
-		ModelHelper.getModel("utilsModel").setProperty("/editableDate", true);
-		//	ProgressDialogHelper.setPercentValues(25, "25%");
-		ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/novedadId", data.IdNovedad);
-		var sNovedadId = ModelHelper.getModel("SelectedNovedadJsonModel").getProperty("/novedadId");
-		OperationErrorsHelper.addMessage("Novedad con id Nº " + sNovedadId, "Novedad: ");
-		//	LicenciaService.saveMultipleLicences(ModelHelper.getModel("LicencesListJsonModel").getData().Licences);
-		//	ConsecuenteService.POST();
-	},
-
-	errorPOST: function (error) {
-		//	ProgressDialogHelper.closeDialog();
-		OperationErrorsHelper.addMessage("Se ha producido un error al crear novedad", "Novedad:");
-		var oContent = OperationErrorsHelper.generateMessageContent();
-		MessageBox.show(oContent);
-	},
-
-	deleteNovedad: function (idNovedad) {
-		return new Promise(function (resolve, reject) {
-			var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
-			var entity = "/NovedadesServicioSet(IdNovedad='" + idNovedad + "',Empresa='" + empresa + "')";
-			oDataService.getModel("").remove(entity, {
-				success: resolve,
-				error: reject
-			});
-		});
-	},
-
-	blockNovedad: function (idNovedad) {
-		return new Promise(function (resolve, reject) {
-			var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
-			var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
-			oDataService.getModel("").read(entity, {
-				success: resolve,
-				error: reject
-			});
-		});
-	},
-
-	unblockNovedad: function (idNovedad) {
-		return new Promise(function (resolve, reject) {
-			var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
-			var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
-			oDataService.getModel("").remove(entity, {
-				success: resolve,
-				error: reject
-			});
-		});
-	}
-
-};
+	};
 });

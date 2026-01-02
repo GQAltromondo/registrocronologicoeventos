@@ -45,7 +45,7 @@
 					<Text text="{parts:[{path:'oPerturbacionesModel>CodNovedad'}],formatter:'.formatter.novedadType'}"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column  filterProperty="IdNovedad" filterOperator="Contains">
 				<Label text="{i18n>novelty}"/>
 				<t:template>
 					<Text text="{oPerturbacionesModel>IdNovedad}"/>

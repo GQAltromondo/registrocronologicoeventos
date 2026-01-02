@@ -44,13 +44,14 @@ sap.ui.define([
 
 	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
 		testOperators: ["Bonavita", "Vandale", "Burbaud"],
+		_expandProperties: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav",
 		_valueHelpDialog3: null,
 		currentUser: {},
 		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
 		formatter: formatter,
 		onInit: function () {
 			this.getBaseURL()
-
+			this.getVersion()
 			this.globalBusyDialog = new sap.m.BusyDialog();
 			UserService.loadModel()
 			this.getView().setModel();
@@ -143,7 +144,7 @@ sap.ui.define([
 
 		},
 		onSelectionChange: function (oEvent) {
-			console.log("enter")
+
 			var oSource = oEvent.getSource();
 			var sSelectedKey = oSource.getSelectedKey();
 
@@ -161,12 +162,12 @@ sap.ui.define([
 			}
 		},
 		handleChangeF: function (evt) {
-			console.log("PASE")
+
 			var estacion = evt.getParameter("value");
 			var codigo = evt.getSource().getSelectedKey();
-			console.log(estacion)
+
 			//var tipo = this.byId("TipoEquipoFilter").getSelectedKey();
-			// var equiposModel = this.getEquiposModel();
+
 			// equiposModel.setData({
 			// 	Equipos: [],
 			// 	busy: true
@@ -318,7 +319,7 @@ sap.ui.define([
 
 				// this.loadTipoNovedades();
 				// this.loadEstaciones();
-				//	this.getEquiposModel();
+
 				// //this.loadLineas();
 				//this.loadTipoEquipo();
 				this.loadModels()
@@ -347,7 +348,7 @@ sap.ui.define([
 				},*/
 				filters: filters,
 				success: function (data) {
-					console.log(data)
+
 					var model = new sap.ui.model.json.JSONModel({
 						Estaciones: data.results
 					});
@@ -380,15 +381,7 @@ sap.ui.define([
 				}
 			});
 		},
-		getEquiposModel: function () {
-			var equiposModel = this.getView().getModel("EquiposModel");
-			if (!equiposModel) {
-				equiposModel = new sap.ui.model.json.JSONModel();
-				equiposModel.setSizeLimit(10000);
-				this.getView().setModel(equiposModel, "EquiposModel");
-			}
-			return equiposModel;
-		},
+
 
 		ValidateCombo: function (oEvent) {
 			var society = this.dialogSociety.getModel("Society").getData().Code;
@@ -399,49 +392,49 @@ sap.ui.define([
 				oEvent.getSource().setValueState("Error");
 			}
 		},
-		onEditP: function (oEvent) {
-			ModelHelper.getModel("editModel").setProperty("/editableMode", true);
-			var oButton = oEvent.getSource();
-			var oColumnListItem = oButton.getParent();
-			const formPerturbaciones = ModelHelper.getModel("formPerturbacionesModel").getData()
+		// onEditP: function (oEvent) {
+		// 	ModelHelper.getModel("editModel").setProperty("/editableMode", true);
+		// 	var oButton = oEvent.getSource();
+		// 	var oColumnListItem = oButton.getParent();
+		// 	const formPerturbaciones = ModelHelper.getModel("formPerturbacionesModel").getData()
 
-			var oContext = oColumnListItem.getBindingContext("oPerturbacionesModel");
-			var oSelectedData = oContext.getObject();
+		// 	var oContext = oColumnListItem.getBindingContext("oPerturbacionesModel");
+		// 	var oSelectedData = oContext.getObject();
 
-			// Guarda los datos seleccionados en el modelo
-			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-			console.log(oSelectedData);
-
-			if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre && oSelectedData.GenIndisponibilidad) {
-				formPerturbaciones.chkRecDeseng = true
-			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre) {
-				formPerturbaciones.chkRecierre = true
-			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
-				formPerturbaciones.chkDeseng = true
-			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
-				formPerturbaciones.chkEmergencia = true
-			}
-			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
-			MotivosService.loadModel(oSelectedData.CodNovedad, "100")
-
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
-		},
-		onEditProg: function (oEvent) {
-			var oButton = oEvent.getSource();
-			var oColumnListItem = oButton.getParent();
+		// 	// Guarda los datos seleccionados en el modelo
+		// 	ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
 
 
-			var oContext = oColumnListItem.getBindingContext("oTProgramadasModel");
-			var oSelectedData = oContext.getObject();
+		// 	if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre && oSelectedData.GenIndisponibilidad) {
+		// 		formPerturbaciones.chkRecDeseng = true
+		// 	} else if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre) {
+		// 		formPerturbaciones.chkRecierre = true
+		// 	} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
+		// 		formPerturbaciones.chkDeseng = true
+		// 	} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
+		// 		formPerturbaciones.chkEmergencia = true
+		// 	}
+		// 	EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
+		// 	MotivosService.loadModel(oSelectedData.CodNovedad, "100")
+
+		// 	this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
+		// },
+		// onEditProg: function (oEvent) {
+		// 	var oButton = oEvent.getSource();
+		// 	var oColumnListItem = oButton.getParent();
 
 
-			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-			console.log(oSelectedData);
+		// 	var oContext = oColumnListItem.getBindingContext("oTProgramadasModel");
+		// 	var oSelectedData = oContext.getObject();
 
-			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
-			MotivosService.loadModel(oSelectedData.CodNovedad, "100")
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
-		},
+
+		// 	ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
+
+
+		// 	EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
+		// 	MotivosService.loadModel(oSelectedData.CodNovedad, "100")
+		// 	this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
+		// },
 		onEditNove: function (oEvent) {
 			var oButton = oEvent.getSource();
 			var oColumnListItem = oButton.getParent();
@@ -452,14 +445,14 @@ sap.ui.define([
 
 			// Guarda los datos seleccionados en el modelo
 			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-			console.log(oSelectedData);
+
 
 
 			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovedades")
 		},
 
 		onCloseDialog: function () {
-			console.log("ACA")
+
 			if (oDialog) {
 				oDialog.close();
 				oDialog.destroy()
@@ -505,7 +498,7 @@ sap.ui.define([
 			var FromDateFilter = this.byId("FromDateFilter").getDateValue();
 			var ToDateFilter = this.byId("ToDateFilter").getDateValue();
 			var InitialDate = this.byId("InitialDate").getDateValue();
-			console.log(InitialDate)
+
 
 			if (lugarFilter) {
 				serverFilters.push(
@@ -567,7 +560,6 @@ sap.ui.define([
 			oGuardiasSetModel.read('/GuardiasListSet', {
 				filters: serverFilters,
 				success: (data) => {
-
 					generales.push(...data.results);
 					oTable.setShowOverlay(false);
 					oTable.setBusy(false)
@@ -581,12 +573,13 @@ sap.ui.define([
 
 			oOperacionesSetModel.read('/NovedadesServicioSet', {
 				filters: NSFilters,
+				urlParameters: {
+						"$expand": this._expandProperties
+					},
 				success: (data) => {
 
 					data.results.forEach(function (item) {
-						if (item.CodNovedad === 'C') {
-							novedades.push(item);
-						} else if (item.CodNovedad === 'P') {
+						if (item.CodNovedad === 'P' || item.CodNovedad === 'C') {
 							perturbaciones.push(item);
 						} else {
 							trabajosProgramados.push(item);
@@ -594,18 +587,13 @@ sap.ui.define([
 					});
 
 
-					console.log("Novedades", novedades)
-					console.log("Perturbaciones", perturbaciones)
-					console.log("Programadas", trabajosProgramados)
-					console.log("Generales", generales)
 
-
-					ModelHelper.getModel('oNovedadesModel').setData({ data: novedades, count: novedades.length })
+					ModelHelper.getModel('oNovedadesModel').setData({ data: generales, count: generales.length })
 					ModelHelper.getModel('oPerturbacionesModel').setData({ data: perturbaciones, count: perturbaciones.length })
 					ModelHelper.getModel('oTProgramadasModel').setData({ data: trabajosProgramados, count: trabajosProgramados.length })
 					ModelHelper.getModel('oFilteredModel').setData({ data: data.results, count: data.results.length });
 
-					console.log(novedades)
+
 					oTableNS.setBusy(false)
 					oTablePS.setBusy(false)
 					oTableTP.setBusy(false)
@@ -634,20 +622,20 @@ sap.ui.define([
 			this.getView().byId("tableProgramadas").setShowOverlay(true);
 		},
 		onUbicacionChange: function (evt) {
-			// Obtener el item seleccionado
+			const oView = this.getView()
+			var oEquiposModel = ModelHelper.getModel("EquiposModel", oView)
+			ModelHelper.getModel("NovedadesFormJsonModel", oView).setProperty("/Equnr", "");
+			var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 			var oSelectedItem = evt.getParameter("selectedItem");
 
 			if (oSelectedItem) {
-				// Sacar el key del item seleccionado
 				var sKey = oSelectedItem.getKey();
-
-				// Llamar a tu servicio con el key y la empresa
-				EquiposService.LoadEquipos(sKey, "100");
+				oEquiposModel.setProperty("/busy", true);
+				EquiposService.LoadEquipos(sKey, Empresa);
 			} else {
 				sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
 			}
-		}
-		,
+		},
 		onClearFilters: function () {
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
@@ -678,7 +666,7 @@ sap.ui.define([
 		},
 		onTabSelect: function (oEvent) {
 			var selectedKey = oEvent.getParameter("key");
-			console.log("Selected Tab Key: " + selectedKey);
+
 		},
 		closeDialog: function () {
 			if (oDialog) {
@@ -689,17 +677,34 @@ sap.ui.define([
 			var now = new Date();
 			return new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
 		},
-		onSaveNovedad: function () {
-			// if (!this.novedadesFormValid()) {
-			// 		MessageBox.show("Existen campos de novedad vacios");
-			// 		return;
-			// 	}
-			const oView = this.getView()
-			var promises = [];
-			var data = ModelHelper.getModel("NovedadesFormJsonModel").getData()
+		_getNroNovedad: function (oResult, oLocalData) {
+			// oResult puede venir de create/update; oLocalData es tu "data" del modelo
+			return oResult?.IdNovedad || oLocalData?.IdNovedad || "";
+		},
 
-			console.log(data)
-			var bool = data.InicioNove <= data.EntIndis;
+		_showSaveMessage: function (bEditable, sId) {
+			const sAction = bEditable ? "Se actualizó" : "Se creó";
+			const sText = sId
+				? `${sAction} la novedad número ${sId}`
+				: `${sAction} la novedad`;
+
+			sap.m.MessageToast.show(sText, { duration: 4000 });
+		},
+
+		onSaveNovedad: function () {
+			const oView = this.getView();
+			const promises = [];
+
+			const data = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
+			const bEditable = ModelHelper
+				.getModel("editModel", oView)
+				.getProperty("/editableMode");
+
+			console.log(data, "editable:", bEditable);
+
+			// ===== Validaciones (sin tocar tu lógica) =====
+			let bool = data.InicioNove <= data.EntIndis;
+
 			if (data.EntDispo && data.EntServicio) {
 				if (data.EntIndis > data.EntDispo || data.EntDispo > data.EntServicio) {
 					bool = false;
@@ -709,51 +714,58 @@ sap.ui.define([
 					bool = false;
 				}
 			} else if (data.EntServicio) {
-				MessageBox.Alert("Si carga Ent. en servicio, debe cargar Ent. Disponibilidad ");
-
+				MessageBox.alert(
+					"Si carga Ent. en servicio, debe cargar Ent. Disponibilidad"
+				);
 				return;
 			}
 
 			if (!bool && (!data.Recierre || data.GenIndisponibilidad)) {
-				MessageBox.show(" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
+				MessageBox.show(
+					" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
 					" Ent. Disponibilidad debe ser mayor que Ent. Indisponibilidad\n" +
-					" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n");
+					" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n"
+				);
 				return;
 			}
 
-			//NovedadesService.POST();
-			promises.push(NovedadesService.PUTPromise(oView));
-			//promises.push(CammesaService.PUTCammesaPromise());
-			//promises.push(ParametrosSistemaService.PUTPromise());
-
-			// var oComentario = AppManagementHelper.getModel("CommentsFormJsonModel").getData();
-			// if (oComentario.Comentario !== "") {
-			// 	promises.push(ComentariosService.PUTCommentsPromise());
-			// }
+			// ===== Decisión PUT / POST =====
+			if (bEditable) {
+				// ✏️ Edición → PUT
+				promises.push(NovedadesService.PUT());
+			} else {
+				// ➕ Alta → POST
+				promises.push(NovedadesService.POST());
+			}
 
 			this.updateCounts = promises.length;
 
-			Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this))).then(function (results) {
-				console.log(results, "finales");
-				var message = "";
-				var count = 0;
-				if (!results[0].resolved) {
-					message += "Error al guardar la novedad \n";
-					count++;
-				}
+			Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this)))
+				.then(function (results) {
+					let message = "";
+					let count = 0;
 
-				if (count) {
-					if (count != 3) message += "Todos los demas cambios se han guardado satisfactoriamente";
-					MessageBox.alert(message);
-				} else {
-			
-					MessageBox.alert("Los cambios se han guardado satisfactoriamente");
-					NovedadesService.unblockNovedad(data.IdNovedad);
-				}
-				//cerrar progress bar y otros TODO
-			});
+					if (!results[0].resolved) {
+						message += "Error al guardar la novedad\n";
+						count++;
+					}
 
-		},
+					if (count) {
+						if (count !== 3) {
+							message += "Todos los demás cambios se han guardado satisfactoriamente";
+						}
+						MessageBox.alert(message);
+					} else {
+						//MessageBox.alert("Los cambios se han guardado satisfactoriamente");
+
+						// Solo desbloqueás si fue edición
+						if (bEditable) {
+							NovedadesService.unblockNovedad(data.IdNovedad, oView);
+						}
+					}
+				});
+		}
+		,
 		reflectProgress: function (promise) {
 			var that = this;
 			return promise.then(data => ({
@@ -867,11 +879,31 @@ sap.ui.define([
 			return !bValid;
 		},
 		resetNovedadesModel: function () {
-			const oModel = ModelHelper.getModel('NovedadesFormJsonModel')
-			var oData = oModel.loadData("model/NovedadesFormJsonModel.json");
+			const oView = this.getView();
+			const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+
+			// evita cache (útil en FLP / cambios frecuentes)
+			const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
+				+ "?_ts=" + Date.now();
+
+			return new Promise((resolve, reject) => {
+				oModel.attachRequestCompleted(function onDone() {
+					oModel.detachRequestCompleted(onDone);
+					resolve(oModel.getData());
+				});
+
+				oModel.attachRequestFailed(function onFail(oEvent) {
+					oModel.detachRequestFailed(onFail);
+					reject(oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades");
+				});
+
+				oModel.loadData(sUrl, null, true /* async */);
+			});
 		},
+
 		onPerturbacionesPress: function () {
-			ModelHelper.getModel("editModel").setProperty("/editableMode", false);
+			const oView = this.getView()
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", false);
 			// var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			// 		oRouter.navTo("Perturbaciones");
 			this.resetNovedadesModel()
@@ -948,7 +980,7 @@ sap.ui.define([
 							var filters = [];
 							var filtersData = ModelHelper.getModel("InformeFiltersJsonModel").getData();
 
-							console.log(filtersData)
+
 							if (!filtersData.desde || !filtersData.hasta) {
 								return;
 							}
@@ -4964,26 +4996,43 @@ sap.ui.define([
 			return pattern.format(date);
 		},
 		handleTableChanges: function (oEvent) {
-			var oComboBox = oEvent.getSource();
-			var oTable = oComboBox.getParent();
+			const oSrc = oEvent.getSource();
 
+			// 1) Buscar la tabla
+			let oTable = oSrc;
 			while (oTable && oTable.getMetadata().getName() !== "sap.ui.table.Table") {
 				oTable = oTable.getParent();
 			}
+			if (!oTable) return;
 
-			var oTableId = oTable.getId()
-			var iRowIndex = oComboBox.getParent().getIndex();
+			// 2) Tomar el nombre del modelo desde el binding de rows
+			const oInfo = oTable.getBindingInfo("rows");
+			const sModelName = oInfo && oInfo.model; // "oTProgramadasModel" o "oPerturbacionesModel"
+			if (!sModelName) return;
 
-			var oRow = oTable.getRows()[iRowIndex];
-			console.log(oRow)
-			if (oTableId === "container-registrocronologicoeventos---Main--generalTable") {
-				oRow.getCells()[6].getItems()[1].setEnabled(true)
-			} else {
-				oRow.getCells()[7].getItems()[1].setEnabled(true)
-			}
+			// 3) Obtener el contexto usando el modelo correcto
+			const oCtx = oSrc.getBindingContext(sModelName);
+			if (!oCtx) return;
 
-			this.byId("saveTableChanges").setVisible(true)
+			// 4) Índice absoluto desde el path: "/data/12" -> 12
+			const sPath = oCtx.getPath();
+			const iAbsIndex = parseInt(sPath.split("/").pop(), 10);
+			if (isNaN(iAbsIndex)) return;
+
+			// 5) Convertir a índice visible (tabla virtualizada)
+			const iVisibleIndex = iAbsIndex - oTable.getFirstVisibleRow();
+			const oRow = oTable.getRows()[iVisibleIndex];
+			if (!oRow) return;
+
+			// 6) Habilitar botón Save (2do botón del HBox de la última columna)
+			const aCells = oRow.getCells();
+			const oLastCell = aCells[aCells.length - 1];
+			const aItems = oLastCell?.getItems?.() || [];
+			aItems[1]?.setEnabled(true);
+
+			this.byId("saveTableChanges")?.setVisible(true);
 		},
+
 		onSaveTableChange: function () {
 			// Capturar el IconTabBar activo
 			var oIconTabBar = this.byId("idIconTabBarNoIcons"); // Reemplazar con el id de tu IconTabBar
@@ -5145,7 +5194,87 @@ sap.ui.define([
 				// Si el diálogo ya fue creado, simplemente ábrelo
 				this._oDialog.open();
 			}
+		},// ======================================
+		// Helper: aplica lógica específica de Perturbaciones
+		// ======================================
+		_applyPerturbacionesFlags: function (oSelectedData) {
+			const oFormModel = ModelHelper.getModel("formPerturbacionesModel");
+			const formPerturbaciones = oFormModel.getData() || {};
+
+			// (opcional) limpiar flags antes de setear para evitar "arrastres"
+			formPerturbaciones.chkRecDeseng = false;
+			formPerturbaciones.chkRecierre = false;
+			formPerturbaciones.chkDeseng = false;
+			formPerturbaciones.chkEmergencia = false;
+
+			if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre && oSelectedData.GenIndisponibilidad) {
+				formPerturbaciones.chkRecDeseng = true;
+			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre) {
+				formPerturbaciones.chkRecierre = true;
+			} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
+				formPerturbaciones.chkDeseng = true;
+			} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
+				formPerturbaciones.chkEmergencia = true;
+			}
+
+			// importante: volver a setear o refresh si tu binding no se entera
+			oFormModel.setData(formPerturbaciones);
 		},
+
+		// ======================================
+		// Única función para editar (P y Prog)
+		// ======================================
+		_onEditCommon: function (oEvent, mCfg) {
+			// mCfg: { modelName, fragmentName, setEditableMode, applyPertFlags }
+			if (mCfg.setEditableMode) {
+				ModelHelper.getModel("editModel").setProperty("/editableMode", true);
+			}
+
+			const oButton = oEvent.getSource();
+			const oItem = oButton.getParent();
+
+			const oCtx = oItem.getBindingContext(mCfg.modelName);
+			if (!oCtx) return;
+
+			const oSelectedData = oCtx.getObject() || {};
+
+			// Guardar en el form principal
+			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
+
+			// Lógica específica perturbaciones
+			if (mCfg.applyPertFlags) {
+				this._applyPerturbacionesFlags(oSelectedData);
+			}
+
+			// Cargas comunes
+			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100");
+			MotivosService.loadModel(oSelectedData.CodNovedad, "100");
+
+			// Abrir fragment
+			this.openDialog(mCfg.fragmentName);
+		},
+
+		// ======================================
+		// Wrappers: mantienen tus nombres actuales
+		// ======================================
+		onEditP: function (oEvent) {
+			return this._onEditCommon(oEvent, {
+				modelName: "oPerturbacionesModel",
+				fragmentName: "transener.registrocronologicoeventos.fragments.forms.formPerturbaciones",
+				setEditableMode: true,
+				applyPertFlags: true
+			});
+		},
+
+		onEditProg: function (oEvent) {
+			return this._onEditCommon(oEvent, {
+				modelName: "oTProgramadasModel",
+				fragmentName: "transener.registrocronologicoeventos.fragments.forms.formProgramadas",
+				setEditableMode: false,     // ponelo true si también querés editableMode acá
+				applyPertFlags: false
+			});
+		}
+
 
 	});
 });

@@ -12,14 +12,13 @@
                                 <VBox width="50%" class="FlexForm">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
                                         <Label text="{i18n>novelty}:" />
-                                        <Text text="{NovedadesFormJsonModel>/CodNovedad}" />
                                         <CheckBox id="chkRecierre" text="Recierre" selected="{formPerturbacionesModel>/chkRecierre}" select=".onCheckBoxSelect" />
                                         <CheckBox id="chkRecDeseng" text="Rec. y Deseng" selected="{formPerturbacionesModel>/chkRecDeseng}" select=".onCheckBoxSelect" />
                                         <CheckBox id="chkDeseng" text="Deseng" selected="{formPerturbacionesModel>/chkDeseng}" select=".onCheckBoxSelect" />
                                         <CheckBox id="chkEmergencia" text="F/ SEmergencia" selected="{formPerturbacionesModel>/chkEmergencia}" select=".onCheckBoxSelect" />
                                     </HBox>
                                     <HBox justifyContent="Start" alignItems="Center">
-                                        <Label text="{i18n>estacion}:" class="sapUiSmallMarginEnd" />
+                                        <Label text="{i18n>estacion}:" class="sapUiSmallMarginEnd"/>
 
                                         <ComboBox selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
                                             <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}" additionalText="{Estaciones>Codigo}" />
@@ -33,13 +32,13 @@
                                     <HBox justifyContent="Start" alignItems="Center">
                                         <Label text="{i18n>team}:" class="sapUiMediumMarginEnd" />
 
-                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" additionalText="{EquiposModel>DescEquipo}" />
+                                        <ComboBox width="550px" selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" busy="{EquiposModel>/busy}">
+                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                         </ComboBox>
 
                                     </HBox>
                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                        <Label text="Fecha/Hora" />
+                                        <Label text="Fuera Servicio (F/S)" />
                                         <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
 
                                         <Label text="Indisponible Desde" />
@@ -518,12 +517,13 @@
                                         <Label text="En Servicio (E/S) " class="sapUiSmallMarginEnd" />
                                         <HBox>
                                             <ComboBox class="sapUiSmallMarginEnd" />
-                                            <DatePicker />
+                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+
                                         </HBox>
                                     </HBox>
                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
                                         <Label text="Fecha /hora de disponibilidad" />
-                                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/Finmtto', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                     </HBox>
                                     <VBox justifyContent="Start">
                                         <Label text="Comentarios" />
@@ -536,13 +536,13 @@
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <VBox>
                                                         <Label text="Se informó a Empresa" />
-                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/NormEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
                                                             <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
                                                         </ComboBox>
                                                     </VBox>
                                                     <VBox>
                                                         <Label text="Se informó a Personal" />
-                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/InfPersonal}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true">
+                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopersnorma}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true">
                                                             <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
                                                         </ComboBox>
                                                     </VBox>
@@ -556,7 +556,8 @@
                                                 <VBox >
                                                     <HBox alignItems="Center" justifyContent="End">
                                                         <Label text="La indisponibilidad se informa a CAMMESA " />
-                                                        <CheckBox text="SI " />
+                                                        <CheckBox text="SI " selected="{CammesaFormJsonModel>/InformaCammesa}"/>
+
                                                     </HBox>
                                                     <VBox justifyContent="Start">
                                                         <Label text="Comentarios CAMMESA" />
@@ -585,7 +586,7 @@
                                             </ComboBox>
                                         </VBox>
                                         <VBox>
-                                             <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaNormPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaNormPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                         </VBox>
                                     </HBox>
 
@@ -799,13 +800,13 @@
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <VBox>
                                                         <Label text="Se informó a Empresa" />
-                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/PruebasInfEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
                                                             <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
                                                         </ComboBox>
                                                     </VBox>
                                                     <VBox>
                                                         <Label text="Se informó al Técnico" />
-                                                      <ComboBox selectedKey="{NovedadesFormJsonModel>/PruebaPersonalTec}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
+                                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
                                                             <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
                                                         </ComboBox>
                                                     </VBox>
