@@ -3,113 +3,112 @@
 	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
 	xmlns="sap.m"
 	xmlns:custom="transener.registrocronologicoeventos.components">
-	<Shell id="shell">
-		<App id="app">
-			<pages>
-				<Page id="page" title="{i18n>title}" class="sapUiNoContentPadding">
-					<content>
-						<Panel headerText="Filtrar" expandable="true" expanded="true">
-							<FlexBox justifyContent="SpaceBetween">
-								<VBox width="40%">
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>place} / {i18n>ET}:"/>
-										<ComboBox id="LugarFilter" width="16rem" change="handleChangeF" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues="true">
-											<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText="{Estaciones>Descripcion}"/>
-										</ComboBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>team}:"/>
-										<ComboBox id="EquipoFilter" width="16rem" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">
-											<core:Item key="{EquiposModel>CodigoEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>
-										</ComboBox>
-										<!-- <ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
+
+	<App id="app">
+		<pages>
+			<Page id="page" title="{i18n>title}" class="sapUiNoContentPadding">
+				<content>
+					<Panel headerText="Filtrar" expandable="true" expanded="true">
+						<FlexBox justifyContent="SpaceBetween">
+							<VBox width="40%">
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>place} / {i18n>ET}:"/>
+									<ComboBox id="LugarFilter" width="16rem" change="handleChangeF" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" showSecondaryValues="true">
+										<core:ListItem key="{Estaciones>Estacion}" text="{Estaciones>Codigo}" additionalText="{Estaciones>Descripcion}"/>
+									</ComboBox>
+								</HBox>
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>team}:"/>
+									<ComboBox id="EquipoFilter" width="16rem" selectionChange="onSelectionChange" items="{ path: 'EquiposModel>/Equipos'}" busy="{EquiposModel>/busy}">
+										<core:Item key="{EquiposModel>CodigoEquipo}" text="{= ${EquiposModel>CodigoEquipo} + ' - ' + ${EquiposModel>DescEquipo}}"/>
+									</ComboBox>
+									<!-- <ComboBox id="TipoEquipoFilter" width="250px" items="{ path: 'TipoModel>/Tipo'}" busy="{TipoModel>/busy}" change="TipoEquipoChanged">
 											<core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo} - {TipoModel>Descripcion}"/>
 										</ComboBox> -->
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>NovedadesType}:"/>
-										<MultiComboBox id="NovedadesFilter" width="16rem" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
-											<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
-										</MultiComboBox>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>fastSearch}:"/>
-										<Input id="fastSearch" name="fastSearch" width="16rem"/>
-									</HBox>
-								</VBox>
-								<VBox width="40%">
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>fromDate}"/>
-										<DateTimePicker id="FromDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>toDate}"/>
-										<DateTimePicker id="ToDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
-									</HBox>
-									<HBox justifyContent="SpaceBetween" alignItems="Center">
-										<Label text="{i18n>initialDate}"/>
-										<DatePicker id="InitialDate" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
-									</HBox>
-									<HBox width="80%" justifyContent="SpaceBetween" class="sapUiResponsiveMargin">
-										<Button class="btn" text="{i18n>search}" press="onSearchLGuard"/>
-										<Button class="btn" text="{i18n>cleanFilters}" press="onClearFilters"/>
-										<Button class="btn" text="{i18n>advancedFilters}"/>
-									</HBox>
-								</VBox>
-							</FlexBox>
-						</Panel>
-						<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" select="onTabSelect" class=" tabbedBar">
-							<items>
-								<IconTabFilter id="TabGeneral" text="{= ${oFilteredModel>/count} ? ${i18n>generalView} + ' ( ' + ${oFilteredModel>/count} + ' )' : ${i18n>generalView} }" key="General">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableGeneral" type="XML"/>
-								</IconTabFilter>
-								<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>news} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>news} }" key="Novedades">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovedades" type="XML"/>
-								</IconTabFilter>
-								<IconTabFilter id="TabPerturbaciones" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>Perturbaciones} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>Perturbaciones}}" key="Perturbaciones">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablePerturbaciones" type="XML"/>
-								</IconTabFilter>
-								<IconTabFilter id="TabScheduled" text="{= ${oTProgramadasModel>/count} ? ${i18n>scheduledTask} + ' ( ' + ${oTProgramadasModel>/count} + ' )' : ${i18n>scheduledTask}}" key="TrabajosProgramados">
-									<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableProgramadas" type="XML"/>
-								</IconTabFilter>
-							</items>
-						</IconTabBar>
-					</content>
-					<footer>
-						<OverflowToolbar>
-						   <Text text="V{appCurrentInfo>/version}" />
-							<ToolbarSpacer/>
-							
-							<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress"/>
-							<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress"/>
-							<Button type="Ghost" text="{i18n>scheduled}" press="onScheduledPress"/>
-							<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted" menuPosition="RightBottom">
-								<menu>
-									<Menu itemSelected="onMenuAction">
-										<items>
-											<MenuItem press="onExport" text="Exportar" icon="sap-icon://hint"/>
-											<MenuItem press="filtersInformeDiario" text="Informe Diario" icon="sap-icon://hint"/>
-											<MenuItem press="reportNovedadesTipoEquipo" text="Novedades por Tipo de Equipo" icon="sap-icon://hint"/>
-											<MenuItem press="reportENS" text="Reportes ENS" icon="sap-icon://hint"/>
-											<MenuItem press="dialogENREExcel" text="Reporte ENRE 390" icon="sap-icon://hint"/>
-											<MenuItem press="reportesPDF" text="reportes ENRE PDF" icon="sap-icon://hint"/>
-											<!--<MenuItem press="reportePDFENRESalidas" text="Reporte ENRE Salidas" icon="sap-icon://hint"/>
+								</HBox>
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>NovedadesType}:"/>
+									<MultiComboBox id="NovedadesFilter" width="16rem" selectionChange=".onSelectionChange" items="{ path: 'Novedades>/novs', templateShareable: true }">
+										<core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
+									</MultiComboBox>
+								</HBox>
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>fastSearch}:"/>
+									<Input id="fastSearch" name="fastSearch" width="16rem"/>
+								</HBox>
+							</VBox>
+							<VBox width="40%">
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>fromDate}"/>
+									<DateTimePicker id="FromDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
+								</HBox>
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>toDate}"/>
+									<DateTimePicker id="ToDateFilter" valueFormat="dd/MM/yyyy H:mm" displayFormat="dd/MM/yyyy H:mm" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
+								</HBox>
+								<HBox justifyContent="SpaceBetween" alignItems="Center">
+									<Label text="{i18n>initialDate}"/>
+									<DatePicker id="InitialDate" placeholder="{i18n>enterDate}" change="handleChange" class="sapUiSmallMarginBottom"/>
+								</HBox>
+								<HBox width="80%" justifyContent="SpaceBetween" class="sapUiResponsiveMargin">
+									<Button class="btn" text="{i18n>search}" press="onSearchLGuard"/>
+									<Button class="btn" text="{i18n>cleanFilters}" press="onClearFilters"/>
+									<Button class="btn" text="{i18n>advancedFilters}"/>
+								</HBox>
+							</VBox>
+						</FlexBox>
+					</Panel>
+					<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" select="onTabSelect" class=" tabbedBar">
+						<items>
+							<IconTabFilter id="TabGeneral" text="{= ${oFilteredModel>/count} ? ${i18n>generalView} + ' ( ' + ${oFilteredModel>/count} + ' )' : ${i18n>generalView} }" key="General">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableGeneral" type="XML"/>
+							</IconTabFilter>
+							<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>news} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>news} }" key="Novedades">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovedades" type="XML"/>
+							</IconTabFilter>
+							<IconTabFilter id="TabPerturbaciones" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>Perturbaciones} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>Perturbaciones}}" key="Perturbaciones">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablePerturbaciones" type="XML"/>
+							</IconTabFilter>
+							<IconTabFilter id="TabScheduled" text="{= ${oTProgramadasModel>/count} ? ${i18n>scheduledTask} + ' ( ' + ${oTProgramadasModel>/count} + ' )' : ${i18n>scheduledTask}}" key="TrabajosProgramados">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableProgramadas" type="XML"/>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</content>
+				<footer>
+					<OverflowToolbar>
+						<Text text="V{appCurrentInfo>/version}" />
+						<ToolbarSpacer/>
+						<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress"/>
+						<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress"/>
+						<Button type="Ghost" text="{i18n>scheduled}" press="onProgramadasPress"/>
+						<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted" menuPosition="RightBottom">
+							<menu>
+								<Menu itemSelected="onMenuAction">
+									<items>
+										<MenuItem press="onExport" text="Exportar" icon="sap-icon://hint"/>
+										<MenuItem press="filtersInformeDiario" text="Informe Diario" icon="sap-icon://hint"/>
+										<MenuItem press="reportNovedadesTipoEquipo" text="Novedades por Tipo de Equipo" icon="sap-icon://hint"/>
+										<MenuItem press="reportENS" text="Reportes ENS" icon="sap-icon://hint"/>
+										<MenuItem press="dialogENREExcel" text="Reporte ENRE 390" icon="sap-icon://hint"/>
+										<MenuItem press="reportesPDF" text="reportes ENRE PDF" icon="sap-icon://hint"/>
+										<!--<MenuItem press="reportePDFENRESalidas" text="Reporte ENRE Salidas" icon="sap-icon://hint"/>
 											<MenuItem press="reportePDFENRECapacidadTransporte" text="Reporte ENRE Capacidad Transporte" icon="sap-icon://hint"/>
 											<MenuItem press="reportePDFENREPotenciaReactiva" text="Reporte ENRE Potencia Reactiva" icon="sap-icon://hint"/ -->
-											<MenuItem press="reporteDBF" text="Informe CAMMESA" icon="sap-icon://hint"/>
-											<MenuItem press="dialogPenalidadesFilter" text="Penalizaciones" icon="sap-icon://hint"/>
-											<MenuItem press="onExportNovedades" text="Exportar Novedades" icon="sap-icon://hint"/>
-											<MenuItem press="onExportPerturbaciones" text="Exportar Perturbaciones" icon="sap-icon://hint"/>
-										</items>
-									</Menu>
-								</menu>
-							</MenuButton>
-							<ToolbarSpacer/>
-							<Button type="Emphasized" id="saveTableChanges" text="{i18n>save}" visible="false" press="onSaveTableChange"/>
-						</OverflowToolbar>
-					</footer>
-				</Page>
-			</pages>
-		</App>
-	</Shell>
+										<MenuItem press="reporteDBF" text="Informe CAMMESA" icon="sap-icon://hint"/>
+										<MenuItem press="dialogPenalidadesFilter" text="Penalizaciones" icon="sap-icon://hint"/>
+										<MenuItem press="onExportNovedades" text="Exportar Novedades" icon="sap-icon://hint"/>
+										<MenuItem press="onExportPerturbaciones" text="Exportar Perturbaciones" icon="sap-icon://hint"/>
+									</items>
+								</Menu>
+							</menu>
+						</MenuButton>
+						<ToolbarSpacer/>
+						<Button type="Emphasized" id="saveTableChanges" text="{i18n>save}" visible="false" press="onSaveTableChange"/>
+					</OverflowToolbar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+
 </mvc:View>

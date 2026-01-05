@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m"
     xmlns:l="sap.ui.layout"
     xmlns:f="sap.ui.layout.form"
-    xmlns:core="sap.ui.core" width="50%">
+    xmlns:core="sap.ui.core">
     <Dialog id="formPerturbaciones" title="Perturbaciones / Desconexiones" titleAlignment="Start">
         <content>
             <IconTabBar>
@@ -84,29 +84,29 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="E.T" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <Input value="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Et}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="KM." class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Km}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <HBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="INST" class="title" />
                                                                                     <Label text="TD" class="subttitle" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="TEMP" class="title" textAlign="Center" />
                                                                                     <Label text="T1" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Pit1}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="MAX" class="title" textAlign="Center" />
                                                                                     <Label text="PLI" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Pili}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <VBox>
@@ -114,35 +114,35 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fn}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fr}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fs}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ft}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="TX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Tx}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rx}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="T2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/T2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="Ts2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ts2}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -151,11 +151,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="DPZ" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rr}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -164,19 +164,19 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fn}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fr}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fs}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ft}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -185,11 +185,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="{i18n>U}" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text=">U" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -197,27 +197,27 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DAG" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DISCO" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="BZ" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="PFI" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="OSC" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                         </cells>
@@ -261,29 +261,29 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="E.T" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <Input value="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Et2}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="KM." class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Km2}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <HBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="INST" class="title" />
                                                                                     <Label text="TD" class="subttitle" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="TEMP" class="title" textAlign="Center" />
                                                                                     <Label text="T1" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Pit1}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="MAX" class="title" textAlign="Center" />
                                                                                     <Label text="PLI" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Pili}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <VBox>
@@ -291,35 +291,35 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fn2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fr2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fs2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ft2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="TX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Tx2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rx2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="T2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/T2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="Ts2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ts22}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -328,11 +328,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="DPZ" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rr2}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -341,19 +341,19 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fn2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fr2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Fs2}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Ft2}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -362,11 +362,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="{i18n>U}" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text=">U" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -374,27 +374,27 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DAG" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DISCO" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="BZ" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="PFI" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="OSC" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                         </cells>
@@ -561,11 +561,11 @@
                                                     </HBox>
                                                     <VBox justifyContent="Start">
                                                         <Label text="Comentarios CAMMESA" />
-                                                        <Input value="{NovedadesFormJsonModel>Comentarios}" />
+                                                        <Input value="{CammesaFormJsonModel>/Texto}" />
                                                     </VBox>
                                                     <VBox justifyContent="Start">
                                                         <Label text="Comentario Interno" />
-                                                        <Input value="{NovedadesFormJsonModel>Comentarios}" />
+                                                        <Input value="{NovedadesFormJsonModel>/Comentarios}" />
                                                     </VBox>
                                                 </VBox>
                                             </IconTabFilter>
@@ -630,29 +630,29 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="E.T" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <Input value="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="KM." class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <Input value="{SignalsListJsonModel>/Signals/0/Km}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <HBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="INST" class="title" />
                                                                                     <Label text="TD" class="subttitle" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="TEMP" class="title" textAlign="Center" />
                                                                                     <Label text="T1" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="MAX" class="title" textAlign="Center" />
                                                                                     <Label text="PLI" textAlign="Center" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                             <VBox>
@@ -660,35 +660,35 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="TX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RX" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="T2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="Ts2" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -697,11 +697,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="DPZ" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="RR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -710,19 +710,19 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FN" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FR" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FS" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="FT" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -731,11 +731,11 @@
                                                                                 <HBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text="{i18n>U}" textAlign="Center" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                     <VBox alignItems="Center">
                                                                                         <Label text=">U" />
-                                                                                        <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                     </VBox>
                                                                                 </HBox>
                                                                             </VBox>
@@ -743,27 +743,27 @@
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DAG" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Rrpi}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="DISCO" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="BZ" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="PFI" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                                 <VBox alignItems="Center">
                                                                                     <Label text="OSC" class="title" />
                                                                                     <Label text="" class="title" />
-                                                                                    <CheckBox selected="{PerturbationJsonModel>/Perturbacion/0/Bz}" />
+                                                                                    <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
                                                                                 </VBox>
                                                                             </HBox>
                                                                         </cells>

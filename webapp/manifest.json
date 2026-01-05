@@ -130,33 +130,35 @@
       "routes": [
         {
           "name": "RouteMain",
-          "pattern": "RouteMain",
+          "pattern": "",
           "target": [
-            "TargetMain"
+            "Main"
           ]
         },
         {
+          "pattern": "perturbaciones/{mode}",
           "name": "Perturbaciones",
-          "pattern": "Perturbaciones",
-          "target": [
-            "TargetPerturbaciones"
-          ]
+          "target": "Perturbaciones"
+        },
+        {
+          "name": "Programadas",
+          "pattern": "programadas/{mode}",
+          "target": "Programadas"
         }
       ],
       "targets": {
-        "TargetMain": {
+        "Main": {
           "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewId": "Main",
-          "viewName": "Main"
+          "viewName": "Main",
+          "viewLevel": 1
         },
-        "TargetPerturbaciones": {
-          "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewId": "Perturbaciones",
-          "viewName": "Perturbaciones/Perturbaciones"
+        "Perturbaciones": {
+          "viewName": "Perturbaciones",
+          "viewLevel": 2
+        },
+        "Programadas": {
+          "viewName": "Programadas",
+          "viewLevel": 2
         }
       }
     }

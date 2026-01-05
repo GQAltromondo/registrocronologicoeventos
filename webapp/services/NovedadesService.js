@@ -227,7 +227,7 @@ sap.ui.define([
 
 		blockNovedad: function (idNovedad) {
 			return new Promise(function (resolve, reject) {
-				var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
+				var empresa = ModelHelper.getModel("Empresa").getProperty("/selectedSociety");
 				var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
 				oDataServices.getModel("").read(entity, {
 					success: resolve,
@@ -236,9 +236,9 @@ sap.ui.define([
 			});
 		},
 
-		unblockNovedad: function (idNovedad,oView) {
+		unblockNovedad: function (idNovedad, oView) {
 			return new Promise(function (resolve, reject) {
-				var empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+				var empresa = ModelHelper.getModel("Empresa").getProperty("/selectedSociety");
 				var entity = "/BloqueoNovedadSet(Idnovedad='" + idNovedad + "',Empresa='" + empresa + "')";
 				oDataServices.getModel("").remove(entity, {
 					success: resolve,

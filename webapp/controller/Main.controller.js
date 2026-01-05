@@ -23,6 +23,7 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/TiposNovedadesService",
 	"transener/registrocronologicoeventos/services/EmpresaTramitacionService",
 	"transener/registrocronologicoeventos/services/PersonalHabilitadoService",
+	"transener/registrocronologicoeventos/services/LicenciaService",
 	"transener/registrocronologicoeventos/services/EquiposService",
 	"transener/registrocronologicoeventos/services/ReportesService",
 	"transener/registrocronologicoeventos/services/EstacionesService",
@@ -36,7 +37,7 @@ sap.ui.define([
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
-	PersonalHabilitadoService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
+	PersonalHabilitadoService, LicenciaService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
 	FormatHelper) {
 	"use strict";
@@ -574,8 +575,8 @@ sap.ui.define([
 			oOperacionesSetModel.read('/NovedadesServicioSet', {
 				filters: NSFilters,
 				urlParameters: {
-						"$expand": this._expandProperties
-					},
+					"$expand": this._expandProperties
+				},
 				success: (data) => {
 
 					data.results.forEach(function (item) {
@@ -696,13 +697,14 @@ sap.ui.define([
 			const promises = [];
 
 			const data = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
-			const bEditable = ModelHelper
-				.getModel("editModel", oView)
-				.getProperty("/editableMode");
 
-			console.log(data, "editable:", bEditable);
+			const oEditModel = ModelHelper.getModel("editModel", oView);
+			const sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();   // "create" | "edit"
+			const bUiEditable = !!oEditModel.getProperty("/editableMode");
 
-			// ===== Validaciones (sin tocar tu lógica) =====
+			console.log(data, "mode:", sMode, "uiEditable:", bUiEditable);
+
+			// ===== Validaciones (SIN TOCAR) =====
 			let bool = data.InicioNove <= data.EntIndis;
 
 			if (data.EntDispo && data.EntServicio) {
@@ -714,9 +716,7 @@ sap.ui.define([
 					bool = false;
 				}
 			} else if (data.EntServicio) {
-				MessageBox.alert(
-					"Si carga Ent. en servicio, debe cargar Ent. Disponibilidad"
-				);
+				MessageBox.alert("Si carga Ent. en servicio, debe cargar Ent. Disponibilidad");
 				return;
 			}
 
@@ -729,19 +729,24 @@ sap.ui.define([
 				return;
 			}
 
-			// ===== Decisión PUT / POST =====
-			if (bEditable) {
-				// ✏️ Edición → PUT
+			// (Opcional) si estás en edit pero UI NO editable, no dejes guardar
+			if (sMode === "edit" && !bUiEditable) {
+				MessageBox.alert("Activá 'Editar' antes de guardar.");
+				return;
+			}
+
+			// ===== Decisión PUT / POST (CORRECTA) =====
+			if (sMode === "edit") {
 				promises.push(NovedadesService.PUT());
 			} else {
-				// ➕ Alta → POST
+				// default: create
 				promises.push(NovedadesService.POST());
 			}
 
 			this.updateCounts = promises.length;
 
 			Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this)))
-				.then(function (results) {
+				.then((results) => {
 					let message = "";
 					let count = 0;
 
@@ -756,15 +761,17 @@ sap.ui.define([
 						}
 						MessageBox.alert(message);
 					} else {
-						//MessageBox.alert("Los cambios se han guardado satisfactoriamente");
-
-						// Solo desbloqueás si fue edición
-						if (bEditable) {
+						// ✅ Unblock SOLO si es EDIT (porque solo ahí bloqueaste)
+						if (sMode === "edit") {
 							NovedadesService.unblockNovedad(data.IdNovedad, oView);
 						}
+
+						// (Opcional) al guardar, podés volver a modo lectura
+						// oEditModel.setProperty("/editableMode", false);
 					}
 				});
 		}
+
 		,
 		reflectProgress: function (promise) {
 			var that = this;
@@ -901,17 +908,33 @@ sap.ui.define([
 			});
 		},
 
-		onPerturbacionesPress: function () {
-			const oView = this.getView()
-			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", false);
-			// var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-			// 		oRouter.navTo("Perturbaciones");
-			this.resetNovedadesModel()
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones");
+
+
+		onEditPerturbacion: function (sIdNovedad) {
+			const oView = this.getView();
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", false); // si querés entrar “ver” y luego Edit
+			// o true si querés entrar directamente editando
+
+			this.getOwnerComponent().getRouter().navTo(
+				"Perturbaciones",
+				{ mode: "edit" },
+				{ query: { id: sIdNovedad } }
+			);
 		},
-		onScheduledPress: function () {
+
+		onPerturbacionesPress: function () {
+			const oView = this.getView();
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+
+			this.resetNovedadesModel(); // deja modelos en blanco/default
+			this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: "create" });
+		},
+
+		onProgramadasPress: function () {
+			const oView = this.getView();
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
 			this.resetNovedadesModel()
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas");
+			this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "create" });
 		},
 		onNovedadesPress: function () {
 			this.resetNovedadesModel()
@@ -5194,7 +5217,8 @@ sap.ui.define([
 				// Si el diálogo ya fue creado, simplemente ábrelo
 				this._oDialog.open();
 			}
-		},// ======================================
+		},
+		// ======================================
 		// Helper: aplica lógica específica de Perturbaciones
 		// ======================================
 		_applyPerturbacionesFlags: function (oSelectedData) {
@@ -5220,61 +5244,177 @@ sap.ui.define([
 			// importante: volver a setear o refresh si tu binding no se entera
 			oFormModel.setData(formPerturbaciones);
 		},
+		onSearchNovedad: function (oEvent) {
+			const oSrc = oEvent.getSource();
 
-		// ======================================
-		// Única función para editar (P y Prog)
-		// ======================================
-		_onEditCommon: function (oEvent, mCfg) {
-			// mCfg: { modelName, fragmentName, setEditableMode, applyPertFlags }
-			if (mCfg.setEditableMode) {
-				ModelHelper.getModel("editModel").setProperty("/editableMode", true);
+			// si viene desde un botón dentro de la fila
+			const oCtx =
+				oSrc.getBindingContext("oPerturbacionesModel") ||
+				oSrc.getBindingContext("oTProgramadasModel");
+
+			if (!oCtx) {
+				MessageBox.alert( "No se encontró la fila (bindingContext).");
+				return;
 			}
 
-			const oButton = oEvent.getSource();
-			const oItem = oButton.getParent();
+			const oRow = oCtx.getObject() || {};
+			const sIdNovedad = oRow.IdNovedad; // <- el que querés
 
-			const oCtx = oItem.getBindingContext(mCfg.modelName);
-			if (!oCtx) return;
-
-			const oSelectedData = oCtx.getObject() || {};
-
-			// Guardar en el form principal
-			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-
-			// Lógica específica perturbaciones
-			if (mCfg.applyPertFlags) {
-				this._applyPerturbacionesFlags(oSelectedData);
+			if (!sIdNovedad) {
+				MessageBox.alert( "La fila no tiene IdNovedad.");
+				return;
 			}
 
-			// Cargas comunes
-			EquiposService.LoadEquipos(oSelectedData.Tplnr, "100");
-			MotivosService.loadModel(oSelectedData.CodNovedad, "100");
+			// si querés seguir con tu lógica de padding
+			let strId = String(sIdNovedad);
+			while (strId.length < 10) strId = "0" + strId;
 
-			// Abrir fragment
-			this.openDialog(mCfg.fragmentName);
-		},
-
-		// ======================================
-		// Wrappers: mantienen tus nombres actuales
-		// ======================================
-		onEditP: function (oEvent) {
-			return this._onEditCommon(oEvent, {
-				modelName: "oPerturbacionesModel",
-				fragmentName: "transener.registrocronologicoeventos.fragments.forms.formPerturbaciones",
-				setEditableMode: true,
-				applyPertFlags: true
+			NovedadesService.blockNovedad(strId).then((res) => {
+				if (res.Usuario) {
+					MessageBox.alert( "La novedad se encuentra bloqueada por: " + res.Usuario);
+					return;
+				}
+				this.onSearchNovedadUnblocked(strId);
+			}).catch(() => {
+				MessageBox.alert( "Ha fallado la búsqueda de la novedad: " + strId);
 			});
 		},
 
-		onEditProg: function (oEvent) {
-			return this._onEditCommon(oEvent, {
-				modelName: "oTProgramadasModel",
-				fragmentName: "transener.registrocronologicoeventos.fragments.forms.formProgramadas",
-				setEditableMode: false,     // ponelo true si también querés editableMode acá
-				applyPertFlags: false
+
+		onSearchNovedadUnblocked: function (strId) {
+			var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+
+			var data = {
+				NroNovedad: strId,
+				Empresa: Empresa
+			}
+			if (!data.NroNovedad) {
+				MessageBox.alert("Novedad de Servicio", "Debe indicar un número de novedad.")
+				return;
+			}
+			NovedadesService.SearchNovedad(data,
+				jQuery.proxy(this.onSuccessLoadCallback, this),
+				jQuery.proxy(this.onErrorLoadCallback, this)
+			)
+		},
+		onSuccessLoadCallback: function (oSelectedNovedad) {
+			if (!oSelectedNovedad.IdNovedad) {
+				MessageBox.alert("Novedad de Servicio", "Esta novedad no existe.");
+				return;
+			}
+
+			if (oSelectedNovedad.Consecuente !== "") {
+				MessageBox.alert("Novedad de Servicio", "Esta novedad de servicio es consecuente de la Novedad Nro.: " +
+					oSelectedNovedad.Consecuente);
+			} else {
+				// var oUtilsJsonModel = this.getView().getModel("UtilsJsonModel");
+				// var codNovedad = oSelectedNovedad.CodNovedad;
+
+				// oUtilsJsonModel.setProperty("/CammesaTab", codNovedad !== "C" && codNovedad !== "I");
+				// oUtilsJsonModel.setProperty("/IdNovedad", oSelectedNovedad.IdNovedad);
+				// var codigo = this.getView().byId("IUbic")?.getSelectedItem()?.getBindingContext("EstacionesJsonModel")?.getObject()?.Estacion
+				// Llamadas asincrónicas
+				Promise.all([
+					MotivosService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.Empresa),
+					CausasService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.CodMotivo, oSelectedNovedad.Empresa),
+					//EquiposService.loadEquipos(oSelectedNovedad.CodTipo, oSelectedNovedad.Tplnr, codigo, oSelectedNovedad.Empresa),
+					LicenciaService.loadList(oSelectedNovedad.Empresa, oSelectedNovedad.IdNovedad)
+				]).then(() => {
+					this.setNavigationPropertiesData(oSelectedNovedad);
+					// (opcional) si querés flags de perturbaciones como cuando editás
+					const sFrag = this._getFragmentByNovedad(oSelectedNovedad);
+					if (sFrag.includes("formPerturbaciones")) {
+						this._applyPerturbacionesFlags(oSelectedNovedad);
+					}
+
+					// (opcional) editableMode si corresponde
+					ModelHelper.getModel("editModel").setProperty("/editableMode", true);
+
+					// Navegar a vista (solo si es Perturbaciones)
+					if (sFrag.includes("formPerturbaciones")) {
+						this.getOwnerComponent().getRouter().navTo(
+							"Perturbaciones",
+							{ mode: "edit" },
+							{ query: { id: oSelectedNovedad.IdNovedad } } // opcional, por si querés mostrarlo o recargar
+						);
+						return;
+					}
+
+					if (sFrag.includes("formProgramadas")) {
+						this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "edit" }, { query: { id: oSelectedNovedad.IdNovedad } });
+
+						return;
+					}
+
+
+				}).catch((oError) => {
+					console.error("Error cargando datos de novedad:", oError);
+					MessageBox.alert("Error", "Ocurrió un error al cargar la información relacionada a la novedad.");
+				});
+			}
+		},
+
+		onErrorLoadCallback: function () {
+
+		},
+		setNavigationPropertiesData: function (oSelectedNovedad) {
+			if (oSelectedNovedad.InformeCammesaSet.results.length > 0) {
+				oSelectedNovedad.InformeCammesaSet.results[0].Autoriza = oSelectedNovedad.InformeCammesaSet.results[0].Autoriza === "S";
+				oSelectedNovedad.InformeCammesaSet.results[0].InformaCammesa = oSelectedNovedad.InformeCammesaSet.results[0].InformaCammesa ===
+					"S";
+				ModelHelper.getModel("CammesaFormJsonModel", this.getView()).setData(oSelectedNovedad.InformeCammesaSet.results[0]);
+			}
+
+			if (oSelectedNovedad.ComentariosSet.results.length > 0) {
+				ModelHelper.getModel("CommentsFormJsonModel", this.getView()).setData(oSelectedNovedad.ComentariosSet.results[0]);
+			}
+
+			if (oSelectedNovedad.ConsecuentesSet.results.length > 0) {
+				ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView()).setProperty("/", oSelectedNovedad.ConsecuentesSet.results[0]);
+			}
+			if (oSelectedNovedad.ENSRegXNS_NAV.results.length > 0) {
+				oSelectedNovedad.ENSRegXNS_NAV.results.map(function (element) {
+					element.ENSRow = (element.Corte / 60) * element.Potencia;
+				});
+			}
+			ModelHelper.getModel("NovedadesFormJsonModel", this.getView()).setData(oSelectedNovedad);
+
+			ModelHelper.getModel("ConsequentListJsonModel", this.getView()).setData({
+				Consequents: oSelectedNovedad.ConsecuentesSet.results
 			});
+			ModelHelper.getModel("PruebasListJsonModel", this.getView()).setData({
+				Pruebas: oSelectedNovedad.PruebasXNS_nav.results
+			});
+			ModelHelper.getModel("SignalsListJsonModel", this.getView()).setData({
+				Signals: oSelectedNovedad.SenialXNS_nav.results
+			});
+			ModelHelper.getModel("ENSListJsonModel", this.getView()).setData({
+				ENSRegisters: oSelectedNovedad.ENSRegXNS_NAV.results
+			});
+			var consecuenteModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
+			var novedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
+			consecuenteModel.setProperty("/Tplnr", novedadesModel.getProperty("/Tplnr"));
+			consecuenteModel.setProperty("/InicioNove", novedadesModel.getProperty("/InicioNove"));
+			consecuenteModel.setProperty("/EntIndis", novedadesModel.getProperty("/EntIndis"));
+			var cammesaModel = ModelHelper.getModel("CammesaFormJsonModel", this.getView());
+			consecuenteModel.setProperty("/InformaCammesa", cammesaModel.getProperty("/InformaCammesa"));
+			consecuenteModel.setProperty("/FechaHora", cammesaModel.getProperty("/FechaHora"));
+			this.addConsecuente = true;
+
+
+		},
+
+		_getFragmentByNovedad: function (oNovedad) {
+			// Ajustá esta condición a tu negocio real:
+			// Ejemplo: si CodNovedad === "P" o "D" => Perturbaciones, sino => Programadas
+			const sCod = oNovedad?.CodNovedad;
+
+			const bPerturbacion = (sCod === "P"); // <-- ajustá si hace falta
+
+			return bPerturbacion
+				? "transener.registrocronologicoeventos.fragments.forms.formPerturbaciones"
+				: "transener.registrocronologicoeventos.fragments.forms.formProgramadas";
 		}
-
 
 	});
 });

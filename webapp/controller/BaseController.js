@@ -33,19 +33,16 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History", "sap
 		},
 
 		onNavBack: function () {
-			//var oHistory, sPreviousHash;
+			const oHistory = sap.ui.core.routing.History.getInstance();
+			const sPrev = oHistory.getPreviousHash();
 
-			//oHistory = History.getInstance();
-			//sPreviousHash = oHistory.getPreviousHash();
-
-			//if (sPreviousHash !== undefined) {
-			//  window.history.go(-1);
-			//} else {
-
-			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-			oRouter.navTo("RouteMain");
-
+			if (sPrev !== undefined) {
+				window.history.go(-1);
+			} else {
+				this.getOwnerComponent().getRouter().navTo("RouteMain", {}, true);
+			}
 		},
+
 		onNavHome: function () {
 			var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
 			oCrossAppNavigator.toExternal({

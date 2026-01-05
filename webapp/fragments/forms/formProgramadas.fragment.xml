@@ -5,7 +5,7 @@
 	xmlns:core="sap.ui.core">
 	<Dialog id="formProgramadas" title="Tareas Programadas" titleAlignment="Start">
 		<content>
-			<FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
+			<FlexBox class="sapUiSmallMargin " direction="Column">
 				<HBox width="100%">
 					<VBox width="50%" class="FlexForm">
 						<HBox class="HBoxContainer">
