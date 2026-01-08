@@ -72,6 +72,7 @@ sap.ui.define([
                     oModelUser.setData(response.Resources);
                     const aDatosUsuario = this.armarDatos(response.Resources);
                     this.onReadUserApiSuccess(aDatosUsuario);
+                    this.onSuccessUserApi(aDatosUsuario)
                     oModel.setData(aDatosUsuario);
                 } else {
                     throw new Error("Invalid API response");
@@ -81,7 +82,7 @@ sap.ui.define([
                 this.onReadUserApiError(error);
             }
         }
-,        
+        ,
 
         armarDatos: function (datos) {
 
@@ -156,7 +157,43 @@ sap.ui.define([
                 // ##########################################################################
             });
         },
+        onSuccessUserApi: function (data) {
+            var UserDataModel = data;
+            UserDataModel.oVisualizador = this.ValidateVisualizador(UserDataModel.groups);
+            UserDataModel.viewEquipos = this.validateViewEquipos(UserDataModel.groups);
+            UserDataModel.DateNow = new Date();
+            var oModel = ModelHelper.getModel("UserDataModel")
+            oModel.setData(UserDataModel);
 
+            setInterval(function () {
+                oModel.setProperty("/DateNow", new Date());
+            }, 60 * 1000); // 60 * 1000 milsec
+        },
+        onErrorUserApi: function () { },
+        ValidateVisualizador: function (Groups) {
+
+            if (typeof Groups === "string") {
+                Groups = [Groups];
+            }
+
+            return !Groups.some(group => group === "ope_visualizador" || group === "Visualizador");
+            return !Groups.some(group => group === "ope_visualizador_tr_tb" || group === "Visualizador");
+        },
+        validateViewEquipos: function (groups) {
+
+            const roles = [
+                "Programacion_COTDT", "Programacion_COT", "Jefe_COTDT", "Jefe_COT",
+                "ope_programacion_cotdt", "ope_programacion_cot", "ope_jefe_cotdt", "ope_jefe_cot"
+            ];
+
+
+            if (typeof groups === "string") {
+                groups = [groups];
+            }
+
+
+            return groups.some(group => roles.includes(group));
+        },
         onReadUserApiError: function (jqXHR, textStatus, error) {
             //verifies if session is still active
             var sessionTimeoutResponseCode = 503;

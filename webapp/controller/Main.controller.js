@@ -63,6 +63,8 @@ sap.ui.define([
 		loadModels: function () {
 			var oView = this.getView()
 			ModelHelper.getModel("utilsModel", oView)
+			ModelHelper.getModel("UserJsonModel", oView)
+			ModelHelper.getModel("UserDataModel", oView)
 			ModelHelper.getModel('MotivosJsonModel', oView)
 			ModelHelper.getModel('EquiposModel', oView)
 			ModelHelper.getModel('ClimasJsonModel', oView)
@@ -393,49 +395,7 @@ sap.ui.define([
 				oEvent.getSource().setValueState("Error");
 			}
 		},
-		// onEditP: function (oEvent) {
-		// 	ModelHelper.getModel("editModel").setProperty("/editableMode", true);
-		// 	var oButton = oEvent.getSource();
-		// 	var oColumnListItem = oButton.getParent();
-		// 	const formPerturbaciones = ModelHelper.getModel("formPerturbacionesModel").getData()
 
-		// 	var oContext = oColumnListItem.getBindingContext("oPerturbacionesModel");
-		// 	var oSelectedData = oContext.getObject();
-
-		// 	// Guarda los datos seleccionados en el modelo
-		// 	ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-
-
-		// 	if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre && oSelectedData.GenIndisponibilidad) {
-		// 		formPerturbaciones.chkRecDeseng = true
-		// 	} else if (oSelectedData.CodNovedad === "P" && oSelectedData.Recierre) {
-		// 		formPerturbaciones.chkRecierre = true
-		// 	} else if (oSelectedData.CodNovedad === "P" && oSelectedData.GenIndisponibilidad) {
-		// 		formPerturbaciones.chkDeseng = true
-		// 	} else if (oSelectedData.CodNovedad === "D" && oSelectedData.GenIndisponibilidad && oSelectedData.Forzada) {
-		// 		formPerturbaciones.chkEmergencia = true
-		// 	}
-		// 	EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
-		// 	MotivosService.loadModel(oSelectedData.CodNovedad, "100")
-
-		// 	this.openDialog("transener.registrocronologicoeventos.fragments.forms.formPerturbaciones")
-		// },
-		// onEditProg: function (oEvent) {
-		// 	var oButton = oEvent.getSource();
-		// 	var oColumnListItem = oButton.getParent();
-
-
-		// 	var oContext = oColumnListItem.getBindingContext("oTProgramadasModel");
-		// 	var oSelectedData = oContext.getObject();
-
-
-		// 	ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
-
-
-		// 	EquiposService.LoadEquipos(oSelectedData.Tplnr, "100")
-		// 	MotivosService.loadModel(oSelectedData.CodNovedad, "100")
-		// 	this.openDialog("transener.registrocronologicoeventos.fragments.forms.formProgramadas")
-		// },
 		onEditNove: function (oEvent) {
 			var oButton = oEvent.getSource();
 			var oColumnListItem = oButton.getParent();
@@ -531,7 +491,7 @@ sap.ui.define([
 				);
 			}
 
-			if (FromDateFilter && ToDateFilter) {
+			if (FromDateFilter || ToDateFilter) {
 				serverFilters.push(new sap.ui.model.Filter({
 					path: "Fechahora",
 					operator: sap.ui.model.FilterOperator.BT,
@@ -622,21 +582,7 @@ sap.ui.define([
 			this.getView().byId("tablePerturbaciones").setShowOverlay(true);
 			this.getView().byId("tableProgramadas").setShowOverlay(true);
 		},
-		onUbicacionChange: function (evt) {
-			const oView = this.getView()
-			var oEquiposModel = ModelHelper.getModel("EquiposModel", oView)
-			ModelHelper.getModel("NovedadesFormJsonModel", oView).setProperty("/Equnr", "");
-			var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
-			var oSelectedItem = evt.getParameter("selectedItem");
 
-			if (oSelectedItem) {
-				var sKey = oSelectedItem.getKey();
-				oEquiposModel.setProperty("/busy", true);
-				EquiposService.LoadEquipos(sKey, Empresa);
-			} else {
-				sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
-			}
-		},
 		onClearFilters: function () {
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
@@ -692,104 +638,13 @@ sap.ui.define([
 			sap.m.MessageToast.show(sText, { duration: 4000 });
 		},
 
-		onSaveNovedad: function () {
-			const oView = this.getView();
-			const promises = [];
 
-			const data = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
 
-			const oEditModel = ModelHelper.getModel("editModel", oView);
-			const sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();   // "create" | "edit"
-			const bUiEditable = !!oEditModel.getProperty("/editableMode");
-
-			console.log(data, "mode:", sMode, "uiEditable:", bUiEditable);
-
-			// ===== Validaciones (SIN TOCAR) =====
-			let bool = data.InicioNove <= data.EntIndis;
-
-			if (data.EntDispo && data.EntServicio) {
-				if (data.EntIndis > data.EntDispo || data.EntDispo > data.EntServicio) {
-					bool = false;
-				}
-			} else if (data.EntDispo) {
-				if (!(data.EntIndis < data.EntDispo)) {
-					bool = false;
-				}
-			} else if (data.EntServicio) {
-				MessageBox.alert("Si carga Ent. en servicio, debe cargar Ent. Disponibilidad");
-				return;
-			}
-
-			if (!bool && (!data.Recierre || data.GenIndisponibilidad)) {
-				MessageBox.show(
-					" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
-					" Ent. Disponibilidad debe ser mayor que Ent. Indisponibilidad\n" +
-					" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n"
-				);
-				return;
-			}
-
-			// (Opcional) si estás en edit pero UI NO editable, no dejes guardar
-			if (sMode === "edit" && !bUiEditable) {
-				MessageBox.alert("Activá 'Editar' antes de guardar.");
-				return;
-			}
-
-			// ===== Decisión PUT / POST (CORRECTA) =====
-			if (sMode === "edit") {
-				promises.push(NovedadesService.PUT());
-			} else {
-				// default: create
-				promises.push(NovedadesService.POST());
-			}
-
-			this.updateCounts = promises.length;
-
-			Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this)))
-				.then((results) => {
-					let message = "";
-					let count = 0;
-
-					if (!results[0].resolved) {
-						message += "Error al guardar la novedad\n";
-						count++;
-					}
-
-					if (count) {
-						if (count !== 3) {
-							message += "Todos los demás cambios se han guardado satisfactoriamente";
-						}
-						MessageBox.alert(message);
-					} else {
-						// ✅ Unblock SOLO si es EDIT (porque solo ahí bloqueaste)
-						if (sMode === "edit") {
-							NovedadesService.unblockNovedad(data.IdNovedad, oView);
-						}
-
-						// (Opcional) al guardar, podés volver a modo lectura
-						// oEditModel.setProperty("/editableMode", false);
-					}
-				});
-		}
-
-		,
-		reflectProgress: function (promise) {
-			var that = this;
-			return promise.then(data => ({
-				resolved: true,
-				data: data
-			}), err => ({
-				resolved: false,
-				err: err
-			})).finally(() => {
-				var advance = 100 / that.updateCounts;
-				//avanzar progress bar TODO
-			});
-		},
 		onDelete: function () {
 			MessageToast.show("Delete Pressed");
 		},
 		onCheckBoxSelect: function (oEvent) {
+			var EntDisp = this.byId("EntDispInput")
 			var oSelectedCheckBox = oEvent.getSource();
 			var bSelected = oEvent.getParameter("selected");
 			var utilsModel = this.getView().getModel("utilsModel");
@@ -818,6 +673,7 @@ sap.ui.define([
 				case "chkRecierre":
 					oData.CodNovedad = "P"
 					oData.Recierre = bSelected;
+					EntDisp.setEnabled(false);
 					break;
 				case "chkDeseng":
 					oData.CodNovedad = "P"
@@ -5253,7 +5109,7 @@ sap.ui.define([
 				oSrc.getBindingContext("oTProgramadasModel");
 
 			if (!oCtx) {
-				MessageBox.alert( "No se encontró la fila (bindingContext).");
+				MessageBox.alert("No se encontró la fila (bindingContext).");
 				return;
 			}
 
@@ -5261,7 +5117,7 @@ sap.ui.define([
 			const sIdNovedad = oRow.IdNovedad; // <- el que querés
 
 			if (!sIdNovedad) {
-				MessageBox.alert( "La fila no tiene IdNovedad.");
+				MessageBox.alert("La fila no tiene IdNovedad.");
 				return;
 			}
 
@@ -5271,12 +5127,12 @@ sap.ui.define([
 
 			NovedadesService.blockNovedad(strId).then((res) => {
 				if (res.Usuario) {
-					MessageBox.alert( "La novedad se encuentra bloqueada por: " + res.Usuario);
+					MessageBox.alert("La novedad se encuentra bloqueada por: " + res.Usuario);
 					return;
 				}
 				this.onSearchNovedadUnblocked(strId);
 			}).catch(() => {
-				MessageBox.alert( "Ha fallado la búsqueda de la novedad: " + strId);
+				MessageBox.alert("Ha fallado la búsqueda de la novedad: " + strId);
 			});
 		},
 
@@ -5317,7 +5173,6 @@ sap.ui.define([
 				Promise.all([
 					MotivosService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.Empresa),
 					CausasService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.CodMotivo, oSelectedNovedad.Empresa),
-					//EquiposService.loadEquipos(oSelectedNovedad.CodTipo, oSelectedNovedad.Tplnr, codigo, oSelectedNovedad.Empresa),
 					LicenciaService.loadList(oSelectedNovedad.Empresa, oSelectedNovedad.IdNovedad)
 				]).then(() => {
 					this.setNavigationPropertiesData(oSelectedNovedad);

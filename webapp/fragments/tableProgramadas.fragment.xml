@@ -9,7 +9,7 @@
 			<!--		</HBox>-->
 			<!--	</t:template>-->
 			<!--</t:Column>-->
-			<t:Column width='150px'>
+			<t:Column width='200px'>
 				<Label text="{i18n>fromDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
@@ -17,7 +17,7 @@
 						value="{ 'path': 'oTProgramadasModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column width='200px'>
 				<Label text="{i18n>toDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->

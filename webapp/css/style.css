@@ -55,8 +55,13 @@
     margin-bottom: 10px;
 }
 
+.sapMITBContent {
+    background-color: #fff !important;
+}
+
 .FlexForm {
-    background-color: #f4f2f2;
+    background-color: #d3d3d33d;
+    border-radius: .25rem;
     padding: 10px;
     margin: 5px;
 }
@@ -123,11 +128,6 @@
 
 .containerDialog {
     width: 1300px;
-}
-
-.sapMITBContent {
-    padding: unset;
-    background-color: unset;
 }
 
 .sapMITBItem {

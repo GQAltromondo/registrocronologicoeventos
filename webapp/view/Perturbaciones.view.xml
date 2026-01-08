@@ -3,7 +3,7 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <Page id="PerturbacionesPage" title="Perturbaciones / Desconexiones" titleAlignment="Center" enableScrolling="false" showNavButton="true" navButtonPress="onNavBack">
+    <Page id="PerturbacionesPage" title="Perturbaciones / Desconexiones" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
 
         <content>
             <VBox height="100%" width="100%">
@@ -42,10 +42,10 @@
                                         </HBox>
                                         <HBox justifyContent="SpaceBetween" alignItems="Center">
                                             <Label text="Fuera Servicio (F/S)" />
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" change="inicioNoveChanged" maxDate="{UserDataModel>/DateNow}" editable="{UserDataModel>/oVisualizador}" initialFocusedDateValue="{UserDataModel>/DateNow}" />
 
                                             <Label text="Indisponible Desde" />
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                            <DateTimePicker  editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate}}" value="{ 'path': 'NovedadesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                         </HBox>
                                         <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
                                             <items>
@@ -520,13 +520,13 @@
                                             <Label text="En Servicio (E/S) " class="sapUiSmallMarginEnd" />
                                             <HBox>
                                                 <ComboBox class="sapUiSmallMarginEnd" />
-                                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                                <DateTimePicker 		editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate}}" enabled="{utilsModel>/editableDate}"  value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
 
                                             </HBox>
                                         </HBox>
                                         <HBox justifyContent="SpaceBetween" alignItems="Center">
                                             <Label text="Fecha /hora de disponibilidad" />
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                            <DateTimePicker 		editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate}}" enabled="{utilsModel>/editableDate}" value="{ 'path': 'NovedadesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                                         </HBox>
                                         <VBox justifyContent="Start">
                                             <Label text="Comentarios" />
