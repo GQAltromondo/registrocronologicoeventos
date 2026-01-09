@@ -1,4 +1,4 @@
-sap.ui.define([], function (FioriComponentHelper) {
+sap.ui.define([], function () {
 	"use strict";
 	return {
 		// globales 
@@ -9,40 +9,40 @@ sap.ui.define([], function (FioriComponentHelper) {
 			this._oApp = oApp;
 		},
 
-getModel: function (sModelName, oView) {
-  if (!sModelName) {
-    throw new Error("ModelHelper.getModel: sModelName es obligatorio");
-  }
+		getModel: function (sModelName, oView) {
+			if (!sModelName) {
+				throw new Error("ModelHelper.getModel: sModelName es obligatorio");
+			}
 
-  // 1️⃣ Siempre busco el modelo global
-  let oModel = sap.ui.getCore().getModel(sModelName);
+			let oModel = sap.ui.getCore().getModel(sModelName);
 
-  // 2️⃣ Si no existe, lo creo y lo registro en el Core
-  if (!oModel) {
-    oModel = new sap.ui.model.json.JSONModel();
-    oModel.setSizeLimit(9999);
-    sap.ui.getCore().setModel(oModel, sModelName);
-  }
+			if (!oModel) {
+				oModel = new sap.ui.model.json.JSONModel();
+				oModel.setSizeLimit(9999);
+				sap.ui.getCore().setModel(oModel, sModelName);
+			}
 
-  // 3️⃣ Compatibilidad hacia atrás:
-  //     si me pasan una vista, lo seteo ahí también
-  if (oView && typeof oView.setModel === "function") {
-    // Evito setearlo dos veces innecesariamente
-    if (oView.getModel(sModelName) !== oModel) {
-      oView.setModel(oModel, sModelName);
-    }
-  }
+			const oComp = sap.ui.core.Component.getOwnerComponentFor(oView || (this._oApp && this._oApp.getRootControl && this._oApp.getRootControl()));
+			if (oComp && typeof oComp.setModel === "function") {
+				if (oComp.getModel(sModelName) !== oModel) {
+					oComp.setModel(oModel, sModelName);
+				}
+			}
 
-  return oModel;
-},
+			if (oView && typeof oView.setModel === "function") {
+				if (oView.getModel(sModelName) !== oModel) {
+					oView.setModel(oModel, sModelName);
+				}
+			}
+
+			return oModel;
+		},
+
 
 		getApp: function () {
 			return this._oApp;
 		},
 
-		getAppRouter: function () {
-			return FioriComponentHelper.getComponent().getRouter();
-		},
 
 		getUser: function () {
 			var oUserData = this.getModel("UserJsonModel").getData();

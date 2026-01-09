@@ -24,7 +24,7 @@
 						<DateTimePicker change="handleTableChanges"	value="{ 'path': 'oPerturbacionesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column width='200px'>
 				<Label text="{i18n>place}"/>
 				<t:template>
 					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
@@ -33,13 +33,13 @@
 					</ComboBox>
 				</t:template>
 			</t:Column>
-			<t:Column>
+		<t:Column width='150px'>
 				<Label text="{i18n>team}"/>
 				<t:template>
 					<Text text="{oPerturbacionesModel>Equnr}"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+		<t:Column width='150px'>
 				<Label text="{i18n>noveltyType}"/>
 				<t:template>
 					<Text text="{parts:[{path:'oPerturbacionesModel>CodNovedad'}],formatter:'.formatter.novedadType'}"/>

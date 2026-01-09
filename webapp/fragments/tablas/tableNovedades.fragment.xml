@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
-	<t:Table id="tableProgramadas" rows="{ path: 'oTProgramadasModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
+	<t:Table id="tableNovedades" rows="{ path: 'oNovedadesModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 		<t:columns>
-			<!--	<t:Column width="50px">-->
+			<!--<t:Column width="50px">-->
 			<!--	<Label/>-->
 			<!--	<t:template>-->
 			<!--		<HBox >-->
@@ -14,7 +14,7 @@
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
 					<DateTimePicker change="handleTableChanges"
-						value="{ 'path': 'oTProgramadasModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						value="{ 'path': 'oNovedadesModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
 			<t:Column width='200px'>
@@ -22,42 +22,41 @@
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
 					<DateTimePicker change="handleTableChanges"
-						value="{ 'path': 'oTProgramadasModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						value="{ 'path': 'oNovedadesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column width='200px'>
 				<Label text="{i18n>place}"/>
 				<t:template>
 					<!--<Text text="{oNovedadesModel>Tplnr}"/>-->
 					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
-						selectedKey="{oTProgramadasModel>Tplnr}">
+						selectedKey="{oNovedadesModel>LugarFormat}">
 						<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
 					</ComboBox>
 				</t:template>
 			</t:Column>
-			<t:Column>
+		<t:Column width='150px'>
 				<Label text="{i18n>team}"/>
 				<t:template>
-					<Text text="{oTProgramadasModel>Equnr}"/>
+					<Text text="{oNovedadesModel>Equipo}"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column width='150px'>
 				<Label text="{i18n>noveltyType}"/>
 				<t:template>
-					<Text text="{parts:[{path:'oTProgramadasModel>CodNovedad'}],formatter:'.formatter.novedadType'}"/>
+					<Text text="{oNovedadesModel>Tiponovedad}"/>
 				</t:template>
 			</t:Column>
-			<t:Column>
+			<t:Column width='250px'>
 				<Label text="{i18n>novelty}"/>
 				<t:template>
-						<Text text="{oTProgramadasModel>IdNovedad}"/>
-					<!-- <Text text="{oTProgramadasModel>CodUbFalla}"/> -->
+					<Text text="{oNovedadesModel>Novedad}"/>
 				</t:template>
 			</t:Column>
 			<t:Column>
 				<Label text="{i18n>operator}"/>
 				<t:template>
-					<Text text="{oTProgramadasModel>fromDate}"/>
+					<Text text="{oNovedadesModel>Creado_Por}"/>
 				</t:template>
 			</t:Column>
 			<t:Column width="180px">
@@ -66,7 +65,7 @@
 					<HBox justifyContent="SpaceAround" wrap="Wrap">
 						<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
 						<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
-						<Button type="Transparent" press="onSearchNovedad" icon="sap-icon://edit"/>
+						<Button type="Transparent" press="onEditNove" icon="sap-icon://edit"/>
 						<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 					</HBox>
 				</t:template>

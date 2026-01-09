@@ -1,10 +1,10 @@
-<core:FragmentDefinition xmlns="sap.m"
-    xmlns:l="sap.ui.layout"
-    xmlns:f="sap.ui.layout.form"
-    xmlns:core="sap.ui.core" width="50%">
-    <Dialog id="formNovedades" title="Novedades" titleAlignment="Start">
-        <content>
+<mvc:View controllerName="transener.registrocronologicoeventos.controller.Novedades"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
 
+    <Page id="NovedadesPage" title="Novedades del sistema LG" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
+        <content>
             <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
                 <HBox width="100%">
                     <HBox width="100%" class="sapUiSmallMarginBotton mainFrame FlexForm">
@@ -46,7 +46,7 @@
                         <VBox width="50%">
                             <HBox width="100%" alignItems="Center" justifyContent="Start">
                                 <Label text="Referencia" class="sapUiSmallMarginEnd labels" />
-                                <Input  value="{NovedadesFormJsonModel>/IdNovedad}" enabled="false" width="250px" />
+                                <Input value="{NovedadesFormJsonModel>/IdNovedad}" enabled="false" width="250px" />
                             </HBox>
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Fecha/Hora" class="sapUiSmallMarginEnd labels" showColon="true" />
@@ -68,13 +68,15 @@
                 </HBox>
 
             </FlexBox>
+            <VBox id="fragContainer" width="100%" class="sapUiSmallMarginTop"/>
         </content>
-        <beginButton>
-            <Button text="Guardar" press="onSaveNovedad"/>
-        </beginButton>
-        <endButton>
-            <Button text="Cerrar" press="onCloseDialog"/>
-        </endButton>
-    </Dialog>
 
-</core:FragmentDefinition>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad"/>
+                <Button text="Cancelar" press="onNavBack"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

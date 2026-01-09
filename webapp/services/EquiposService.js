@@ -4,10 +4,9 @@ sap.ui.define([
 ], function (oDataServices, ModelHelper) {
 	"use strict";
 	return {
-		// _entitySet: "/NSEquiposSet",
-        _entitySet: "/EquiposSet",
+
 		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
-		LoadEquipos: function (estatacionId,empresa) {
+		LoadEquipos: function (estatacionId, empresa) {
 			var filters = [];
 			if (!estatacionId) {
 				this.onSuccessEquipos({
@@ -16,7 +15,7 @@ sap.ui.define([
 				return;
 			}
 			filters.push(new sap.ui.model.Filter("Estacion", sap.ui.model.FilterOperator.EQ, estatacionId));
-            filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, empresa));
+			filters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, empresa));
 			var odataModel = oDataServices.getModel();
 			odataModel.read("/EquiposSet", {
 				filters: filters,
@@ -28,7 +27,7 @@ sap.ui.define([
 		loadNSEquipos: function (tipo, estacion, empresa) {
 			//var k = '"' + tipo + '"';
 			var aFilter = [new sap.ui.model.Filter("IEmpresa", sap.ui.model.FilterOperator.EQ, empresa),
-				new sap.ui.model.Filter("IEqart", sap.ui.model.FilterOperator.EQ, tipo)
+			new sap.ui.model.Filter("IEqart", sap.ui.model.FilterOperator.EQ, tipo)
 			];
 			if (!estacion && !this.lineas.includes(tipo)) {
 				return;
@@ -54,7 +53,50 @@ sap.ui.define([
 				busy: false
 			});
 		},
-		onErrorEquipos: function () {},
+		onErrorEquipos: function () { },
+		LoadLTEquipos: function (sKey, Empresa) {
+
+			let roles = ModelHelper.getModel("UserJsonModel").getProperty("/roles");
+
+			var aFilter = [
+				new sap.ui.model.Filter("Estacion", sap.ui.model.FilterOperator.EQ, sKey),
+				new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, Empresa)
+			];
+
+
+			aFilter.push(new sap.ui.model.Filter({
+				path: "Rol",
+				operator: sap.ui.model.FilterOperator.EQ,
+				value1: roles.includes("ope_solic-lic_transener") ? "ope_solic-lic_transener" : roles[0]
+			}));
+
+
+
+			this.getEquiposPromise(aFilter).then($.proxy(this.successGetEquipos, this)).catch($.proxy(this.errorGetEquipos, this));
+		},
+		getEquiposPromise: function (aFilter) {
+			return new Promise((resolve, reject) => {
+				oDataServices.getModel().read("/EquiposRolesSet", {
+					filters: aFilter,
+					success: function (data) {
+						resolve(data);
+					},
+					error: function (error) {
+						reject(error);
+					}
+				})
+			})
+		},
+		successGetEquipos: function (data) {
+			var aData = data.results;
+			ModelHelper.getModel("EquiposModel").setData({
+				Equipos: aData
+			})
+		},
+
+		errorGetEquipos: function (error) {
+			console.log("Error al cargar Equipos");
+		}
 
 	};
 });

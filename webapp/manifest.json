@@ -122,7 +122,8 @@
         "routerClass": "sap.m.routing.Router",
         "viewType": "XML",
         "async": true,
-        "viewPath": "transener.registrocronologicoeventos.view",
+        "path": "transener.registrocronologicoeventos.view",
+        "type": "View",
         "controlAggregation": "pages",
         "controlId": "app",
         "clearControlAggregation": false
@@ -144,20 +145,32 @@
           "name": "Programadas",
           "pattern": "programadas/{mode}",
           "target": "Programadas"
+        },
+        {
+          "name": "Novedades",
+          "pattern": "novedades/{mode}",
+          "target": "Novedades"
         }
       ],
       "targets": {
         "Main": {
-          "viewType": "XML",
-          "viewName": "Main",
+          "type": "View",
+          "name": "Main",
           "viewLevel": 1
         },
         "Perturbaciones": {
-          "viewName": "Perturbaciones",
+          "type": "View",
+          "name": "Perturbaciones",
           "viewLevel": 2
         },
         "Programadas": {
-          "viewName": "Programadas",
+          "type": "View",
+          "name": "Programadas",
+          "viewLevel": 2
+        },
+        "Novedades": {
+          "type": "View",
+          "name": "Novedades",
           "viewLevel": 2
         }
       }

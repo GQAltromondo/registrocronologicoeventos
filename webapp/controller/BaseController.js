@@ -1,18 +1,37 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageBox",
+	"sap/ui/core/Fragment",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
 	"transener/registrocronologicoeventos/services/EquiposService",
 	"transener/registrocronologicoeventos/services/NovedadesService",
 	"transener/registrocronologicoeventos/services/SubindiceService",
 	"transener/registrocronologicoeventos/services/MotivosService",
 	"sap/ui/core/UIComponent"]
-	, function (Controller, MessageBox, ModelHelper, EquiposService, NovedadesService, SubindiceService, MotivosService, UIComponent) {
+	, function (Controller, MessageBox,Fragment, ModelHelper, EquiposService, NovedadesService, SubindiceService, MotivosService, UIComponent) {
 		"use strict";
-
+		var oDialog = null;
 		return Controller.extend("transener.registrocronologicoeventos.controller.BaseController", {
 			getRouter: function () {
 				return UIComponent.getRouterFor(this);
+			},
+			openDialog: function (fragment) {
+				if (oDialog) {
+					oDialog.destroy();
+				}
+
+				return Fragment.load({
+					name: fragment,
+					controller: this,
+					type: "XML"
+				}).then(
+					function (oFragment) {
+						oDialog = oFragment;
+						this.getView().addDependent(oDialog);
+						oDialog.open();
+					}.bind(this)
+				);
+
 			},
 			getVersion: function () {
 				const oComponent = this.getOwnerComponent();
@@ -59,6 +78,47 @@ sap.ui.define([
 					}
 				});
 			},
+			onPerturbacionesPress: function () {
+				const oView = this.getView();
+				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+				this.resetNovedadesModel();
+				this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: "create" });
+			},
+
+			onProgramadasPress: function () {
+				const oView = this.getView();
+				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+				this.resetNovedadesModel()
+				this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "create" });
+			},
+			onNovedadesPress: function () {
+				const oView = this.getView();
+				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+				this.resetNovedadesModel()
+				this.getOwnerComponent().getRouter().navTo("Novedades", { mode: "create" });
+			},
+			resetNovedadesModel: function () {
+				const oView = this.getView();
+				const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+
+				// evita cache (útil en FLP / cambios frecuentes)
+				const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
+					+ "?_ts=" + Date.now();
+
+				return new Promise((resolve, reject) => {
+					oModel.attachRequestCompleted(function onDone() {
+						oModel.detachRequestCompleted(onDone);
+						resolve(oModel.getData());
+					});
+
+					oModel.attachRequestFailed(function onFail(oEvent) {
+						oModel.detachRequestFailed(onFail);
+						reject(oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades");
+					});
+
+					oModel.loadData(sUrl, null, true /* async */);
+				});
+			},
 			onUbicacionChange: function (evt) {
 				const oView = this.getView()
 				var oEquiposModel = ModelHelper.getModel("EquiposModel", oView)
@@ -69,7 +129,8 @@ sap.ui.define([
 				if (oSelectedItem) {
 					var sKey = oSelectedItem.getKey();
 					oEquiposModel.setProperty("/busy", true);
-					EquiposService.LoadEquipos(sKey, Empresa);
+					// EquiposService.LoadEquipos(sKey, Empresa);
+					EquiposService.LoadLTEquipos(sKey, Empresa);
 				} else {
 					sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
 				}
@@ -275,7 +336,7 @@ sap.ui.define([
 				});
 			},
 			novedadesFormValid: function () {
-				var oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel",this.getView());
+				var oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
 				var oRules = {
 					CodNovedad: ["required"],
 					CodTipo: ["required"],

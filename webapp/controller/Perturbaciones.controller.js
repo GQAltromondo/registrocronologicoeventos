@@ -17,12 +17,14 @@ sap.ui.define([
 	"use strict";
 	var oDialog = null;
 
-	return BaseController.extend("transener.registrocronologicoeventos.controller.Perturbaciones.Perturbaciones", {
+	return BaseController.extend("transener.registrocronologicoeventos.controller.Perturbaciones", {
 		formatter: formatter,
 		onInit: function () {
 			this.getOwnerComponent().getRouter()
 				.getRoute("Perturbaciones")
 				.attachPatternMatched(this._onRouteMatched, this);
+
+			ModelHelper.getModel("ConsequentListJsonModel", this.getView())
 		},
 		_onRouteMatched: function (oEvent) {
 			const oArgs = oEvent.getParameter("arguments") || {};

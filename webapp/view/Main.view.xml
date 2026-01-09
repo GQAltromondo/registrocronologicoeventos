@@ -58,19 +58,19 @@
 							</VBox>
 						</FlexBox>
 					</Panel>
-					<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" select="onTabSelect" class=" tabbedBar">
+					<IconTabBar id="idIconTabBarNoIcons" expanded="{device>/isNoPhone}" select="onTabSelect" class=" tabbedBar" expandable="false">
 						<items>
-							<IconTabFilter id="TabGeneral" text="{= ${oFilteredModel>/count} ? ${i18n>generalView} + ' ( ' + ${oFilteredModel>/count} + ' )' : ${i18n>generalView} }" key="General">
-								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableGeneral" type="XML"/>
+							<IconTabFilter id="TabGeneral" text="{= ${oGeneralModel>/count} ? ${i18n>generalView} + ' ( ' + ${oGeneralModel>/count} + ' )' : ${i18n>generalView} }" key="General">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablas.tableGeneral" type="XML"/>
 							</IconTabFilter>
-							<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>news} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>news} }" key="Novedades">
-								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableNovedades" type="XML"/>
+							<IconTabFilter id="TabNovedades" text="{= ${oNovedadesModel>/count} ? ${i18n>novelties} + ' ( ' + ${oNovedadesModel>/count} + ' )' : ${i18n>novelties} }" key="Novedades">
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablas.tableNovedades" type="XML"/>
 							</IconTabFilter>
 							<IconTabFilter id="TabPerturbaciones" text="{= ${oPerturbacionesModel>/count} ?  ${i18n>Perturbaciones} + ' ( ' + ${oPerturbacionesModel>/count} + ' )' : ${i18n>Perturbaciones}}" key="Perturbaciones">
-								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablePerturbaciones" type="XML"/>
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablas.tablePerturbaciones" type="XML"/>
 							</IconTabFilter>
 							<IconTabFilter id="TabScheduled" text="{= ${oTProgramadasModel>/count} ? ${i18n>scheduledTask} + ' ( ' + ${oTProgramadasModel>/count} + ' )' : ${i18n>scheduledTask}}" key="TrabajosProgramados">
-								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tableProgramadas" type="XML"/>
+								<core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.tablas.tableProgramadas" type="XML"/>
 							</IconTabFilter>
 						</items>
 					</IconTabBar>

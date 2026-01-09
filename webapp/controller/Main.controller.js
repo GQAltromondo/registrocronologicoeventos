@@ -41,7 +41,7 @@ sap.ui.define([
 	MessageBoxHelper,
 	FormatHelper) {
 	"use strict";
-	var oDialog = null;
+
 
 	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
 		testOperators: ["Bonavita", "Vandale", "Burbaud"],
@@ -86,7 +86,7 @@ sap.ui.define([
 			ModelHelper.getModel('oNovedadesModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oPerturbacionesModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oTProgramadasModel', oView).setData({ data: [], count: 0 })
-			ModelHelper.getModel('oFilteredModel', oView).setData({ data: [], count: 0 })
+			ModelHelper.getModel('oGeneralModel', oView).setData({ data: [], count: 0 })
 
 			this.loadModelsData()
 		},
@@ -165,9 +165,10 @@ sap.ui.define([
 			}
 		},
 		handleChangeF: function (evt) {
-
+			const oView = this.getView()
+			var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 			var estacion = evt.getParameter("value");
-			var codigo = evt.getSource().getSelectedKey();
+			var sKey = evt.getSource().getSelectedKey();
 
 			//var tipo = this.byId("TipoEquipoFilter").getSelectedKey();
 
@@ -175,7 +176,8 @@ sap.ui.define([
 			// 	Equipos: [],
 			// 	busy: true
 			// });
-			EquiposService.LoadEquipos(codigo, "100");
+		// EquiposService.LoadEquipos(sKey, Empresa);
+						EquiposService.LoadLTEquipos(sKey, Empresa);
 			if (!estacion) {
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
@@ -421,161 +423,201 @@ sap.ui.define([
 			}
 		},
 
-		onSearchLGuard: function (evt) {
-			var generales = []
-			var novedades = [];
-			var perturbaciones = [];
-			var trabajosProgramados = [];
+		onSearchLGuard: function () {
+
 
 			var oView = this.getView();
-			var oTable = oView.byId("generalTable"),
-				oTableNS = oView.byId("tableNovedades"),
-				oTablePS = oView.byId("tablePerturbaciones"),
-				oTableTP = oView.byId("tableProgramadas")
 
-			oTable.setBusy(true)
-			oTableNS.setBusy(true)
-			oTablePS.setBusy(true)
-			oTableTP.setBusy(true)
+			var oTable = oView.byId("generalTable");
+			var oTableNS = oView.byId("tableNovedades");
+			var oTablePS = oView.byId("tablePerturbaciones");
+			var oTableTP = oView.byId("tableProgramadas");
 
-			var oGuardiasSetModel = this.getView().getModel('LGuardias')
+			oTable.setBusy(true);
+			oTableNS.setBusy(true);
+			oTablePS.setBusy(true);
+			oTableTP.setBusy(true);
 
-			var oOperacionesSetModel = this.getView().getModel('Operaciones')
+			var oGuardiasSetModel = oView.getModel("LGuardias");
+			var oOperacionesSetModel = oView.getModel("Operaciones");
 
-			ModelHelper.getModel('oNovedadesModel')
-			ModelHelper.getModel('oPerturbacionesModel')
-			ModelHelper.getModel('oTProgramadasModel')
+			var oMs = sap.ui.getCore().byId("msgStrip");
+			if (oMs) oMs.destroy();
+
+			var lugarKey = this.byId("LugarFilter").getSelectedKey();
+			var lugarText = this.byId("LugarFilter").getSelectedItem()?.getText();
+
+			var novedadesKeys = this.byId("NovedadesFilter").getSelectedKeys();
+			var tipoEquipoKey = this.byId("EquipoFilter").getSelectedKey();
+
+			var fromDate = this.byId("FromDateFilter").getDateValue();
+			var toDate = this.byId("ToDateFilter").getDateValue();
+			var initialDate = this.byId("InitialDate").getDateValue();
 
 			var serverFilters = [];
 			var NSFilters = [];
-			var oMs = sap.ui.getCore().byId("msgStrip");
-			if (oMs) {
-				oMs.destroy();
-			}
-			var lugarFilter = this.byId("LugarFilter").getSelectedKey();
-			var lugarValue = this.byId("LugarFilter").getSelectedItem()?.getText();
-			var novedadesFilter = this.byId("NovedadesFilter").getSelectedKeys();
-			var tipoEquipoFilter = this.byId("EquipoFilter").getSelectedKey();
-			var FromDateFilter = this.byId("FromDateFilter").getDateValue();
-			var ToDateFilter = this.byId("ToDateFilter").getDateValue();
-			var InitialDate = this.byId("InitialDate").getDateValue();
 
-
-			if (lugarFilter) {
-				serverFilters.push(
-					new Filter("Lugar", FilterOperator.EQ, lugarFilter)
-				);
-				NSFilters.push(
-					new Filter("Tplnr", FilterOperator.EQ, lugarValue)
-				);
+			if (lugarKey) {
+				serverFilters.push(new sap.ui.model.Filter("Lugar", sap.ui.model.FilterOperator.EQ, lugarKey));
+				NSFilters.push(new sap.ui.model.Filter("Tplnr", sap.ui.model.FilterOperator.EQ, lugarText));
 			}
 
-			if (novedadesFilter && novedadesFilter.length > 0) {
-
-				var novedadesArrayFilters = []
-
-				novedadesFilter.forEach(nov => {
-					novedadesArrayFilters.push(new Filter("Tiponovedad", FilterOperator.EQ, nov))
-				})
-
-				var novFilter = new Filter(novedadesArrayFilters, false)
-				serverFilters.push(novFilter)
+			if (novedadesKeys && novedadesKeys.length) {
+				var arr = [];
+				novedadesKeys.forEach(function (nov) {
+					arr.push(new sap.ui.model.Filter("Tiponovedad", sap.ui.model.FilterOperator.EQ, nov));
+				});
+				serverFilters.push(new sap.ui.model.Filter(arr, false));
 			}
 
-			if (tipoEquipoFilter) {
-				serverFilters.push(
-					new Filter("Equipo", FilterOperator.EQ, tipoEquipoFilter)
-				);
-				NSFilters.push(
-					new Filter("Equnr", FilterOperator.EQ, tipoEquipoFilter)
-				);
+			if (tipoEquipoKey) {
+				serverFilters.push(new sap.ui.model.Filter("Equipo", sap.ui.model.FilterOperator.EQ, tipoEquipoKey));
+				NSFilters.push(new sap.ui.model.Filter("Equnr", sap.ui.model.FilterOperator.EQ, tipoEquipoKey));
 			}
 
-			if (FromDateFilter || ToDateFilter) {
+			if (fromDate && toDate) {
 				serverFilters.push(new sap.ui.model.Filter({
 					path: "Fechahora",
 					operator: sap.ui.model.FilterOperator.BT,
-					value1: FromDateFilter,
-					value2: ToDateFilter
-				}))
+					value1: fromDate,
+					value2: toDate
+				}));
 				NSFilters.push(new sap.ui.model.Filter({
 					path: "InicioNove",
 					operator: sap.ui.model.FilterOperator.BT,
-					value1: FromDateFilter,
-					value2: ToDateFilter
+					value1: fromDate,
+					value2: toDate
 				}));
+			} else if (fromDate) {
+				serverFilters.push(new sap.ui.model.Filter("Fechahora", sap.ui.model.FilterOperator.GE, fromDate));
+				NSFilters.push(new sap.ui.model.Filter("InicioNove", sap.ui.model.FilterOperator.GE, fromDate));
+			} else if (toDate) {
+				serverFilters.push(new sap.ui.model.Filter("Fechahora", sap.ui.model.FilterOperator.LE, toDate));
+				NSFilters.push(new sap.ui.model.Filter("InicioNove", sap.ui.model.FilterOperator.LE, toDate));
 			}
-			if (InitialDate) {
+
+
+			if (initialDate) {
 				serverFilters.push(new sap.ui.model.Filter({
 					path: "Fechahora",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: InitialDate
-				}))
+					value1: initialDate
+				}));
 				NSFilters.push(new sap.ui.model.Filter({
 					path: "InicioNove",
 					operator: sap.ui.model.FilterOperator.EQ,
-					value1: new Date(InitialDate)
+					value1: new Date(initialDate)
 				}));
 			}
 
-			oGuardiasSetModel.read('/GuardiasListSet', {
+			var toGeneralRow = function (it, type) {
+				var inicio = it?.InicioNove || it?.Fechahora || null;
+				var fin = it?.FechaFinNove || null;
+				var dInicio = inicio ? new Date(inicio) : null;
+
+				return {
+					__type: type,
+					IdNovedad: it?.IdNovedad || "",
+					InicioNove: inicio,
+					FechaFinNove: fin,
+					Tplnr: it?.Tplnr || it?.LugarFormat || "",
+					Equnr: it?.Equnr || it?.Equipo || "",
+					CodNovedad: it?.CodNovedad || it?.Tiponovedad || "",
+					CodUbFalla: it?.CodUbFalla || it?.Novedad || it?.IdNovedad || "",
+					Creado_Por: it?.Creado_Por || it?.fromDate || "",
+					FhFormat: dInicio ? dInicio.getTime() : 0,
+					__raw: it
+				};
+			};
+
+			var state = {
+				guardiasDone: false,
+				opsDone: false,
+				guardias: [],
+				perturbaciones: [],
+				programadas: []
+			};
+
+			var setOverlayOff = function () {
+				oTable.setShowOverlay(false);
+				oTableNS.setShowOverlay(false);
+				oTablePS.setShowOverlay(false);
+				oTableTP.setShowOverlay(false);
+			};
+
+			var setBusyOff = function () {
+				oTable.setBusy(false);
+				oTableNS.setBusy(false);
+				oTablePS.setBusy(false);
+				oTableTP.setBusy(false);
+			};
+
+			var publishIfReady = function () {
+				if (!state.guardiasDone || !state.opsDone) return;
+
+				ModelHelper.getModel("oNovedadesModel").setData({ data: state.guardias, count: state.guardias.length });
+				ModelHelper.getModel("oPerturbacionesModel").setData({ data: state.perturbaciones, count: state.perturbaciones.length });
+				ModelHelper.getModel("oTProgramadasModel").setData({ data: state.programadas, count: state.programadas.length });
+
+				var general = []
+					.concat(state.guardias.map(function (it) { return toGeneralRow(it, "NOVEDAD"); }))
+					.concat(state.perturbaciones.map(function (it) { return toGeneralRow(it, "PERT"); }))
+					.concat(state.programadas.map(function (it) { return toGeneralRow(it, "PROG"); }));
+
+				//SI QUEREMOS QUITAR DUPLICADOS
+				// var seen = new Set();
+				// var unique = general.filter(function (it) {
+				// 	var k = it?.IdNovedad || (it.__type + "|" + it.FhFormat + "|" + it.Tplnr + "|" + it.Equnr);
+				// 	if (seen.has(k)) return false;
+				// 	seen.add(k);
+				// 	return true;
+				// });
+
+				// ModelHelper.getModel("oGeneralModel").setData({ data: unique, count: unique.length });
+				ModelHelper.getModel("oGeneralModel").setData({ data: general, count: general.length });
+
+				setOverlayOff();
+				setBusyOff();
+			};
+
+			oGuardiasSetModel.read("/GuardiasListSet", {
 				filters: serverFilters,
-				success: (data) => {
-					generales.push(...data.results);
-					oTable.setShowOverlay(false);
-					oTable.setBusy(false)
-					console.log(data)
+				success: function (data) {
+					state.guardias = (data && data.results) ? data.results : [];
+					state.guardiasDone = true;
+					publishIfReady();
 				},
-				error: (error) => {
-					console.log(error)
-					oTable.setBusy(false)
+				error: function () {
+					state.guardias = [];
+					state.guardiasDone = true;
+					publishIfReady();
 				}
-			})
+			});
 
-			oOperacionesSetModel.read('/NovedadesServicioSet', {
+			oOperacionesSetModel.read("/NovedadesServicioSet", {
 				filters: NSFilters,
-				urlParameters: {
-					"$expand": this._expandProperties
-				},
-				success: (data) => {
-
-					data.results.forEach(function (item) {
-						if (item.CodNovedad === 'P' || item.CodNovedad === 'C') {
-							perturbaciones.push(item);
+				urlParameters: { "$expand": this._expandProperties },
+				success: function (data) {
+					var results = (data && data.results) ? data.results : [];
+					results.forEach(function (item) {
+						if (item.CodNovedad === "P" || item.CodNovedad === "C") {
+							state.perturbaciones.push(item);
 						} else {
-							trabajosProgramados.push(item);
+							state.programadas.push(item);
 						}
 					});
-
-
-
-					ModelHelper.getModel('oNovedadesModel').setData({ data: generales, count: generales.length })
-					ModelHelper.getModel('oPerturbacionesModel').setData({ data: perturbaciones, count: perturbaciones.length })
-					ModelHelper.getModel('oTProgramadasModel').setData({ data: trabajosProgramados, count: trabajosProgramados.length })
-					ModelHelper.getModel('oFilteredModel').setData({ data: data.results, count: data.results.length });
-
-
-					oTableNS.setBusy(false)
-					oTablePS.setBusy(false)
-					oTableTP.setBusy(false)
-					oTableNS.setShowOverlay(false);
-					oTablePS.setShowOverlay(false);
-					oTableTP.setShowOverlay(false);
-
-					console.log(data)
+					state.opsDone = true;
+					publishIfReady();
 				},
-				error: (error) => {
-					console.log(error)
-					oTableNS.setBusy(false)
-					oTablePS.setBusy(false)
-					oTableTP.setBusy(false)
-					oTableNS.setShowOverlay(false);
-					oTablePS.setShowOverlay(false);
-					oTableTP.setShowOverlay(false);
+				error: function () {
+					state.perturbaciones = [];
+					state.programadas = [];
+					state.opsDone = true;
+					publishIfReady();
 				}
-			})
-
+			});
 		},
+
 		onSelectionChange: function () {
 			this.getView().byId("generalTable").setShowOverlay(true);
 			this.getView().byId("tableNovedades").setShowOverlay(true);
@@ -593,24 +635,7 @@ sap.ui.define([
 			oView.byId("InitialDate").setValue(null);
 			oView.byId("fastSearch").setValue(null);
 		},
-		openDialog: function (fragment) {
-			if (oDialog) {
-				oDialog.destroy();
-			}
 
-			return Fragment.load({
-				name: fragment,
-				controller: this,
-				type: "XML"
-			}).then(
-				function (oFragment) {
-					oDialog = oFragment;
-					this.getView().addDependent(oDialog);
-					oDialog.open();
-				}.bind(this)
-			);
-
-		},
 		onTabSelect: function (oEvent) {
 			var selectedKey = oEvent.getParameter("key");
 
@@ -741,62 +766,7 @@ sap.ui.define([
 			oNovedadesModel.refresh(true);
 			return !bValid;
 		},
-		resetNovedadesModel: function () {
-			const oView = this.getView();
-			const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
-
-			// evita cache (útil en FLP / cambios frecuentes)
-			const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
-				+ "?_ts=" + Date.now();
-
-			return new Promise((resolve, reject) => {
-				oModel.attachRequestCompleted(function onDone() {
-					oModel.detachRequestCompleted(onDone);
-					resolve(oModel.getData());
-				});
-
-				oModel.attachRequestFailed(function onFail(oEvent) {
-					oModel.detachRequestFailed(onFail);
-					reject(oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades");
-				});
-
-				oModel.loadData(sUrl, null, true /* async */);
-			});
-		},
-
-
-
-		onEditPerturbacion: function (sIdNovedad) {
-			const oView = this.getView();
-			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", false); // si querés entrar “ver” y luego Edit
-			// o true si querés entrar directamente editando
-
-			this.getOwnerComponent().getRouter().navTo(
-				"Perturbaciones",
-				{ mode: "edit" },
-				{ query: { id: sIdNovedad } }
-			);
-		},
-
-		onPerturbacionesPress: function () {
-			const oView = this.getView();
-			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-
-			this.resetNovedadesModel(); // deja modelos en blanco/default
-			this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: "create" });
-		},
-
-		onProgramadasPress: function () {
-			const oView = this.getView();
-			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-			this.resetNovedadesModel()
-			this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "create" });
-		},
-		onNovedadesPress: function () {
-			this.resetNovedadesModel()
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovedades");
-		},
-		//Reporte informe Diario
+		
 		filtersInformeDiario: function () {
 			var that = this;
 			var model = ModelHelper.getModel("InformeFiltersJsonModel");
@@ -4969,58 +4939,7 @@ sap.ui.define([
 
 		},
 
-		onNovedadSelected: function (oEvent) {
-			var empresa = "100";
-
-			var oMappingTRA = {
-				PantallaGeneral: ["AUTR", "NAUT", "ADAP", "NADA", "DFOR", "FORZ", "DISP", "INDI", "ENER", "ESPO", "FINA", "INIC", "HABI", "INHI", "INFO", "REAN", "RMON", "RTRI", "SUSP", "CREC", "SREC", "AUTO", "MANU", "R495", "R500", "R5005", "SOLI", "SULI"],
-				Alarma: ["ALAR", "RTNA"],
-				CargaDeEquipos: ["VANO", "INTF", "CNOM", "NRLI", "SULI", "CMAX", "SNOR"],
-				VinculadoSinTension: ["otro1", "otro2"],
-				EnBandaFueraDeBanda: ["EBAN", "FBAN"],
-				IndisponibilidadesSubindice: ["otro1", "otro2"],
-				ManiobrasOperativas1: ["DESC", "DENE", "ESER", "FSER", "FSPO", "ABTR", "CBAR", "AACO", "ESSP", "AINT", "CNOR", "AACO"],
-				ManiobrasOperativas2: ["otro1", "otro2"],
-				ManiobrasOperativas3: ["otro1", "otro2"]
-			};
-
-			var oMappingTBA = {
-				PantallaGeneral: ["DI", "IN", "HABI", "INHI", "COM", "RH", "RA", "APADECSUB", "ACT SUB V", "GUI", "MIN FREC", "NGUI", "NFORM", "PT", "RESTR", "RSSP"],
-				Alarma: ["ALARMA", "FT", "FTP", "IFUIM", "NT", "RTNA"],
-				CargaDeEquipos: ["INTF", "CNOM", "NRESTR"],
-				VinculadoSinTension: ["otro1", "otro2"],
-				EnBandaFueraDeBanda: ["EB", "FB"],
-				IndisponibilidadesSubindice: ["otro1", "otro2"],
-				ManiobrasOperativas1: ["CR", "DF", "DG", "EP", "FP", "PFIH", "PFII", "SOLGEN", "SPG", "SSG", "TORET", "TORS", "TORT", "U10%", "U5%", "UNORM"],
-				ManiobrasOperativas2: ["otro1", "otro2"],
-				ManiobrasOperativas3: ["otro1", "otro2"]
-			};
-
-			// Determinar qué mapeo usar
-			var oMapping = empresa === "100" ? oMappingTRA : oMappingTBA;
-
-			var sSelectedKey = oEvent.getSource().getSelectedKey();
-			var sFragmentName = null;
-
-			// Buscar la categoría correspondiente en el mapeo seleccionado
-			Object.keys(oMapping).forEach(function (sCategory) {
-				if (oMapping[sCategory].includes(sSelectedKey)) {
-					sFragmentName = sCategory;
-				}
-			});
-
-			if (!sFragmentName) {
-				MessageToast.show("No existe un fragmento para la opción seleccionada.");
-				return;
-			}
-
-			var sFragmentPath = "transener.registrocronologicoeventos.fragments.novedades." + sFragmentName;
-
-
-
-			// Cargar el fragmento dinámicamente
-			this.openDialog(sFragmentPath)
-		},
+		
 
 		onOpenDialogNovedades: function () {
 			// Crear el diálogo si no existe
