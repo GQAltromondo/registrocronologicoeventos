@@ -1,11 +1,13 @@
 sap.ui.define([
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/ModelHelper"
-], function (oDataServices, ModelHelper) {
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler",
+	"transener/registrocronologicoeventos/utils/Constants"
+], function (oDataServices, ModelHelper, Logger, ErrorHandler, Constants) {
 	"use strict";
 	return {
-
-		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
+		lineas: Constants.LINEAS,
 		LoadEquipos: function (estatacionId, empresa) {
 			var filters = [];
 			if (!estatacionId) {
@@ -72,7 +74,9 @@ sap.ui.define([
 
 
 
-			this.getEquiposPromise(aFilter).then($.proxy(this.successGetEquipos, this)).catch($.proxy(this.errorGetEquipos, this));
+			this.getEquiposPromise(aFilter)
+				.then((data) => this.successGetEquipos(data))
+				.catch((error) => this.errorGetEquipos(error));
 		},
 		getEquiposPromise: function (aFilter) {
 			return new Promise((resolve, reject) => {
@@ -94,8 +98,12 @@ sap.ui.define([
 			})
 		},
 
+		/**
+		 * Maneja errores al cargar equipos
+		 * @param {Error|Object} error - Error ocurrido
+		 */
 		errorGetEquipos: function (error) {
-			console.log("Error al cargar Equipos");
+			ErrorHandler.handleError(error, "cargar equipos", false);
 		}
 
 	};

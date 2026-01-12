@@ -29,8 +29,7 @@ sap.ui.define([
 		},
 
 		_readODataOnSuccess: function (data) {
-
-			console.log("Climas",data)
+			// Logger.debug("Climas cargados", data); // Descomentar si se necesita logging
 				//toma modelo
 			var jsonModel = this._getClimas();
 			//setea busy

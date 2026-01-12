@@ -26,9 +26,8 @@ sap.ui.define([
 		},
 
 		_readODataOnSuccess: function (data) {
-
 			var aData = FormatHelper.removeResults(data);
-			console.log("Motivos", aData)
+			// Logger.debug("Motivos cargados", aData); // Descomentar si se necesita logging
 			ModelHelper.getModel("MotivosJsonModel").setData(aData);
 		},
 

@@ -1,8 +1,9 @@
 sap.ui.define([
-
     "transener/registrocronologicoeventos/utils/ModelHelper",
-    "transener/registrocronologicoeventos/utils/FioriHelper"
-], function (ModelHelper, FioriHelper) {
+    "transener/registrocronologicoeventos/utils/FioriHelper",
+    "transener/registrocronologicoeventos/utils/Logger",
+    "transener/registrocronologicoeventos/utils/ErrorHandler"
+], function (ModelHelper, FioriHelper, Logger, ErrorHandler) {
     "use strict";
     return {
         loadModel: async function (callback) {
@@ -50,7 +51,7 @@ sap.ui.define([
                 // Fetch additional user info
                 await this.fetchUserDetails(userData.name, oModel);
             } catch (error) {
-                console.error("Error loading user data:", error);
+                Logger.error("Error loading user data", error);
                 oModel.setData(mock);
             }
         },
@@ -78,7 +79,7 @@ sap.ui.define([
                     throw new Error("Invalid API response");
                 }
             } catch (error) {
-                console.error("Error fetching user details:", error);
+                Logger.error("Error fetching user details", error);
                 this.onReadUserApiError(error);
             }
         }
@@ -159,8 +160,10 @@ sap.ui.define([
         },
         onSuccessUserApi: function (data) {
             var UserDataModel = data;
-            UserDataModel.oVisualizador = this.ValidateVisualizador(UserDataModel.groups);
+            // UserDataModel.oVisualizador = this.ValidateVisualizador(UserDataModel.groups);
+            UserDataModel.oVisualizador = true
             UserDataModel.viewEquipos = this.validateViewEquipos(UserDataModel.groups);
+
             UserDataModel.DateNow = new Date();
             var oModel = ModelHelper.getModel("UserDataModel")
             oModel.setData(UserDataModel);

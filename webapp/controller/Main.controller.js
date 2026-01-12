@@ -32,23 +32,22 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/ModelHelper",
 	"transener/registrocronologicoeventos/utils/ValidateHelper",
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
-	"transener/registrocronologicoeventos/utils/FormatHelper"
+	"transener/registrocronologicoeventos/utils/FormatHelper",
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler",
+	"transener/registrocronologicoeventos/utils/Constants",
+	"transener/registrocronologicoeventos/utils/BusyDialogHelper"
 ], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
 	PersonalHabilitadoService, LicenciaService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
-	FormatHelper) {
+	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper) {
 	"use strict";
 
 
 	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
-		testOperators: ["Bonavita", "Vandale", "Burbaud"],
-		_expandProperties: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav",
-		_valueHelpDialog3: null,
-		currentUser: {},
-		lineas: ["L1", "L2", "L3", "L4", "L5", "L6", "L9"],
 		formatter: formatter,
 		onInit: function () {
 			this.getBaseURL()
@@ -108,27 +107,7 @@ sap.ui.define([
 
 			PersonalHabilitadoService.getPersonalPromise(Empresa);
 		},
-		getBaseURL: function () {
-
-			var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
-
-			//var appId = this.getManifestEntry("/sap.app/id");
-			var appPath = appId.replaceAll(".", "/");
-			var appModulePath = jQuery.sap.getModulePath(appPath);
-
-			var jsonModel = sap.ui.getCore().getModel("appCurrentInfo");
-			//checks if the model exists
-			if (!jsonModel) {
-				jsonModel = new sap.ui.model.json.JSONModel();
-				jsonModel.setSizeLimit(9999);
-				jsonModel.appUrl = appModulePath;
-				sap.ui.getCore().setModel(jsonModel, "appCurrentInfo");
-				//initilializing = appModulePath; 
-				jsonModel.setData({});
-			}
-			return appModulePath;
-
-		},
+		// getBaseURL ahora se hereda de BaseController
 
 		onAfterRendering: function () {
 			this.loadSociety();
@@ -220,7 +199,7 @@ sap.ui.define([
 					});
 				});
 			} catch (err) {
-				console.log(err);
+				Logger.error("Error en operación asíncrona", err);
 				throw err;
 			}
 
@@ -398,20 +377,52 @@ sap.ui.define([
 			}
 		},
 
-		onEditNove: function (oEvent) {
+		onEditNoveLG: function (oEvent) {
 			var oButton = oEvent.getSource();
-			var oColumnListItem = oButton.getParent();
+			var oRow = oButton.getParent().getParent(); // Obtener la fila de la tabla
+			
+			// Obtener el contexto de la fila
+			var oContext = oRow.getBindingContext("oNovedadesModel");
+			if (!oContext) {
+				ErrorHandler.handleError("No se pudo obtener el contexto de la fila seleccionada", "Editar novedad", true);
+				return;
+			}
 
-
-			var oContext = oColumnListItem.getBindingContext("oNovedadesModel");
 			var oSelectedData = oContext.getObject();
+			
+			// Mapear los datos de la fila al formato del modelo NovedadesFormJsonModel
+			var oNovedadData = {
+				IdNovedad: oSelectedData.IdNovedad || oSelectedData.__raw?.IdNovedad || "",
+				InicioNove: oSelectedData.InicioNove || null,
+				FechaFinNove: oSelectedData.FechaFinNove || null,
+				Tplnr: oSelectedData.Tplnr || oSelectedData.LugarFormat || "",
+				Equnr: oSelectedData.Equnr || oSelectedData.Equipo || "",
+				CodNovedad: oSelectedData.CodNovedad || oSelectedData.Tiponovedad || "",
+				Creado_Por: oSelectedData.Creado_Por || ""
+			};
 
-			// Guarda los datos seleccionados en el modelo
-			ModelHelper.getModel("NovedadesFormJsonModel").setData(oSelectedData);
+			// Si hay datos raw, copiarlos también
+			if (oSelectedData.__raw) {
+				Object.assign(oNovedadData, oSelectedData.__raw);
+			}
 
+			// Establecer los datos en el modelo NovedadesFormJsonModel
+			var oView = this.getView();
+			var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+			oNovedadModel.setData(oNovedadData);
 
+			// Configurar el modo de edición
+			var oEditModel = ModelHelper.getModel("editModel", oView);
+			if (oEditModel) {
+				oEditModel.setProperty("/mode", Constants.EDIT_MODES.EDIT);
+				oEditModel.setProperty("/editableMode", true);
+			}
 
-			this.openDialog("transener.registrocronologicoeventos.fragments.forms.formNovedades")
+			// Navegar a la vista de Novedades
+			this.getOwnerComponent().getRouter().navTo(
+				"Novedades",
+				{ mode: Constants.EDIT_MODES.EDIT }
+			);
 		},
 
 		onCloseDialog: function () {
@@ -596,7 +607,7 @@ sap.ui.define([
 
 			oOperacionesSetModel.read("/NovedadesServicioSet", {
 				filters: NSFilters,
-				urlParameters: { "$expand": this._expandProperties },
+				urlParameters: { "$expand": Constants.ODATA_EXPAND_PROPERTIES },
 				success: function (data) {
 					var results = (data && data.results) ? data.results : [];
 					results.forEach(function (item) {
@@ -668,105 +679,7 @@ sap.ui.define([
 		onDelete: function () {
 			MessageToast.show("Delete Pressed");
 		},
-		onCheckBoxSelect: function (oEvent) {
-			var EntDisp = this.byId("EntDispInput")
-			var oSelectedCheckBox = oEvent.getSource();
-			var bSelected = oEvent.getParameter("selected");
-			var utilsModel = this.getView().getModel("utilsModel");
-			const empresa = utilsModel.getProperty("/CodEmpresa")
-			const oModel = ModelHelper.getModel("NovedadesFormJsonModel")
-			if (bSelected) {
-				// Obtener todos los CheckBoxes en el HBox
-				var oHBox = oSelectedCheckBox.getParent();
-				var aCheckBoxes = oHBox.getItems().filter(function (oItem) {
-					return oItem.isA("sap.m.CheckBox");
-				});
-
-				// Desmarcar todos los demás CheckBoxes
-				aCheckBoxes.forEach(function (oCheckBox) {
-					if (oCheckBox !== oSelectedCheckBox) {
-						oCheckBox.setSelected(false);
-					}
-				});
-			}
-
-			var oData = oModel.getData();
-
-			console.log(oSelectedCheckBox.getId())
-
-			switch (oSelectedCheckBox.getId()) {
-				case "chkRecierre":
-					oData.CodNovedad = "P"
-					oData.Recierre = bSelected;
-					EntDisp.setEnabled(false);
-					break;
-				case "chkDeseng":
-					oData.CodNovedad = "P"
-					oData.GenIndisponibilidad = bSelected;
-					break;
-				case "chkRecDeseng":
-					oData.CodNovedad = "P"
-					oData.Recierre = bSelected;
-					oData.GenIndisponibilidad = bSelected;
-					break;
-				case "chkEmergencia":
-					oData.CodNovedad = "D"
-					oData.GenIndisponibilidad = bSelected;
-					break;
-			}
-			oModel.setData(oData)
-
-			MotivosService.loadModel(oModel.getProperty("/CodNovedad"), empresa)
-
-			console.log(oData)
-		},
-		novedadesFormValid: function () {
-			var oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel");
-			var oRules = {
-				CodNovedad: ["required"],
-				CodTipo: ["required"],
-				InicioNove: ["required", "date"],
-				EntIndis: ["required", "date"],
-				CodWeather: ["required"],
-				CodDispAct: ["required"],
-				CodAreaResp: ["required"],
-				CodCausa: ["required"],
-				//CodTipFalla: ["required"],
-				//CodUbFalla: ["required"],
-				//Tplnr: ["required"],
-				Equnr: ["required"],
-				CodMotivo: ["required"],
-				GenIndisponibilidad: ["required"]
-			};
-			var novedad = oNovedadesModel.getProperty("/CodNovedad");
-			if (novedad === "C") {
-				delete (oRules.CodDispAct);
-				delete (oRules.CodAreaResp);
-				delete (oRules.CodWeather);
-				delete (oRules.GenIndisponibilidad);
-			}
-			if (novedad === "I") {
-				delete (oRules.CodDispAct);
-			}
-			if (novedad === "D") {
-				delete (oRules.CodDispAct);
-				//delete(oRules.EntIndis);
-			}
-			var tipo = oNovedadesModel.getProperty("/CodTipo");
-			if (!this.lineas.includes(tipo)) {
-				oRules.Tplnr = ["required"];
-			}
-			var recierre = oNovedadesModel.getProperty("/Recierre");
-			var genIndisponibilidad = oNovedadesModel.getProperty("/GenIndisponibilidad");
-			if (recierre && genIndisponibilidad === false) {
-				delete (oRules.EntIndis);
-			}
-			var data = oNovedadesModel.getData();
-			var bValid = ValidateHelper.make(data, oRules);
-			oNovedadesModel.refresh(true);
-			return !bValid;
-		},
-		
+			
 		filtersInformeDiario: function () {
 			var that = this;
 			var model = ModelHelper.getModel("InformeFiltersJsonModel");
@@ -825,7 +738,7 @@ sap.ui.define([
 						type: sap.m.ButtonType.Emphasized,
 						text: "Exportar",
 						press: [function () {
-							console.log("ACA")
+							Logger.debug("Iniciando exportación de informe");
 							var filters = [];
 							var filtersData = ModelHelper.getModel("InformeFiltersJsonModel").getData();
 
@@ -1388,8 +1301,6 @@ sap.ui.define([
 						});
 					}
 
-					//console.log(fechasDiarias);
-
 					/*var forzadas = informes.filter(function (el) {
 						return el.Tipo == 1;
 					});
@@ -1736,7 +1647,7 @@ sap.ui.define([
 				return;
 			}
 
-			var headers = ["CT", (filterData.tipo && this.lineas.includes(filterData.tipo)) ? "Desde - Hasta" : "Estacion", "Salida",
+			var headers = ["CT", (filterData.tipo && Constants.LINEAS.includes(filterData.tipo)) ? "Desde - Hasta" : "Estacion", "Salida",
 				"Código de equipo",
 				"Circuito", "Ref", "Salida",
 				"Entrada", "Indisp Tiempo", "Indisp Tipo", "Cond.Atmosf"
@@ -1784,8 +1695,6 @@ sap.ui.define([
 					link.click();
 					document.body.removeChild(link);
 				}
-
-				//console.log(data);
 
 				/*const doc = new Document();
 				var fecha = doc.Header.createParagraph().right();
@@ -2020,8 +1929,6 @@ sap.ui.define([
 					document.body.removeChild(link);
 				}
 			})
-
-			// console.log(ezeem);
 
 			//})
 		},
@@ -2818,7 +2725,6 @@ sap.ui.define([
 				XLSX.utils.book_append_sheet(Workbook, sheet5, "TRAFOS TRANSENER + TI")
 				XLSX.utils.book_append_sheet(Workbook, sheet6, "HOJA 1")
 
-				//console.log(Workbook.Sheets);
 				//Workbook.Sheets.sheet.A1.s = { fill: {patternType: "none",fgColor: {rgb: "FF000000"},bgColor: {rgb: "00000000"}} }
 
 				XLSX.writeFile(Workbook, 'ENRE 390.xlsx', {
@@ -3228,7 +3134,7 @@ sap.ui.define([
 						doc.setFontType("normal");
 						doc.setFontSize(8);
 						var filtersData = ModelHelper.getModel("InformeFiltersJsonModel").getData();
-						console.log(filtersData)
+						Logger.debug("Generando informe con filtros", filtersData);
 						var desde = formatDate(filtersData.desde);
 						var hasta = formatDate(filtersData.hasta);
 						doc.text(70, 24, "Del " + desde + " al " + hasta + "");
@@ -4979,13 +4885,29 @@ sap.ui.define([
 					controller: this,
 				})
 					.then(function (oFragment) {
-						// Añadir fragmento a la VBox
-						this._oVBoxFormNovedades.addItem(oFragment);
+						// Validar que el fragmento sea válido antes de agregarlo
+						if (!oFragment) {
+							Logger.error("El fragmento formNovedades no se pudo cargar");
+							MessageToast.show("Error al cargar el formulario de novedades");
+							return;
+						}
 
-						// Abrir el dialog solo cuando el fragmento haya sido cargado
-						this._oDialog.open();
+						// Verificar que sea un ManagedObject válido
+						if (oFragment.isA && typeof oFragment.isA === "function") {
+							// Añadir fragmento a la VBox
+							this._oVBoxFormNovedades.addItem(oFragment);
+
+							// Abrir el dialog solo cuando el fragmento haya sido cargado
+							if (this._oDialog && typeof this._oDialog.open === "function") {
+								this._oDialog.open();
+							}
+						} else {
+							Logger.error("El fragmento formNovedades no es un control válido");
+							MessageToast.show("Error: el formulario no es válido");
+						}
 					}.bind(this))
 					.catch(function (oError) {
+						Logger.error("Error al cargar fragmento formNovedades", oError);
 						MessageToast.show("Failed to load formNovedades fragment: " + oError);
 					});
 			} else {
@@ -5122,8 +5044,7 @@ sap.ui.define([
 
 
 				}).catch((oError) => {
-					console.error("Error cargando datos de novedad:", oError);
-					MessageBox.alert("Error", "Ocurrió un error al cargar la información relacionada a la novedad.");
+					ErrorHandler.handleODataError(oError, "cargar datos de novedad", true);
 				});
 			}
 		},

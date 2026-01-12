@@ -3,60 +3,127 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler",
+	"transener/registrocronologicoeventos/utils/Constants",
 	"transener/registrocronologicoeventos/services/EquiposService",
 	"transener/registrocronologicoeventos/services/NovedadesService",
 	"transener/registrocronologicoeventos/services/SubindiceService",
 	"transener/registrocronologicoeventos/services/MotivosService",
-	"sap/ui/core/UIComponent"]
-	, function (Controller, MessageBox,Fragment, ModelHelper, EquiposService, NovedadesService, SubindiceService, MotivosService, UIComponent) {
-		"use strict";
-		var oDialog = null;
+	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
+	"transener/registrocronologicoeventos/utils/ValidateHelper",
+	"sap/ui/core/UIComponent"
+], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, MessageBoxHelper, ValidateHelper, UIComponent) {
+	"use strict";
 		return Controller.extend("transener.registrocronologicoeventos.controller.BaseController", {
+			/**
+			 * Referencia al diálogo abierto (evita múltiples instancias)
+			 * @private
+			 */
+			_oDialog: null,
+
+			/**
+			 * Obtiene el router de la aplicación
+			 * @returns {sap.ui.core.routing.Router} Router de la aplicación
+			 */
 			getRouter: function () {
 				return UIComponent.getRouterFor(this);
 			},
+
+			/**
+			 * Abre un diálogo desde un fragment
+			 * @param {string} fragment - Ruta del fragment a cargar
+			 * @returns {Promise} Promise que se resuelve cuando el diálogo se abre
+			 */
 			openDialog: function (fragment) {
-				if (oDialog) {
-					oDialog.destroy();
+				if (this._oDialog) {
+					this._oDialog.destroy();
+					this._oDialog = null;
+				}
+
+				var oView = this.getView();
+				if (!oView) {
+					Logger.error("No se puede abrir el diálogo: la vista no está disponible");
+					return Promise.reject("Vista no disponible");
 				}
 
 				return Fragment.load({
 					name: fragment,
 					controller: this,
 					type: "XML"
-				}).then(
-					function (oFragment) {
-						oDialog = oFragment;
-						this.getView().addDependent(oDialog);
-						oDialog.open();
-					}.bind(this)
-				);
+				}).then((oFragment) => {
+					if (!oFragment) {
+						Logger.error("El fragmento cargado es inválido: " + fragment);
+						throw new Error("Fragmento inválido");
+					}
 
+					// Verificar que el fragment sea un Dialog o tenga método open
+					if (typeof oFragment.open !== "function") {
+						Logger.warn("El fragmento no es un Dialog, intentando usar como control");
+					}
+
+					this._oDialog = oFragment;
+					
+					// Solo agregar como dependent si es un ManagedObject válido
+					if (oFragment && oFragment.isA && oFragment.isA("sap.ui.core.Control")) {
+						oView.addDependent(this._oDialog);
+					}
+					
+					// Intentar abrir si tiene método open
+					if (typeof this._oDialog.open === "function") {
+						this._oDialog.open();
+						Logger.debug("Diálogo abierto: " + fragment);
+					} else {
+						Logger.warn("El fragmento no tiene método open: " + fragment);
+					}
+				}).catch((oError) => {
+					ErrorHandler.handleError(oError, "Abrir diálogo", true);
+				});
 			},
+			/**
+			 * Obtiene la URL base de la aplicación
+			 * @returns {string} URL base de la aplicación
+			 */
+			getBaseURL: function () {
+				var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
+				var appPath = appId.replaceAll(".", "/");
+				var appModulePath = jQuery.sap.getModulePath(appPath);
+
+				var jsonModel = sap.ui.getCore().getModel("appCurrentInfo");
+				// Verifica si el modelo existe
+				if (!jsonModel) {
+					jsonModel = new sap.ui.model.json.JSONModel();
+					jsonModel.setSizeLimit(Constants.LIMITS.MODEL_SIZE);
+					jsonModel.appUrl = appModulePath;
+					sap.ui.getCore().setModel(jsonModel, "appCurrentInfo");
+					jsonModel.setData({});
+				}
+				return appModulePath;
+			},
+
+			/**
+			 * Obtiene y establece la versión de la aplicación en el modelo
+			 */
 			getVersion: function () {
 				const oComponent = this.getOwnerComponent();
 				const oView = this.getView();
 
-				// 1️⃣ Obtener versión una sola vez
 				const sVersion = oComponent.getManifestEntry("/sap.app/applicationVersion/version");
 
-				// 2️⃣ Obtener o crear modelo
 				let oModel = sap.ui.getCore().getModel("appCurrentInfo");
 
 				if (!oModel) {
 					oModel = new sap.ui.model.json.JSONModel();
-					oModel.setSizeLimit(9999);
-
-					// setear el modelo una sola vez
+					oModel.setSizeLimit(Constants.LIMITS.MODEL_SIZE);
 					sap.ui.getCore().setModel(oModel, "appCurrentInfo");
 					oView.setModel(oModel, "appCurrentInfo");
 				}
 
-				// 3️⃣ Setear datos SIEMPRE (caso nuevo o existente)
 				oModel.setData({
 					version: sVersion
 				});
 				oView.setModel(oModel, "appCurrentInfo");
+				Logger.debug("Versión de aplicación establecida: " + sVersion);
 			},
 
 			onNavBack: function () {
@@ -78,45 +145,73 @@ sap.ui.define([
 					}
 				});
 			},
+			/**
+			 * Navega a la vista de Perturbaciones en modo creación
+			 */
 			onPerturbacionesPress: function () {
 				const oView = this.getView();
 				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-				this.resetNovedadesModel();
-				this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: "create" });
+				this.resetNovedadesModel().then(() => {
+					this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: Constants.EDIT_MODES.CREATE });
+				}).catch((oError) => {
+					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
+				});
 			},
 
+			/**
+			 * Navega a la vista de Programadas en modo creación
+			 */
 			onProgramadasPress: function () {
 				const oView = this.getView();
 				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-				this.resetNovedadesModel()
-				this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "create" });
+				this.resetNovedadesModel().then(() => {
+					this.getOwnerComponent().getRouter().navTo("Programadas", { mode: Constants.EDIT_MODES.CREATE });
+				}).catch((oError) => {
+					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
+				});
 			},
+
+			/**
+			 * Navega a la vista de Novedades en modo creación
+			 */
 			onNovedadesPress: function () {
 				const oView = this.getView();
 				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-				this.resetNovedadesModel()
-				this.getOwnerComponent().getRouter().navTo("Novedades", { mode: "create" });
+				this.resetNovedadesModel().then(() => {
+					this.getOwnerComponent().getRouter().navTo("Novedades", { mode: Constants.EDIT_MODES.CREATE });
+				}).catch((oError) => {
+					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
+				});
 			},
+			/**
+			 * Resetea el modelo de novedades cargando el JSON inicial
+			 * @returns {Promise} Promise que se resuelve cuando el modelo se carga
+			 */
 			resetNovedadesModel: function () {
 				const oView = this.getView();
 				const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
 
-				// evita cache (útil en FLP / cambios frecuentes)
+				// Evita cache (útil en FLP / cambios frecuentes)
 				const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
 					+ "?_ts=" + Date.now();
 
 				return new Promise((resolve, reject) => {
-					oModel.attachRequestCompleted(function onDone() {
+					const onDone = () => {
 						oModel.detachRequestCompleted(onDone);
+						Logger.debug("Modelo de novedades reseteado correctamente");
 						resolve(oModel.getData());
-					});
+					};
 
-					oModel.attachRequestFailed(function onFail(oEvent) {
+					const onFail = (oEvent) => {
 						oModel.detachRequestFailed(onFail);
-						reject(oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades");
-					});
+						const sError = oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades";
+						Logger.error("Error al resetear modelo de novedades", sError);
+						reject(sError);
+					};
 
-					oModel.loadData(sUrl, null, true /* async */);
+					oModel.attachRequestCompleted(onDone);
+					oModel.attachRequestFailed(onFail);
+					oModel.loadData(sUrl, null, true);
 				});
 			},
 			onUbicacionChange: function (evt) {
@@ -151,15 +246,21 @@ sap.ui.define([
 					consecuenteModel.setProperty("/EntIndis", novedadesModel.getProperty("/EntIndis"));
 				}
 			},
+			/**
+			 * Obtiene el subíndice basado en los datos de la novedad
+			 */
 			getSubindice: function () {
-				const oView = this.getView()
-				var CodNovedad = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/CodNovedad");
-				var Tplnr = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/Tplnr");
-				var Equnr = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/Equnr");
-				var InicioNove = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/InicioNove");
-				var CodTipo = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/CodTipo");
-				if (CodNovedad && Equnr && (Tplnr || this.lineas.includes(CodTipo)) && InicioNove) {
+				const oView = this.getView();
+				const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+				const CodNovedad = oModel.getProperty("/CodNovedad");
+				const Tplnr = oModel.getProperty("/Tplnr");
+				const Equnr = oModel.getProperty("/Equnr");
+				const InicioNove = oModel.getProperty("/InicioNove");
+				const CodTipo = oModel.getProperty("/CodTipo");
+
+				if (CodNovedad && Equnr && (Tplnr || Constants.LINEAS.includes(CodTipo)) && InicioNove) {
 					SubindiceService.getSubindice(CodNovedad, Tplnr, Equnr, InicioNove);
+					Logger.debug("Obteniendo subíndice", { CodNovedad, Tplnr, Equnr, InicioNove });
 				}
 			},
 			recierreChanged: function () {
@@ -176,168 +277,248 @@ sap.ui.define([
 					ModelHelper.getModel("utilsModel", oView).setProperty("/editableDate", true);
 				}
 			},
-			onCheckBoxSelect: function (oEvent) {
-				var oSelectedCheckBox = oEvent.getSource();
-				var bSelected = oEvent.getParameter("selected");
-				var utilsModel = this.getView().getModel("utilsModel");
-				var empresa = utilsModel.getProperty("/CodEmpresa");
-				var oModel = ModelHelper.getModel("NovedadesFormJsonModel");
-				var oData = oModel.getData();
+		onCheckBoxSelect: function (oEvent) {
+			var oView = this.getView();
+			if (!oView) {
+				Logger.error("onCheckBoxSelect: vista no disponible");
+				return;
+			}
 
-				var oHBox = oSelectedCheckBox.getParent();
-				var aCheckBoxes = oHBox.getItems().filter(function (oItem) {
-					return oItem.isA("sap.m.CheckBox");
+			var oSelectedCheckBox = oEvent.getSource();
+			var bSelected = oEvent.getParameter("selected");
+			var utilsModel = ModelHelper.getModel("utilsModel", oView) || oView.getModel("utilsModel");
+			
+			if (!utilsModel) {
+				Logger.error("onCheckBoxSelect: utilsModel no encontrado");
+				return;
+			}
+
+			var empresa = utilsModel.getProperty("/CodEmpresa");
+			var oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+			
+			if (!oModel) {
+				Logger.error("onCheckBoxSelect: NovedadesFormJsonModel no encontrado");
+				return;
+			}
+
+			var oData = oModel.getData();
+
+			var oHBox = oSelectedCheckBox.getParent();
+			var aCheckBoxes = oHBox.getItems().filter(function (oItem) {
+				return oItem.isA("sap.m.CheckBox");
+			});
+
+			if (bSelected) {
+				aCheckBoxes.forEach(function (oCheckBox) {
+					if (oCheckBox !== oSelectedCheckBox) {
+						oCheckBox.setSelected(false);
+					}
 				});
+			}
 
-				if (bSelected) {
-					aCheckBoxes.forEach(function (oCheckBox) {
-						if (oCheckBox !== oSelectedCheckBox) {
-							oCheckBox.setSelected(false);
-						}
-					});
-				}
+			var oChecked = aCheckBoxes.find(function (cb) {
+				return cb.getSelected();
+			});
 
-				var oChecked = aCheckBoxes.find(function (cb) {
-					return cb.getSelected();
-				});
+			var sCheckedId = oChecked ? oChecked.getId().split("--").pop() : "";
 
-				var sCheckedId = oChecked ? oChecked.getId().split("--").pop() : "";
+			oData.Recierre = false;
+			oData.GenIndisponibilidad = false;
 
-				oData.Recierre = false;
-				oData.GenIndisponibilidad = false;
+			// Obtener referencia a EntDispInput si existe (puede no estar en todas las vistas)
+			var oEntDisp = oView ? oView.byId("EntDispInput") : null;
 
+			switch (sCheckedId) {
+				case "chkRecierre":
+					oData.CodNovedad = Constants.NOVEDAD_TYPES.PERTURBACION;
+					oData.Recierre = true;
+					if (oEntDisp) {
+						oEntDisp.setEnabled(false);
+					}
+					break;
 
-				switch (sCheckedId) {
-					case "chkRecierre":
-						oData.CodNovedad = "P";
-						oData.Recierre = true;
+				case "chkDeseng":
+					oData.CodNovedad = Constants.NOVEDAD_TYPES.PERTURBACION;
+					oData.GenIndisponibilidad = true;
+					break;
 
-						break;
+				case "chkRecDeseng":
+					oData.CodNovedad = Constants.NOVEDAD_TYPES.PERTURBACION;
+					oData.Recierre = true;
+					oData.GenIndisponibilidad = true;
+					break;
 
-					case "chkDeseng":
-						oData.CodNovedad = "P";
-						oData.GenIndisponibilidad = true;
-						break;
-
-					case "chkRecDeseng":
-						oData.CodNovedad = "P";
-						oData.Recierre = true;
-						oData.GenIndisponibilidad = true;
-						break;
-
-					case "chkEmergencia":
-						oData.CodNovedad = "D";
-						oData.GenIndisponibilidad = true;
-						break;
-				}
-				this.recierreChanged()
+				case "chkEmergencia":
+					oData.CodNovedad = Constants.NOVEDAD_TYPES.DESCONEXION;
+					oData.GenIndisponibilidad = true;
+					break;
+			}
+				this.recierreChanged();
 				oModel.setData(oData);
 				MotivosService.loadModel(oData.CodNovedad, empresa);
+				Logger.debug("Datos del modelo de novedades actualizados", oData);
 			}
 			,
+			/**
+			 * Guarda una novedad (crea o actualiza según el modo)
+			 */
 			onSaveNovedad: function () {
-
 				if (!this.novedadesFormValid()) {
-					MessageBoxHelper.alert("Existen campos de novedad vacios");
-
+					ErrorHandler.handleValidationError(Constants.ERROR_MESSAGES.VALIDATION_ERROR, "Novedades");
 					return;
 				}
 
 
+				
 				const oView = this.getView();
 				const promises = [];
-
 				const data = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
-
 				const oEditModel = ModelHelper.getModel("editModel", oView);
-				const sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();   // "create" | "edit"
+				const sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();
 				const bUiEditable = !!oEditModel.getProperty("/editableMode");
 
-				console.log(data, "mode:", sMode, "uiEditable:", bUiEditable);
+				Logger.debug("Guardando novedad", { mode: sMode, uiEditable: bUiEditable, novedadId: data.IdNovedad });
 
-				// ===== Validaciones (SIN TOCAR) =====
-				let bool = data.InicioNove <= data.EntIndis;
+				// Validaciones de fechas
+				let bValidDates = data.InicioNove <= data.EntIndis;
 
 				if (data.EntDispo && data.EntServicio) {
 					if (data.EntIndis > data.EntDispo || data.EntDispo > data.EntServicio) {
-						bool = false;
+						bValidDates = false;
 					}
 				} else if (data.EntDispo) {
 					if (!(data.EntIndis < data.EntDispo)) {
-						bool = false;
+						bValidDates = false;
 					}
 				} else if (data.EntServicio) {
 					MessageBox.alert("Si carga Ent. en servicio, debe cargar Ent. Disponibilidad");
 					return;
 				}
 
-				if (!bool && (!data.Recierre || data.GenIndisponibilidad)) {
-					MessageBox.show(
-						" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
-						" Ent. Disponibilidad debe ser mayor que Ent. Indisponibilidad\n" +
-						" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n"
-					);
-					return;
+			if (!bValidDates && (!data.Recierre || data.GenIndisponibilidad)) {
+				MessageBox.show(
+					" Ent. Indisponibilidad debe ser mayor que Inicio de Novedad\n" +
+					" Ent. Disponibilidad debe ser mayor que Ent. Indisponibilidad\n" +
+					" Ent. Servicio debe ser mayor que Ent. Disponibilidad\n"
+				);
+				return;
+			}
+
+			// Si hay fecha de EntDispo, mostrar mensaje informativo sobre creación de novedad en LG
+			if (data.EntDispo) {
+				var sUbicacion = data.Tplnr || "N/A";
+				var sReferencia = data.IdNovedad || "Nueva";
+				
+				// Intentar obtener la descripción de la ubicación
+				var sUbicacionDesc = sUbicacion;
+				try {
+					var oEstacionesModel = ModelHelper.getModel("Estaciones", oView) || ModelHelper.getModel("EstacionesJsonModel", oView);
+					if (oEstacionesModel) {
+						var aEstaciones = oEstacionesModel.getData();
+						if (aEstaciones && aEstaciones.Estaciones) {
+							var oEstacion = aEstaciones.Estaciones.find(function(est) {
+								return est.Codigo === sUbicacion;
+							});
+							if (oEstacion && oEstacion.Descripcion) {
+								sUbicacionDesc = sUbicacion + " - " + oEstacion.Descripcion;
+							}
+						}
+					}
+				} catch (e) {
+					Logger.debug("No se pudo obtener descripción de ubicación", e);
 				}
 
-				// (Opcional) si estás en edit pero UI NO editable, no dejes guardar
-				if (sMode === "edit" && !bUiEditable) {
-					MessageBox.alert("Activá 'Editar' antes de guardar.");
-					return;
+				// Formatear la fecha de EntDispo para mostrar
+				var sFechaDispo = "";
+				if (data.EntDispo instanceof Date) {
+					var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+						pattern: "dd/MM/yyyy HH:mm"
+					});
+					sFechaDispo = oDateFormat.format(data.EntDispo);
+				} else if (data.EntDispo) {
+					sFechaDispo = data.EntDispo;
 				}
 
-				// ===== Decisión PUT / POST (CORRECTA) =====
-				if (sMode === "edit") {
-					promises.push(NovedadesService.PUT());
+				var sMensaje = "Se creará una novedad en LG a futuro con los siguientes datos:\n\n" +
+					"Ubicación: " + sUbicacionDesc + "\n" +
+					"Referencia: " + sReferencia + "\n" +
+					"Fecha de Disponibilidad: " + sFechaDispo;
+
+				MessageBox.information(sMensaje, {
+					title: "Novedad en LG",
+					actions: [MessageBox.Action.OK]
+				});
+			}
+
+			// Validar que esté en modo edición si es necesario
+			if (sMode === Constants.EDIT_MODES.EDIT && !bUiEditable) {
+				MessageBox.alert("Activá 'Editar' antes de guardar.");
+				return;
+			}
+
+				// Decisión PUT / POST según el modo
+				if (sMode === Constants.EDIT_MODES.EDIT) {
+					promises.push(NovedadesService.PUTPromise(oView));
 				} else {
-					// default: create
-					promises.push(NovedadesService.POST());
+					promises.push(NovedadesService.POSTNovedad());
 				}
 
 				this.updateCounts = promises.length;
 
-				Promise.all(promises.map(jQuery.proxy(this.reflectProgress, this)))
+				Promise.all(promises.map((promise) => this.reflectProgress(promise)))
 					.then((results) => {
-						let message = "";
-						let count = 0;
-
-						if (!results[0].resolved) {
-							message += "Error al guardar la novedad\n";
-							count++;
-						}
-
-						if (count) {
-							if (count !== 3) {
-								message += "Todos los demás cambios se han guardado satisfactoriamente";
-							}
-							MessageBox.alert(message);
+						const failedResults = results.filter(r => !r.resolved);
+						
+						if (failedResults.length > 0) {
+							ErrorHandler.handleODataError(
+								failedResults[0].err,
+								sMode === Constants.EDIT_MODES.EDIT ? "actualizar novedad" : "crear novedad"
+							);
 						} else {
-							// ✅ Unblock SOLO si es EDIT (porque solo ahí bloqueaste)
-							if (sMode === "edit") {
+							// Desbloquear novedad si estaba en modo edición
+							if (sMode === Constants.EDIT_MODES.EDIT) {
 								NovedadesService.unblockNovedad(data.IdNovedad, oView);
 							}
-
-							// (Opcional) al guardar, podés volver a modo lectura
-							// oEditModel.setProperty("/editableMode", false);
+							ErrorHandler.showSuccess(
+								sMode === Constants.EDIT_MODES.EDIT 
+									? Constants.SUCCESS_MESSAGES.UPDATED 
+									: Constants.SUCCESS_MESSAGES.CREATED
+							);
 						}
+					})
+					.catch((oError) => {
+						ErrorHandler.handleODataError(oError, "guardar novedad");
 					});
 			},
+			/**
+			 * Refleja el progreso de una promesa
+			 * @param {Promise} promise - Promesa a monitorear
+			 * @returns {Promise} Promise con el resultado formateado
+			 */
 			reflectProgress: function (promise) {
-				var that = this;
-				return promise.then(data => ({
-					resolved: true,
-					data: data
-				}), err => ({
-					resolved: false,
-					err: err
-				})).finally(() => {
-					var advance = 100 / that.updateCounts;
-					//avanzar progress bar TODO
+				return promise.then((data) => {
+					return {
+						resolved: true,
+						data: data
+					};
+				}).catch((err) => {
+					return {
+						resolved: false,
+						err: err
+					};
+				}).finally(() => {
+					// TODO: Implementar actualización de progress bar si es necesario
+					const advance = Constants.LIMITS.PROGRESS_BAR_MAX / this.updateCounts;
+					Logger.debug("Progreso actualizado", { advance });
 				});
 			},
+			/**
+			 * Valida el formulario de novedades
+			 * @returns {boolean} true si el formulario es válido, false en caso contrario
+			 */
 			novedadesFormValid: function () {
-				var oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
-				var oRules = {
+				const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
+				const oRules = {
 					CodNovedad: ["required"],
 					CodTipo: ["required"],
 					InicioNove: ["required", "date"],
@@ -346,41 +527,44 @@ sap.ui.define([
 					CodDispAct: ["required"],
 					CodAreaResp: ["required"],
 					CodCausa: ["required"],
-					//CodTipFalla: ["required"],
-					//CodUbFalla: ["required"],
-					//Tplnr: ["required"],
 					Equnr: ["required"],
 					CodMotivo: ["required"],
 					GenIndisponibilidad: ["required"]
 				};
-				var novedad = oNovedadesModel.getProperty("/CodNovedad");
-				if (novedad === "C") {
-					delete (oRules.CodDispAct);
-					delete (oRules.CodAreaResp);
-					delete (oRules.CodWeather);
-					delete (oRules.GenIndisponibilidad);
+
+				const sNovedad = oNovedadesModel.getProperty("/CodNovedad");
+				
+				// Ajustar reglas según el tipo de novedad
+				if (sNovedad === Constants.NOVEDAD_TYPES.CONEXION) {
+					delete oRules.CodDispAct;
+					delete oRules.CodAreaResp;
+					delete oRules.CodWeather;
+					delete oRules.GenIndisponibilidad;
 				}
-				if (novedad === "I") {
-					delete (oRules.CodDispAct);
+				if (sNovedad === Constants.NOVEDAD_TYPES.INTERRUPCION) {
+					delete oRules.CodDispAct;
 				}
-				if (novedad === "D") {
-					delete (oRules.CodDispAct);
-					//delete(oRules.EntIndis);
+				if (sNovedad === Constants.NOVEDAD_TYPES.DESCONEXION) {
+					delete oRules.CodDispAct;
 				}
-				var tipo = oNovedadesModel.getProperty("/CodTipo");
-				if (!this.lineas.includes(tipo)) {
+
+				const sTipo = oNovedadesModel.getProperty("/CodTipo");
+				if (!Constants.LINEAS.includes(sTipo)) {
 					oRules.Tplnr = ["required"];
 				}
-				var recierre = oNovedadesModel.getProperty("/Recierre");
-				var genIndisponibilidad = oNovedadesModel.getProperty("/GenIndisponibilidad");
-				if (recierre && genIndisponibilidad === false) {
-					delete (oRules.EntIndis);
+
+				const bRecierre = oNovedadesModel.getProperty("/Recierre");
+				const bGenIndisponibilidad = oNovedadesModel.getProperty("/GenIndisponibilidad");
+				if (bRecierre && bGenIndisponibilidad === false) {
+					delete oRules.EntIndis;
 				}
-				var data = oNovedadesModel.getData();
-				var bValid = ValidateHelper.make(data, oRules);
+
+				const oData = oNovedadesModel.getData();
+				const bHasErrors = ValidateHelper.make(oData, oRules);
 				oNovedadesModel.refresh(true);
-				return !bValid;
-			},
+				
+				return !bHasErrors;
+			}
 
 		});
 	});

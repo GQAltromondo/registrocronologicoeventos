@@ -6,8 +6,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/i18nTranslationHelper",
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/ModelHelper"
-], function (FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, oDataService, ModelHelper) {
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
+], function (FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, oDataService, ModelHelper, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -32,7 +33,7 @@ sap.ui.define([
 					model.setData(data.results);
 				},
 				error: function (error) {
-					console.log(error);
+					ErrorHandler.handleODataError(error, "cargar estado del tiempo", false);
 				}
 			});
 		}

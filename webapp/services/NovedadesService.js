@@ -1,30 +1,20 @@
 sap.ui.define([
-	//helpers
 	"sap/m/MessageBox",
 	"transener/registrocronologicoeventos/utils/FioriHelper",
-	"transener/registrocronologicoeventos/utils/FioriComponentHelper",
 	"transener/registrocronologicoeventos/utils/FormatHelper",
-	"transener/registrocronologicoeventos/utils/i18nTranslationHelper",
-	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/services/oDataServices",
 	"transener/registrocronologicoeventos/utils/BusyDialogHelper",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
-	// "transener/registrocronologicoeventos/services/ConsecuenteService",
-	// "transener/registrocronologicoeventos/services/LicenciaService",
-	"transener/registrocronologicoeventos/utils/OperationErrorsHelper",
-	// "transener/registrocronologicoeventos/utils/ProgressDialogHelper"
-], function (MessageBox, FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, oDataServices,
-	BusyDialogHelper,
-	ModelHelper,
-	// ConsecuenteService, LicenciaService,
-	OperationErrorsHelper
-	// , ProgressDialogHelper
-) {
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler",
+	"transener/registrocronologicoeventos/utils/Constants",
+	"transener/registrocronologicoeventos/utils/OperationErrorsHelper"
+], function (MessageBox, FioriHelper, FormatHelper, oDataServices, BusyDialogHelper, ModelHelper, Logger, ErrorHandler, Constants, OperationErrorsHelper) {
 	"use strict";
 
 	return {
 		_entitySet: "/NovedadesSet",
-		_expandProperties: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav",
+		_expandProperties: Constants.ODATA_EXPAND_PROPERTIES,
 
 		findNovedad: function (aFilter, nroNovedad) {
 			var sNovedadId = ModelHelper.getModel("utilsModel").getProperty("/nroNovedad");
@@ -58,18 +48,35 @@ sap.ui.define([
 			});
 
 		},
+		/**
+		 * Busca novedades con filtros
+		 * @param {Array} aFilter - Array de filtros
+		 * @param {Function} callback - Callback a ejecutar con los resultados
+		 */
 		FIND: function (aFilter, callback) {
-			var that = this;
-			var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
+			const empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
 			aFilter.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, empresa));
-			this.findNovedad(aFilter).then($.proxy(function (data) {
-				$.proxy(that.successFindNovedad(data), that);
-				callback(data);
-			}, this)).catch($.proxy(this.errorFindNovedad, this));
+			
+			this.findNovedad(aFilter)
+				.then((data) => {
+					this.successFindNovedad(data);
+					if (callback && typeof callback === "function") {
+						callback(data);
+					}
+				})
+				.catch((error) => {
+					this.errorFindNovedad(error);
+				});
 		},
 
+		/**
+		 * Actualiza una novedad (wrapper para compatibilidad)
+		 * @param {sap.ui.core.mvc.View} oView - Vista actual
+		 */
 		PUT: function (oView) {
-			this.PUTPromise(oView).then($.proxy(this.successPUT, this)).catch(this.errorPUT, this)
+			this.PUTPromise(oView)
+				.then((sNovedadId) => this.successPUT(sNovedadId))
+				.catch((error) => this.errorPUT(error));
 		},
 
 		PUTPromise: function (oView) {
@@ -124,12 +131,21 @@ sap.ui.define([
 		,
 
 
+		/**
+		 * Callback de éxito para actualizar novedad
+		 * @param {string} sNovedadId - ID de la novedad actualizada
+		 */
 		successPUT: function (sNovedadId) {
-			MessageBox.success("Se ha modificado la novedad " + sNovedadId + " de manera exitosa");
+			Logger.info("Novedad actualizada exitosamente", { novedadId: sNovedadId });
+			ErrorHandler.showSuccess("Se ha modificado la novedad " + sNovedadId + " de manera exitosa");
 		},
 
+		/**
+		 * Callback de error para actualizar novedad
+		 * @param {Error|Object} error - Error ocurrido
+		 */
 		errorPUT: function (error) {
-			MessageBox.error("Alerta", "Se ha producido un error al modificar la novedad");
+			ErrorHandler.handleODataError(error, "modificar novedad");
 		},
 
 		successFindNovedad: function (data) {
@@ -149,9 +165,13 @@ sap.ui.define([
 			BusyDialogHelper.close();
 		},
 
+		/**
+		 * Callback de error para buscar novedad
+		 * @param {Error|Object} error - Error ocurrido
+		 */
 		errorFindNovedad: function (error) {
 			BusyDialogHelper.close();
-			console.log(error);
+			ErrorHandler.handleError(error, "buscar novedad", false);
 		},
 
 		POSTNovedad: function () {
@@ -165,7 +185,7 @@ sap.ui.define([
 						data.setSeconds(0, 0);
 					}
 				}
-				//TODO ESPERAR QUE DEMIAN ME AGREGUE EL NULLABLE
+				// Normalizar valores numéricos
 				oNovedad.Cantidadtorrescaidas = oNovedad.Cantidadtorrescaidas || 0;
 				let entity = "/NovedadesServicioSet";
 				oNovedad.Empresa = empresa;
@@ -182,36 +202,44 @@ sap.ui.define([
 			})
 		},
 
+		/**
+		 * Crea una nueva novedad
+		 * @returns {Promise} Promise que se resuelve cuando la novedad se crea
+		 */
 		POST: function () {
 			OperationErrorsHelper.cleanMessages();
-			// var oPercentModel = ModelHelper.getModel("ProgressBarJsonModel");
-			// ProgressDialogHelper.setPercentValues(0, "0");
-			// ProgressDialogHelper.getDialog().setModel(oPercentModel, "ProgressBarJsonModel");
-			// ProgressDialogHelper.openDialog();
-			return this.POSTNovedad().then($.proxy(this.successPOST, this)).catch($.proxy(this.errorPOST, this));
+			return this.POSTNovedad()
+				.then((data) => this.successPOST(data))
+				.catch((error) => this.errorPOST(error));
 		},
 
+		/**
+		 * Callback de éxito para crear novedad
+		 * @param {Object} data - Datos de la novedad creada
+		 */
 		successPOST: function (data) {
-
-			var sPath = FioriHelper.getAppPath();
-			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/CodNovedad"),
-				ModelHelper.getModel("NovedadesFormJsonModel").getProperty("/CodNovedad");
+			const sPath = FioriHelper.getAppPath();
+			const sNovedadId = data.IdNovedad;
+			
+			// Resetear modelo de novedades
 			ModelHelper.getModel("NovedadesFormJsonModel").loadData(sPath + "model/NovedadesFormJsonModel.json", "", false);
 			ModelHelper.getModel("utilsModel").setProperty("/editableDate", true);
-			//	ProgressDialogHelper.setPercentValues(25, "25%");
-			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/novedadId", data.IdNovedad);
-			var sNovedadId = ModelHelper.getModel("SelectedNovedadJsonModel").getProperty("/novedadId");
+			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/novedadId", sNovedadId);
+			
 			OperationErrorsHelper.addMessage("Novedad con id Nº " + sNovedadId, "Novedad: ");
-			MessageBox.success("Novedad de Servicio Nº " + sNovedadId + " creada exitosamente")
-			//	LicenciaService.saveMultipleLicences(ModelHelper.getModel("LicencesListJsonModel").getData().Licences);
-			//	ConsecuenteService.POST();
+			
+			Logger.info("Novedad creada exitosamente", { novedadId: sNovedadId });
+			ErrorHandler.showSuccess("Novedad de Servicio Nº " + sNovedadId + " creada exitosamente");
 		},
 
+		/**
+		 * Callback de error para crear novedad
+		 * @param {Error|Object} error - Error ocurrido
+		 */
 		errorPOST: function (error) {
-			//	ProgressDialogHelper.closeDialog();
 			OperationErrorsHelper.addMessage("Se ha producido un error al crear novedad", "Novedad:");
-			var oContent = OperationErrorsHelper.generateMessageContent();
-			MessageBox.error(oContent);
+			const oContent = OperationErrorsHelper.generateMessageContent();
+			ErrorHandler.handleODataError(error, "crear novedad");
 		},
 
 		deleteNovedad: function (idNovedad) {

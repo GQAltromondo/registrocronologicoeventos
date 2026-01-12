@@ -31,7 +31,7 @@ sap.ui.define([
 		},
 
 		_readODataOnSuccess: function (data) {
-			console.log("Causas",data)
+			// Logger.debug("Causas cargadas", data); // Descomentar si se necesita logging
 			var aData = FormatHelper.removeResults(data);
 			ModelHelper.getModel("CausasJsonModel").setData({
 				Causas: aData

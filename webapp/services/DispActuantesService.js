@@ -1,13 +1,9 @@
 sap.ui.define([
 	//helpers
-	"transener/registrocronologicoeventos/utils/FioriHelper",
-	"transener/registrocronologicoeventos/utils/FioriComponentHelper",
-	"transener/registrocronologicoeventos/utils/FormatHelper",
-	"transener/registrocronologicoeventos/utils/i18nTranslationHelper",
-	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/ModelHelper"
-], function (FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, oDataService, ModelHelper) {
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
+], function ( oDataService, ModelHelper, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -32,7 +28,7 @@ sap.ui.define([
 					model.setData(data.results);
 				},
 				error: function (error) {
-					console.log(error);
+					ErrorHandler.handleODataError(error, "cargar dispositivos actuantes", false);
 				}
 			});
 		}

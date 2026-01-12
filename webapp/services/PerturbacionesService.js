@@ -1,7 +1,8 @@
 sap.ui.define([
 	//helpers
-	"transener/registrocronologicoeventos/services/oDataServices"
-], function ( oDataService) {
+	"transener/registrocronologicoeventos/services/oDataServices",
+	"transener/registrocronologicoeventos/utils/Logger"
+], function (oDataService, Logger) {
 	"use strict";
 
 	return {
@@ -25,7 +26,7 @@ sap.ui.define([
 		},
 
 		_readODataOnSuccess: function (data) {
-		console.log("Success",data)
+			Logger.debug("Perturbaciones cargadas exitosamente", data);
 			//toma modelo
 			var jsonModel = this._getTipificacion();
 			//setea busy

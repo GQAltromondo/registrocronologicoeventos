@@ -6,8 +6,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/i18nTranslationHelper",
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
 
-], function (oDataServices, FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, ModelHelper) {
+], function (oDataServices, FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, ModelHelper, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -48,7 +49,7 @@ sap.ui.define([
 					JefeDeTrabajoTct: aPromisesResolved[4].results,
 				})
 			}).catch(function (e) {
-				console.log("aaaa")
+				ErrorHandler.handleError(e, "cargar personal habilitado", false);
 			})
 		},
 
@@ -153,8 +154,8 @@ sap.ui.define([
 						})
 					})
 				},
-				error: function () {
-					console.log("Se ha producido un error al cargar el personal habilitado")
+				error: function (error) {
+					ErrorHandler.handleODataError(error, "cargar personal habilitado", false);
 				}
 			})
 		}

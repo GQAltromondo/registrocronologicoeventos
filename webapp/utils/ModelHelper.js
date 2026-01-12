@@ -18,7 +18,7 @@ sap.ui.define([], function () {
 
 			if (!oModel) {
 				oModel = new sap.ui.model.json.JSONModel();
-				oModel.setSizeLimit(9999);
+				oModel.setSizeLimit(9999); // TODO: Usar Constants.LIMITS.MODEL_SIZE cuando se importe
 				sap.ui.getCore().setModel(oModel, sModelName);
 			}
 

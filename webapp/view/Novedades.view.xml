@@ -34,11 +34,11 @@
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Equipo" class="sapUiSmallMarginEnd labels" showColon="true" />
                                 <HBox>
-                                    <ComboBox width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodTipo}" items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
-                                        <core:Item key="{TipoModel>Tipo}" text="{TipoModel>Tipo}" />
+                                    <ComboBox width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
                                     </ComboBox>
-                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodTipo}" items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
-                                        <core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}" />
+                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                     </ComboBox>
                                 </HBox>
                             </HBox>

@@ -1,13 +1,11 @@
 sap.ui.define([
 	//helpers
-	"transener/registrocronologicoeventos/utils/FioriHelper",
-	"transener/registrocronologicoeventos/utils/FioriComponentHelper",
 	"transener/registrocronologicoeventos/utils/FormatHelper",
-	"transener/registrocronologicoeventos/utils/i18nTranslationHelper",
-	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/ModelHelper"
-], function (FioriHelper, FioriComponentHelper, FormatHelper, i18nTranslationHelper, MessageBoxHelper, oDataService, ModelHelper) {
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
+], function (FormatHelper, oDataService, ModelHelper, Logger, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -27,7 +25,7 @@ sap.ui.define([
 				oDataService.getModel("").read(entity, {
 					filters: aFilter,
 					success: function (data) {
-						console.log("Estaciones",data)
+						Logger.debug("Estaciones cargadas exitosamente", data);
 						resolve(data);
 					},
 					error: function (error) {
@@ -46,7 +44,7 @@ sap.ui.define([
 		},
 
 		errorGetEstaciones: function (error) {
-			console.log("Error al cargar Estaciones");
+			ErrorHandler.handleODataError(error, "cargar estaciones", false);
 		}
 
 	};

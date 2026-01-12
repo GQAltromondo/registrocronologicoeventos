@@ -2,8 +2,9 @@ sap.ui.define([
 	//helpers
 	"transener/registrocronologicoeventos/utils/FormatHelper",
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/ModelHelper"
-], function (FormatHelper, oDataService, ModelHelper) {
+	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
+], function (FormatHelper, oDataService, ModelHelper, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -33,7 +34,7 @@ sap.ui.define([
 		},
 
 		error: function (error) {
-			console.log("Error al cargar Empresas");
+			ErrorHandler.handleODataError(error, "cargar empresas de tramitación", false);
 		}
 
 	};

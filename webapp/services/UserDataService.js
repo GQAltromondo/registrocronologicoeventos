@@ -1,6 +1,8 @@
 sap.ui.define([
 	//helpers
-], function() {
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/ErrorHandler"
+], function(Logger, ErrorHandler) {
 	"use strict";
 
 	return {
@@ -29,7 +31,7 @@ sap.ui.define([
 			//reads user api
 			var path = this._servicePathPrefix + this._servicePath;
 			
-			console.log(path)
+			Logger.debug("Cargando datos de usuario desde: " + path);
 			jQuery.ajax(path + "?multiValuesAsArrays=true", {
 				method: "GET",
 				success: jQuery.proxy(UserDataService.onReadUserApiSuccess, UserDataService),
@@ -40,7 +42,7 @@ sap.ui.define([
 		onReadUserApiSuccess: function(data, textStatus, jqXHR) {
 			//creates model
 			
-			console.log(data)
+			Logger.debug("Datos de usuario cargados exitosamente", data);
 			var jsonModel = this.getModel();
 			//sets data
 			jsonModel.setData(data);
@@ -52,7 +54,7 @@ sap.ui.define([
 				
 		onReadUserApiError: function(jqXHR, textStatus, error) {
 			//verifies if session is still active
-					console.log(jqXHR,textStatus,error)
+			ErrorHandler.handleError(error, "cargar datos de usuario", false);
 			var sessionTimeoutResponseCode = 503;
 			if (error.status === sessionTimeoutResponseCode) {
 				//session timeout
