@@ -1,4 +1,8 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table">
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+	xmlns:t="sap.ui.table">
 	<t:Table id="tableNovedades" rows="{ path: 'oNovedadesModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 		<t:columns>
 			<!--<t:Column width="50px">-->
@@ -13,29 +17,26 @@
 				<Label text="{i18n>fromDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-					<DateTimePicker change="handleTableChanges"
-						value="{ 'path': 'oNovedadesModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+					<DateTimePicker change="handleTableChanges" value="{ 'path': 'oNovedadesModel>Fechahora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
 			<t:Column width='200px'>
 				<Label text="{i18n>toDate}"/>
 				<t:template>
 					<!--<Text text="{parts: [{path: 'oNovedadesModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-					<DateTimePicker change="handleTableChanges"
-						value="{ 'path': 'oNovedadesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+					<DateTimePicker change="handleTableChanges" value="{ 'path': 'oNovedadesModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 				</t:template>
 			</t:Column>
 			<t:Column width='200px'>
 				<Label text="{i18n>place}"/>
 				<t:template>
 					<!--<Text text="{oNovedadesModel>Tplnr}"/>-->
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }"
-						selectedKey="{oNovedadesModel>LugarFormat}">
+					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" selectedKey="{oNovedadesModel>LugarFormat}">
 						<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
 					</ComboBox>
 				</t:template>
 			</t:Column>
-		<t:Column width='150px'>
+			<t:Column width='150px'>
 				<Label text="{i18n>team}"/>
 				<t:template>
 					<Text text="{oNovedadesModel>Equipo}"/>

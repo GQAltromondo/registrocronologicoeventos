@@ -10,10 +10,11 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/PerturbacionesService",
 	"transener/registrocronologicoeventos/utils/formatter",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
+	"transener/registrocronologicoeventos/utils/Constants",
 	"sap/ui/core/routing/History"
 ], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageStrip, userDataService,
 	PerturbacionesService,
-	formatter, ModelHelper, History) {
+	formatter, ModelHelper, Constants, History) {
 	"use strict";
 	var oDialog = null;
 
@@ -29,12 +30,26 @@ sap.ui.define([
 		_onRouteMatched: function (oEvent) {
 			const oArgs = oEvent.getParameter("arguments") || {};
 			const sMode = (oArgs.mode || "edit").toLowerCase();
+			const oView = this.getView();
 
-			// Modo (create/edit) para reutilizar la vista
-			const oEditModel = sap.ui.getCore().getModel("editModel") || this.getView().getModel("editModel");
+			// Modo (create/edit/view) para reutilizar la vista
+			const oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
+			const oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+			
 			if (oEditModel) {
 				oEditModel.setProperty("/mode", sMode);
-				oEditModel.setProperty("/editableMode", sMode === "create" ? true : oEditModel.getProperty("/editableMode"));
+				// Si es modo "view", configurar readOnlyMode en utilsModel
+				if (sMode === Constants.EDIT_MODES.VIEW) {
+					oEditModel.setProperty("/editableMode", false);
+					if (oUtilsModel) {
+						oUtilsModel.setProperty("/readOnlyMode", true);
+					}
+				} else {
+					oEditModel.setProperty("/editableMode", sMode === Constants.EDIT_MODES.CREATE ? true : oEditModel.getProperty("/editableMode"));
+					if (oUtilsModel) {
+						oUtilsModel.setProperty("/readOnlyMode", false);
+					}
+				}
 			}
 
 			// Importante: NO necesitás recargar nada si venís desde Main,

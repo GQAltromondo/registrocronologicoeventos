@@ -1,4 +1,5 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core">
 
     <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
         <HBox width="100%" class="sapUiSmallMarginBottom">
@@ -6,28 +7,26 @@
                 <VBox width="100%">
                     <HBox justifyContent="Start" alignItems="Center">
                         <Label text="Porcentaje de carga / Superacion de limite / Supera valor nominal" class="sapUiSmallMarginEnd labels" showColon="true" />
-                        <Input class="sapUiSmallMarginEnd" />
+                        <Input value="{CargaFormJsonModel>/porcen}" class="sapUiSmallMarginEnd" />
                     </HBox>
                     <HBox width="100%" justifyContent="Start">
                         <HBox alignItems="Center" class="sapUiLargeMarginEnd">
                             <Label text="Se informa a Empresa" showColon="true" class="sapUiSmallMarginEnd labels" />
-  <ComboBox  width="300px" selectionChange=".onSelectionChange"
-													selectedKey="{NovedadesFormJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
-													<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
-														text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
-												</ComboBox>
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{CargaFormJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                                <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+                            </ComboBox>
                         </HBox>
                         <HBox alignItems="Center">
                             <Label text="Fecha/Hora" class="sapUiSmallMarginEnd labels" showColon="true" />
 
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                            <DateTimePicker value="{ 'path': 'CargaFormJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                         </HBox>
                     </HBox>
                     <HBox width="100%">
                         <VBox alignItems="Start">
                             <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
                             <HBox>
-                                <TextArea width="600px" />
+                                <TextArea value="{CargaFormJsonModel>/Comentarios}" width="600px" />
                             </HBox>
                         </VBox>
                     </HBox>
@@ -43,17 +42,15 @@
                     <HBox alignItems="Center" class="sapUiLargeMarginEnd">
                         <Label text="Fecha / Hora" showColon="true" class="sapUiSmallMarginEnd labels" />
                         <HBox>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                            <DateTimePicker value="{ 'path': 'NormalizacionCarga>/Fechahora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                         </HBox>
                     </HBox>
                     <HBox alignItems="Center">
                         <Label text="Se Informo a Empresa" class="sapUiSmallMarginEnd labels" showColon="true" />
                         <HBox>
-                             <ComboBox  width="300px" selectionChange=".onSelectionChange"
-													selectedKey="{NovedadesFormJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
-													<core:Item key="{EmpresaTramitacionJsonModel>Codigo}"
-														text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
-												</ComboBox>
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionCarga>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                                <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+                            </ComboBox>
                         </HBox>
                     </HBox>
                 </HBox>
@@ -80,15 +77,15 @@
                     <HBox alignItems="Center">
                         <Label text="Otra Medida" class="sapUiSmallMarginEnd labels" showColon="true" />
                         <HBox>
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodTipo}" items="{ path: 'TipoModel>/Tipo', templateShareable: true }">
-                                <core:ListItem key="{TipoModel>Tipo}" text="{TipoModel>Descripcion}" />
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionCarga>/otrasMedidas}" items="{ path: 'medidasModel>/Medidas', templateShareable: true }">
+                                <core:ListItem key="{medidasModel>Codigo}" text="{medidasModel>Descripcion}" />
                             </ComboBox>
                         </HBox>
                     </HBox>
                     <HBox alignItems="Center" class="sapUiLargeMarginEnd">
                         <Label text="Fecha / Hora de finalizacion de las medidas adoptadas" showColon="true" class="sapUiSmallMarginEnd labels" />
                         <HBox>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                            <DateTimePicker value="{ 'path': 'NormalizacionCarga>/FechaFinMedidas', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
                         </HBox>
                     </HBox>
                 </VBox>
@@ -96,12 +93,12 @@
                     <VBox alignItems="Start">
                         <Label text="Comentarios " showColon="true" class="sapUiSmallMarginEnd labels" />
                         <HBox>
-                            <TextArea width="600px" />
+                            <TextArea value="{NormalizacionCarga>/Comentarios }" width="600px" />
                         </HBox>
                     </VBox>
                 </HBox>
             </VBox>
         </VBox>
     </FlexBox>
- 
+
 </core:FragmentDefinition>

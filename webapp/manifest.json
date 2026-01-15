@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "1.0.3"
+      "version": "1.0.5"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -93,7 +93,8 @@
           "defaultOperationMode": "Server",
           "defaultBindingMode": "OneWay",
           "defaultCountMode": "Request",
-          "useBatch": false
+          "useBatch": false,
+          "defaultUpdateMethod": "PUT"
         },
         "dataSource": "Z_SCP_LIBRO_GUARDIAS_SRV",
         "preload": true

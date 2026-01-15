@@ -13,7 +13,7 @@ sap.ui.define([
 	"use strict";
 
 	return {
-		_entitySet: "/NovedadesSet",
+
 		_expandProperties: Constants.ODATA_EXPAND_PROPERTIES,
 
 		findNovedad: function (aFilter, nroNovedad) {
@@ -56,7 +56,7 @@ sap.ui.define([
 		FIND: function (aFilter, callback) {
 			const empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
 			aFilter.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, empresa));
-			
+
 			this.findNovedad(aFilter)
 				.then((data) => {
 					this.successFindNovedad(data);
@@ -83,6 +83,7 @@ sap.ui.define([
 			return new Promise((resolve, reject) => {
 				const oModel = oDataServices.getModel("");
 				let oNovedad = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
+				ModelHelper.deleteNavigationProperties(oNovedad)
 				function toRelativeODataPath(oModel, sMetadataUri) {
 					if (!sMetadataUri) return "";
 
@@ -220,14 +221,14 @@ sap.ui.define([
 		successPOST: function (data) {
 			const sPath = FioriHelper.getAppPath();
 			const sNovedadId = data.IdNovedad;
-			
+
 			// Resetear modelo de novedades
 			ModelHelper.getModel("NovedadesFormJsonModel").loadData(sPath + "model/NovedadesFormJsonModel.json", "", false);
 			ModelHelper.getModel("utilsModel").setProperty("/editableDate", true);
 			ModelHelper.getModel("SelectedNovedadJsonModel").setProperty("/novedadId", sNovedadId);
-			
+
 			OperationErrorsHelper.addMessage("Novedad con id Nº " + sNovedadId, "Novedad: ");
-			
+
 			Logger.info("Novedad creada exitosamente", { novedadId: sNovedadId });
 			ErrorHandler.showSuccess("Novedad de Servicio Nº " + sNovedadId + " creada exitosamente");
 		},

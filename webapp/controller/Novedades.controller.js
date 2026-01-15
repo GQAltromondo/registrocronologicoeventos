@@ -54,16 +54,47 @@ sap.ui.define([
       }
 
       var oNovedadData = oNovedadModel.getData();
-      if (!oNovedadData) {
-        Logger.debug("NovedadesFormJsonModel no tiene datos en _onRouteMatched");
-        return;
+      
+      // Verificar si los datos están vacíos o no válidos (solo para modo EDIT/VIEW)
+      if (sMode !== Constants.EDIT_MODES.CREATE) {
+        // Las novedades tienen el ID en el campo Id, no en IdNovedad
+        var sIdNovedad = oNovedadData?.Id || oNovedadData?.IdNovedad;
+        if (!oNovedadData || Object.keys(oNovedadData).length === 0 || !sIdNovedad) {
+          Logger.debug("NovedadesFormJsonModel no tiene datos válidos en _onRouteMatched, esperando...");
+          // Esperar un momento y reintentar (los datos pueden estar cargándose)
+          var that = this;
+          setTimeout(function() {
+            var oRetryData = oNovedadModel.getData();
+            var sRetryId = oRetryData?.Id || oRetryData?.IdNovedad;
+            if (oRetryData && Object.keys(oRetryData).length > 0 && sRetryId) {
+              that._processNovedadData(oRetryData, sMode, oNovedadModel, oView);
+            } else {
+              Logger.warn("NovedadesFormJsonModel aún no tiene datos después de esperar");
+            }
+          }, 300);
+          return;
+        }
       }
 
+      // Procesar los datos de la novedad
+      this._processNovedadData(oNovedadData, sMode, oNovedadModel, oView);
+    },
+
+    /**
+     * Procesa los datos de la novedad y carga fragmentos/equipos según corresponda
+     * @param {Object} oNovedadData - Datos de la novedad
+     * @param {string} sMode - Modo de edición (create/edit/view)
+     * @param {sap.ui.model.json.JSONModel} oNovedadModel - Modelo de novedades
+     * @param {sap.ui.core.mvc.View} oView - Vista actual
+     * @private
+     */
+    _processNovedadData: function (oNovedadData, sMode, oNovedadModel, oView) {
       // Si está en modo CREATE, limpiar CodNovedad y fragmentos
       if (sMode === Constants.EDIT_MODES.CREATE) {
         Logger.debug("Modo CREATE detectado, limpiando CodNovedad y fragmentos");
         oNovedadModel.setProperty("/CodNovedad", "");
         this._clearFragmentContainer();
+        return;
       }
       
       // Si hay Tplnr (ubicación), cargar los equipos correspondientes
@@ -372,9 +403,104 @@ sap.ui.define([
         }
 
         Logger.debug("Fragmento cargado exitosamente: " + sFragmentPath);
+        
+        // Inicializar modelos específicos según el fragmento cargado
+        if (sFragmentPath.indexOf("Alarma") !== -1) {
+          this._initializeAlarmaModels(oView);
+        } else if (sFragmentPath.indexOf("CargaDeEquipos") !== -1) {
+          this._initializeCargaModels(oView);
+        }
       } catch (e) {
         Logger.error("Error cargando fragmento: " + sFragmentPath, e);
         ErrorHandler.handleError(e, "Cargar fragmento de novedad", true);
+      }
+    },
+
+    /**
+     * Inicializa los modelos AlarmaModel y AlarmaJsonModel para el fragmento Alarma
+     * @param {sap.ui.core.mvc.View} oView - Vista actual
+     * @private
+     */
+    _initializeAlarmaModels: function (oView) {
+      try {
+        // Inicializar AlarmaModel con 4 elementos
+        var oAlarmaModel = ModelHelper.getModel("AlarmaModel", oView);
+        oAlarmaModel.setData({
+          Alarmas: [
+            { Codigo: "ALM1", Descripcion: "Alarma Tipo 1" },
+            { Codigo: "ALM2", Descripcion: "Alarma Tipo 2" },
+            { Codigo: "ALM3", Descripcion: "Alarma Tipo 3" },
+            { Codigo: "ALM4", Descripcion: "Alarma Tipo 4" }
+          ]
+        });
+
+        // Inicializar AlarmaJsonModel con valores por defecto
+        var oAlarmaJsonModel = ModelHelper.getModel("AlarmaJsonModel", oView);
+        if (!oAlarmaJsonModel.getData() || Object.keys(oAlarmaJsonModel.getData()).length === 0) {
+          oAlarmaJsonModel.setData({
+            CodAlarma: "",
+            InformoTecnico: "",
+            InformoEmpresa: "",
+            Comentarios: "",
+            FechaHoraNormalizacion: null,
+            NormalizacionInformoTecnico: "",
+            NormalizacionInformoEmpresa: "",
+            ComentariosNormalizacion: ""
+          });
+        }
+
+        Logger.debug("Modelos AlarmaModel y AlarmaJsonModel inicializados correctamente");
+      } catch (e) {
+        Logger.error("Error al inicializar modelos de Alarma", e);
+        ErrorHandler.handleError(e, "Inicializar modelos de Alarma", false);
+      }
+    },
+
+    /**
+     * Inicializa los modelos para el fragmento CargaDeEquipos
+     * Incluye medidasModel con 4 opciones, CargaFormJsonModel y NormalizacionCarga
+     * @param {sap.ui.core.mvc.View} oView - Vista actual
+     * @private
+     */
+    _initializeCargaModels: function (oView) {
+      try {
+        // Inicializar medidasModel con 4 opciones
+        var oMedidasModel = ModelHelper.getModel("medidasModel", oView);
+        oMedidasModel.setData({
+          Medidas: [
+            { Codigo: "MED1", Descripcion: "Medida 1" },
+            { Codigo: "MED2", Descripcion: "Medida 2" },
+            { Codigo: "MED3", Descripcion: "Medida 3" },
+            { Codigo: "MED4", Descripcion: "Medida 4" }
+          ]
+        });
+
+        // Inicializar CargaFormJsonModel con valores por defecto
+        var oCargaFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
+        if (!oCargaFormModel.getData() || Object.keys(oCargaFormModel.getData()).length === 0) {
+          oCargaFormModel.setData({
+            InformoEmpresa: "",
+            FechaHora: null,
+            Comentarios: ""
+          });
+        }
+
+        // Inicializar NormalizacionCarga con valores por defecto
+        var oNormalizacionModel = ModelHelper.getModel("NormalizacionCarga", oView);
+        if (!oNormalizacionModel.getData() || Object.keys(oNormalizacionModel.getData()).length === 0) {
+          oNormalizacionModel.setData({
+            Fechahora: null,
+            NormalizacionInformoEmpresa: "",
+            otrasMedidas: "",
+            FechaFinMedidas: null,
+            Comentarios: ""
+          });
+        }
+
+        Logger.debug("Modelos de CargaDeEquipos inicializados correctamente");
+      } catch (e) {
+        Logger.error("Error al inicializar modelos de CargaDeEquipos", e);
+        ErrorHandler.handleError(e, "Inicializar modelos de CargaDeEquipos", false);
       }
     }
   });

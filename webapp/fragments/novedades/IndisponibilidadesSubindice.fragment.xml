@@ -49,7 +49,7 @@
                     <HBox alignItems="Center" class="sapUiLargeMarginEnd">
                         <Label text="Causa" showColon="true" class="sapUiSmallMarginEnd labels" />
                         <HBox>
-                            	<ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}"
+                            	<ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" valueState="{NovedadesFormJsonModel>/CodCausaState}" valueStateText="{NovedadesFormJsonModel>/CodCausaStateMessage}"
 												items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
 												<core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
 											</ComboBox>
@@ -59,7 +59,7 @@
                         <Label text="Motivo" class="sapUiSmallMarginEnd labels" showColon="true" />
                         <HBox>
                           <ComboBox width="300px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}"
-												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+												selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
 												<core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}" additionalText="{MotivosJsonModel>CodigoMotivo}"/>
 											</ComboBox>
                         </HBox>

@@ -4,6 +4,7 @@
 	xmlns:core="sap.ui.core"
 	xmlns:t="sap.ui.table">
 	<t:Table id="generalTable" rows="{ path: 'oGeneralModel>/data', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
+
 		<t:Column width='200px'>
 			<Label text="{i18n>fromDate}"/>
 			<t:template>

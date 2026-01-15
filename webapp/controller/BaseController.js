@@ -10,12 +10,18 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/NovedadesService",
 	"transener/registrocronologicoeventos/services/SubindiceService",
 	"transener/registrocronologicoeventos/services/MotivosService",
+	"transener/registrocronologicoeventos/services/LibroGuardiaService",
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/utils/ValidateHelper",
+	"transener/registrocronologicoeventos/utils/formatter",
 	"sap/ui/core/UIComponent"
-], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, MessageBoxHelper, ValidateHelper, UIComponent) {
+], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, LibroGuardiaService, MessageBoxHelper, ValidateHelper, formatter, UIComponent) {
 	"use strict";
 		return Controller.extend("transener.registrocronologicoeventos.controller.BaseController", {
+			/**
+			 * Formatter para usar en todas las vistas que extienden BaseController
+			 */
+			formatter: formatter,
 			/**
 			 * Referencia al diálogo abierto (evita múltiples instancias)
 			 * @private
@@ -145,31 +151,39 @@ sap.ui.define([
 					}
 				});
 			},
-			/**
-			 * Navega a la vista de Perturbaciones en modo creación
-			 */
-			onPerturbacionesPress: function () {
-				const oView = this.getView();
-				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-				this.resetNovedadesModel().then(() => {
-					this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: Constants.EDIT_MODES.CREATE });
-				}).catch((oError) => {
-					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
-				});
-			},
+		/**
+		 * Navega a la vista de Perturbaciones en modo creación
+		 */
+		onPerturbacionesPress: function () {
+			const oView = this.getView();
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+			var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+			if (oUtilsModel) {
+				oUtilsModel.setProperty("/readOnlyMode", false);
+			}
+			this.resetNovedadesModel().then(() => {
+				this.getOwnerComponent().getRouter().navTo("Perturbaciones", { mode: Constants.EDIT_MODES.CREATE });
+			}).catch((oError) => {
+				ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
+			});
+		},
 
-			/**
-			 * Navega a la vista de Programadas en modo creación
-			 */
-			onProgramadasPress: function () {
-				const oView = this.getView();
-				ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
-				this.resetNovedadesModel().then(() => {
-					this.getOwnerComponent().getRouter().navTo("Programadas", { mode: Constants.EDIT_MODES.CREATE });
-				}).catch((oError) => {
-					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
-				});
-			},
+		/**
+		 * Navega a la vista de Programadas en modo creación
+		 */
+		onProgramadasPress: function () {
+			const oView = this.getView();
+			ModelHelper.getModel("editModel", oView).setProperty("/editableMode", true);
+			var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+			if (oUtilsModel) {
+				oUtilsModel.setProperty("/readOnlyMode", false);
+			}
+			this.resetNovedadesModel().then(() => {
+				this.getOwnerComponent().getRouter().navTo("Programadas", { mode: Constants.EDIT_MODES.CREATE });
+			}).catch((oError) => {
+				ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
+			});
+		},
 
 			/**
 			 * Navega a la vista de Novedades en modo creación
@@ -183,37 +197,99 @@ sap.ui.define([
 					ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
 				});
 			},
-			/**
-			 * Resetea el modelo de novedades cargando el JSON inicial
-			 * @returns {Promise} Promise que se resuelve cuando el modelo se carga
-			 */
-			resetNovedadesModel: function () {
-				const oView = this.getView();
-				const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+		/**
+		 * Limpia todos los modelos de formulario antes de cargar datos nuevos
+		 * Se ejecuta antes de cargar datos en modo create, edit o view
+		 * @param {sap.ui.core.mvc.View} oView - Vista actual
+		 * @private
+		 */
+		_clearAllFormModels: function (oView) {
+			try {
+				// Limpiar modelo principal de novedades
+				const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+				if (oNovedadesModel) {
+					oNovedadesModel.setData({});
+				}
 
-				// Evita cache (útil en FLP / cambios frecuentes)
-				const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
-					+ "?_ts=" + Date.now();
+				// Limpiar modelo de perturbaciones (checkboxes)
+				const oFormPerturbacionesModel = ModelHelper.getModel("formPerturbacionesModel", oView);
+				if (oFormPerturbacionesModel) {
+					oFormPerturbacionesModel.setData({
+						chkRecierre: false,
+						chkRecDeseng: false,
+						chkDeseng: false,
+						chkEmergencia: false
+					});
+				}
 
-				return new Promise((resolve, reject) => {
-					const onDone = () => {
-						oModel.detachRequestCompleted(onDone);
-						Logger.debug("Modelo de novedades reseteado correctamente");
-						resolve(oModel.getData());
-					};
+				// Limpiar modelo de programadas si existe
+				const oFormProgramadasModel = ModelHelper.getModel("formProgramadasModel", oView);
+				if (oFormProgramadasModel) {
+					oFormProgramadasModel.setData({});
+				}
 
-					const onFail = (oEvent) => {
-						oModel.detachRequestFailed(onFail);
-						const sError = oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades";
-						Logger.error("Error al resetear modelo de novedades", sError);
-						reject(sError);
-					};
+				// Limpiar modelos relacionados
+				const oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
+				if (oCammesaModel) {
+					oCammesaModel.setData({});
+				}
 
-					oModel.attachRequestCompleted(onDone);
-					oModel.attachRequestFailed(onFail);
-					oModel.loadData(sUrl, null, true);
-				});
-			},
+				const oCommentsModel = ModelHelper.getModel("CommentsFormJsonModel", oView);
+				if (oCommentsModel) {
+					oCommentsModel.setData({});
+				}
+
+				const oConsecuentesModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
+				if (oConsecuentesModel) {
+					oConsecuentesModel.setData({});
+				}
+
+				const oConsequentListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+				if (oConsequentListModel) {
+					oConsequentListModel.setData({ Consequents: [] });
+				}
+
+				Logger.debug("Todos los modelos de formulario han sido limpiados");
+			} catch (e) {
+				Logger.error("Error al limpiar modelos de formulario", e);
+			}
+		},
+
+		/**
+		 * Resetea el modelo de novedades cargando el JSON inicial
+		 * @returns {Promise} Promise que se resuelve cuando el modelo se carga
+		 */
+		resetNovedadesModel: function () {
+			const oView = this.getView();
+			
+			// Limpiar todos los modelos primero
+			this._clearAllFormModels(oView);
+			
+			const oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+
+			// Evita cache (útil en FLP / cambios frecuentes)
+			const sUrl = sap.ui.require.toUrl("transener/registrocronologicoeventos/model/NovedadesFormJsonModel.json")
+				+ "?_ts=" + Date.now();
+
+			return new Promise((resolve, reject) => {
+				const onDone = () => {
+					oModel.detachRequestCompleted(onDone);
+					Logger.debug("Modelo de novedades reseteado correctamente");
+					resolve(oModel.getData());
+				};
+
+				const onFail = (oEvent) => {
+					oModel.detachRequestFailed(onFail);
+					const sError = oEvent.getParameter("message") || "No se pudo cargar el JSON de Novedades";
+					Logger.error("Error al resetear modelo de novedades", sError);
+					reject(sError);
+				};
+
+				oModel.attachRequestCompleted(onDone);
+				oModel.attachRequestFailed(onFail);
+				oModel.loadData(sUrl, null, true);
+			});
+		},
 			onUbicacionChange: function (evt) {
 				const oView = this.getView()
 				var oEquiposModel = ModelHelper.getModel("EquiposModel", oView)
@@ -263,6 +339,121 @@ sap.ui.define([
 					Logger.debug("Obteniendo subíndice", { CodNovedad, Tplnr, Equnr, InicioNove });
 				}
 			},
+			/**
+			 * Maneja el cambio en EntDispo y actualiza EntServicio con el mismo valor
+			 * También crea un registro en el Libro de Guardia si hay fecha
+			 * @param {sap.ui.base.Event} oEvent - Evento del cambio
+			 */
+			onEntDispoChange: function (oEvent) {
+				const oView = this.getView();
+				const oDateTimePicker = oEvent.getSource();
+				const oDateValue = oDateTimePicker.getDateValue();
+				
+				if (oDateValue) {
+					// Actualizar EntServicio con el mismo valor que EntDispo
+					const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+					if (oNovedadesModel) {
+						oNovedadesModel.setProperty("/EntServicio", oDateValue);
+						Logger.debug("EntServicio actualizado automáticamente con EntDispo", { EntDispo: oDateValue, EntServicio: oDateValue });
+					}
+				}
+			},
+
+			/**
+			 * Crea un registro en el Libro de Guardia
+			 * @param {sap.ui.core.mvc.View} oView - Vista actual
+			 * @param {Date} [oFechaHora] - Fecha y hora (opcional, si no se proporciona usa InicioNove)
+			 * @param {string} [sIdNovedadFromResult] - IdNovedad del resultado del POST (opcional)
+			 * @private
+			 */
+			_createGuardiaRecord: function (oView, oFechaHora, sIdNovedadFromResult) {
+				try {
+					const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+					if (!oNovedadesModel) {
+						Logger.warn("_createGuardiaRecord: No se encontró NovedadesFormJsonModel");
+						return;
+					}
+
+					const data = oNovedadesModel.getData();
+					const sEquipo = data.Equnr || "";
+					const sLugar = data.Tplnr || "";
+					
+					// Usar IdNovedad del resultado si se proporciona, sino del modelo
+					const sNovedad = sIdNovedadFromResult || data.IdNovedad || data.Id || "";
+					
+					// Si no se proporciona fecha, usar InicioNove
+					if (!oFechaHora) {
+						oFechaHora = data.InicioNove || null;
+					}
+					
+					// Validar que tengamos los datos mínimos
+					if (!sEquipo || !sLugar || !oFechaHora) {
+						Logger.debug("_createGuardiaRecord: Faltan datos requeridos (Equipo, Lugar o Fecha)");
+						return;
+					}
+
+					// Determinar el TipoNovedad basado en los checkboxes
+					var sTipoNovedad = "";
+					var oFormPerturbacionesModel = ModelHelper.getModel("formPerturbacionesModel", oView);
+					
+					if (oFormPerturbacionesModel) {
+						var oFormData = oFormPerturbacionesModel.getData() || {};
+						if (oFormData.chkRecDeseng) {
+							sTipoNovedad = "RECD"; // Recierre y Desenganche
+						} else if (oFormData.chkRecierre) {
+							sTipoNovedad = "AREC"; // Recierre
+						} else if (oFormData.chkDeseng) {
+							sTipoNovedad = "DESE"; // Desenganche
+						} else if (oFormData.chkEmergencia) {
+							sTipoNovedad = "FSPE"; // F/S Emergencia
+						}
+					}
+					
+					// Si no se encontró en formPerturbacionesModel, usar los valores de NovedadesFormJsonModel
+					if (!sTipoNovedad) {
+						// Caso especial: Si tiene solo Recierre pero sin EntIndis, es AREC
+						if (data.Recierre && !data.EntIndis) {
+							sTipoNovedad = "AREC";
+						} else if (data.Recierre && data.GenIndisponibilidad) {
+							sTipoNovedad = "RECD";
+						} else if (data.Recierre) {
+							sTipoNovedad = "AREC";
+						} else if (data.GenIndisponibilidad && data.CodNovedad === Constants.NOVEDAD_TYPES.PERTURBACION) {
+							sTipoNovedad = "DESE";
+						} else if (data.GenIndisponibilidad && data.CodNovedad === Constants.NOVEDAD_TYPES.DESCONEXION) {
+							sTipoNovedad = "FSPE";
+						} else {
+							sTipoNovedad = "N/A";
+						}
+					}
+
+					// Preparar datos para el servicio
+					var oGuardiaData = {
+						Fechahora: oFechaHora,
+						Equipo: sEquipo,
+						Lugar: sLugar,
+						Novedad: sNovedad,
+						Tiponovedad: sTipoNovedad
+					};
+
+					// Crear registro en Libro de Guardia y retornar la Promise
+					return LibroGuardiaService.createGuardia(oGuardiaData, oView)
+						.then(function (oResponse) {
+							Logger.info("_createGuardiaRecord: Registro creado exitosamente en Libro de Guardia");
+							// El mensaje ya se muestra en el servicio (MessageToast)
+							return oResponse;
+						})
+						.catch(function (oError) {
+							Logger.error("_createGuardiaRecord: Error al crear registro en Libro de Guardia", oError);
+							// El error ya se maneja en el servicio
+							throw oError;
+						});
+				} catch (e) {
+					Logger.error("_createGuardiaRecord: Excepción al crear registro", e);
+					ErrorHandler.handleError(e, "crear registro en Libro de Guardia", false);
+				}
+			},
+
 			recierreChanged: function () {
 				const oView = this.getView()
 				var genIndisponibilidad = ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/GenIndisponibilidad");
@@ -293,7 +484,7 @@ sap.ui.define([
 				return;
 			}
 
-			var empresa = utilsModel.getProperty("/CodEmpresa");
+			var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 			var oModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
 			
 			if (!oModel) {
@@ -355,22 +546,121 @@ sap.ui.define([
 			}
 				this.recierreChanged();
 				oModel.setData(oData);
-				MotivosService.loadModel(oData.CodNovedad, empresa);
+				MotivosService.loadModel(oData.CodNovedad, Empresa);
 				Logger.debug("Datos del modelo de novedades actualizados", oData);
 			}
 			,
 			/**
-			 * Guarda una novedad (crea o actualiza según el modo)
+			 * Guarda un registro en Libro de Guardia desde la vista de Novedades
+			 * Si es modo EDIT hace PUT, si es CREATE hace POST
+			 * Solo guarda en GuardiasListSet usando los campos de la vista de Novedades
 			 */
-			onSaveNovedad: function () {
-				if (!this.novedadesFormValid()) {
-					ErrorHandler.handleValidationError(Constants.ERROR_MESSAGES.VALIDATION_ERROR, "Novedades");
+			onSaveGuardia: function () {
+				const oView = this.getView();
+				const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+				const oEditModel = ModelHelper.getModel("editModel", oView);
+				
+				if (!oNovedadesModel) {
+					MessageBox.alert("No se encontró el modelo de novedades.");
 					return;
 				}
 
-
+				const data = oNovedadesModel.getData();
+				const sMode = oEditModel ? (oEditModel.getProperty("/mode") || "").toLowerCase() : Constants.EDIT_MODES.CREATE;
+				const bIsEditMode = sMode === Constants.EDIT_MODES.EDIT;
 				
+				// Validar campos requeridos
+				if (!data.CodNovedad) {
+					MessageBox.alert("Debe seleccionar un Tipo de Novedad.");
+					return;
+				}
+				
+				if (!data.Tplnr) {
+					MessageBox.alert("Debe seleccionar una Ubicación.");
+					return;
+				}
+				
+				if (!data.Equnr) {
+					MessageBox.alert("Debe seleccionar un Equipo.");
+					return;
+				}
+				
+				if (!data.InicioNove) {
+					MessageBox.alert("Debe ingresar una Fecha/Hora.");
+					return;
+				}
+
+				// Para modo EDIT, validar que tenga Id del registro de GuardiasListSet
+				if (bIsEditMode && !data.Id) {
+					MessageBox.alert("No se encontró el Id del registro a actualizar.");
+					return;
+				}
+
+				// Armar el payload con los campos de la vista de Novedades
+				var oGuardiaData = {
+					Fechahora: data.InicioNove,
+					Equipo: data.Equnr,
+					Lugar: data.Tplnr,
+					Novedad: data.Id || data.IdNovedad || "",
+					Tiponovedad: data.CodNovedad || ""
+				};
+
+				// Si es modo EDIT, agregar el Id para el PUT
+				if (bIsEditMode) {
+					oGuardiaData.Id = data.Id;
+				}
+
+				// Guardar en Libro de Guardia (CREATE o UPDATE según el modo)
+				var oPromise = bIsEditMode 
+					? LibroGuardiaService.updateGuardia(oGuardiaData, oView)
+					: LibroGuardiaService.createGuardia(oGuardiaData, oView);
+
+				oPromise
+					.then((oResponse) => {
+						Logger.info("onSaveGuardia: Registro " + (bIsEditMode ? "actualizado" : "creado") + " exitosamente en Libro de Guardia");
+						// El mensaje ya se muestra en el servicio (MessageToast)
+						
+						// Publicar evento para refrescar datos en Main
+						var oBus = sap.ui.getCore().getEventBus();
+						if (oBus) {
+							oBus.publish("Main", "onInit");
+							Logger.debug("onSaveGuardia: Evento publicado para refrescar datos en Main");
+						}
+						
+						// Navegar de vuelta a la vista principal
+						this.onNavBack();
+					})
+					.catch((oError) => {
+						Logger.error("onSaveGuardia: Error al " + (bIsEditMode ? "actualizar" : "crear") + " registro en Libro de Guardia", oError);
+						// El error ya se maneja en el servicio
+					});
+			},
+
+			/**
+			 * Guarda una novedad (crea o actualiza según el modo)
+			 */
+			onSaveNovedad: function () {
+				const oValidationResult = this.novedadesFormValid();
+				if (!oValidationResult.valid) {
+					// Marcar campos con error en rojo (ya lo hace ValidateHelper a través de propertyState)
+					// Mostrar mensaje con campos faltantes
+					var sMessage = "Por favor complete los siguientes campos requeridos:\n\n";
+					if (oValidationResult.missingFields && oValidationResult.missingFields.length > 0) {
+						sMessage += "• " + oValidationResult.missingFields.join("\n• ");
+					} else {
+						sMessage += "Hay campos con errores de validación";
+					}
+					
+					MessageBox.error(sMessage, {
+						title: "Campos Faltantes",
+						actions: [MessageBox.Action.OK]
+					});
+					return;
+				}
+
 				const oView = this.getView();
+				// Flag para controlar si hay un MessageBox abierto (con EntDispo)
+				var bMessageBoxOpen = false;
 				const promises = [];
 				const data = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
 				const oEditModel = ModelHelper.getModel("editModel", oView);
@@ -407,6 +697,7 @@ sap.ui.define([
 			// Si hay fecha de EntDispo, mostrar mensaje informativo sobre creación de novedad en LG
 			if (data.EntDispo) {
 				var sUbicacion = data.Tplnr || "N/A";
+				var sEquipo = data.Equnr || "N/A";
 				var sReferencia = data.IdNovedad || "Nueva";
 				
 				// Intentar obtener la descripción de la ubicación
@@ -439,14 +730,86 @@ sap.ui.define([
 					sFechaDispo = data.EntDispo;
 				}
 
-				var sMensaje = "Se creará una novedad en LG a futuro con los siguientes datos:\n\n" +
-					"Ubicación: " + sUbicacionDesc + "\n" +
-					"Referencia: " + sReferencia + "\n" +
-					"Fecha de Disponibilidad: " + sFechaDispo;
+				// Determinar el TipoNovedad basado en los checkboxes
+				var sTipoNovedad = "";
+				var oFormPerturbacionesModel = ModelHelper.getModel("formPerturbacionesModel", oView);
+				
+				// Intentar obtener desde formPerturbacionesModel primero
+				if (oFormPerturbacionesModel) {
+					var oFormData = oFormPerturbacionesModel.getData() || {};
+					if (oFormData.chkRecDeseng) {
+						sTipoNovedad = "RECD"; // Recierre y Desenganche
+					} else if (oFormData.chkRecierre) {
+						sTipoNovedad = "AREC"; // Recierre
+					} else if (oFormData.chkDeseng) {
+						sTipoNovedad = "DESE"; // Desenganche
+					} else if (oFormData.chkEmergencia) {
+						sTipoNovedad = "FSPE"; // F/S Emergencia
+					}
+				}
+				
+				// Si no se encontró en formPerturbacionesModel, usar los valores de NovedadesFormJsonModel
+				if (!sTipoNovedad) {
+					if (data.Recierre && data.GenIndisponibilidad) {
+						sTipoNovedad = "RECD"; // Recierre y Desenganche
+					} else if (data.Recierre) {
+						sTipoNovedad = "AREC"; // Recierre
+					} else if (data.GenIndisponibilidad && data.CodNovedad === Constants.NOVEDAD_TYPES.PERTURBACION) {
+						sTipoNovedad = "DESE"; // Desenganche
+					} else if (data.GenIndisponibilidad && data.CodNovedad === Constants.NOVEDAD_TYPES.DESCONEXION) {
+						sTipoNovedad = "FSPE"; // F/S Emergencia
+					} else {
+						sTipoNovedad = "N/A"; // Por defecto si no se puede determinar
+					}
+				}
 
+				var sMensaje = "Se creará una novedad en LG a futuro con los siguientes datos:\n\n" +
+					"Fecha/Hora: " + sFechaDispo + "\n" +
+					"Lugar (Estación): " + sUbicacionDesc + "\n" +
+					"Equipo: " + sEquipo + "\n" +
+					"TipoNovedad: " + sTipoNovedad + "\n" +
+					"Referencia: " + sReferencia;
+
+				var that = this;
+				bMessageBoxOpen = true;
+				
 				MessageBox.information(sMensaje, {
 					title: "Novedad en LG",
-					actions: [MessageBox.Action.OK]
+					actions: [MessageBox.Action.OK],
+					onClose: function (sAction) {
+						bMessageBoxOpen = false;
+						// Crear registro en Libro de Guardia después de mostrar el mensaje
+						var oGuardiaPromise = that._createGuardiaRecord(oView, data.EntDispo);
+						// Navegar después de crear el registro (o inmediatamente si no hay Promise)
+						if (oGuardiaPromise && typeof oGuardiaPromise.then === "function") {
+							oGuardiaPromise
+								.then(function() {
+									// Publicar evento para refrescar datos en Main
+									var oBus = sap.ui.getCore().getEventBus();
+									if (oBus) {
+										oBus.publish("Main", "onInit");
+										Logger.debug("onSaveNovedad: Evento publicado para refrescar datos en Main");
+									}
+									// Navegar de vuelta a la vista principal
+									that.onNavBack();
+								})
+								.catch(function(oError) {
+									// Aún así navegar aunque haya error
+									var oBus = sap.ui.getCore().getEventBus();
+									if (oBus) {
+										oBus.publish("Main", "onInit");
+									}
+									that.onNavBack();
+								});
+						} else {
+							// Si no hay Promise, navegar inmediatamente
+							var oBus = sap.ui.getCore().getEventBus();
+							if (oBus) {
+								oBus.publish("Main", "onInit");
+							}
+							that.onNavBack();
+						}
+					}
 				});
 			}
 
@@ -479,11 +842,58 @@ sap.ui.define([
 							if (sMode === Constants.EDIT_MODES.EDIT) {
 								NovedadesService.unblockNovedad(data.IdNovedad, oView);
 							}
+							
+							// Si es modo CREATE, crear registro en Libro de Guardia con los datos de la vista
+							// Solo si NO hay EntDispo (porque si hay EntDispo, ya se creó en el MessageBox.onClose)
+							var oGuardiaPromise = null;
+							if (sMode === Constants.EDIT_MODES.CREATE && !data.EntDispo) {
+								// Obtener IdNovedad del resultado del POST si está disponible
+								var sIdNovedadFromResult = "";
+								if (results && results.length > 0 && results[0].data) {
+									sIdNovedadFromResult = results[0].data.IdNovedad || results[0].data.Id || "";
+								}
+								// Usar la función existente, pasando null como fecha para que use InicioNove
+								oGuardiaPromise = this._createGuardiaRecord(oView, null, sIdNovedadFromResult);
+							}
+							
 							ErrorHandler.showSuccess(
 								sMode === Constants.EDIT_MODES.EDIT 
 									? Constants.SUCCESS_MESSAGES.UPDATED 
 									: Constants.SUCCESS_MESSAGES.CREATED
 							);
+							
+							// Si hay un MessageBox abierto (con EntDispo), la navegación se hará en el onClose del MessageBox
+							// Si no hay MessageBox, navegar ahora
+							if (!bMessageBoxOpen) {
+								// Función para navegar y refrescar
+								var that = this;
+								var fnNavigateAndRefresh = function() {
+									// Publicar evento para refrescar datos en Main
+									var oBus = sap.ui.getCore().getEventBus();
+									if (oBus) {
+										oBus.publish("Main", "onInit");
+										Logger.debug("onSaveNovedad: Evento publicado para refrescar datos en Main");
+									}
+									// Navegar de vuelta a la vista principal
+									that.onNavBack();
+								};
+								
+								// Si hay una Promise de creación de Guardia, esperarla antes de navegar
+								if (oGuardiaPromise && typeof oGuardiaPromise.then === "function") {
+									oGuardiaPromise
+										.then(function() {
+											fnNavigateAndRefresh();
+										})
+										.catch(function(oError) {
+											// Aún así navegar aunque haya error en la creación del registro de Guardia
+											Logger.warn("onSaveNovedad: Error al crear registro en Guardia, pero navegando de todas formas", oError);
+											fnNavigateAndRefresh();
+										});
+								} else {
+									// Si no hay Promise de Guardia (o no es válida), navegar inmediatamente
+									fnNavigateAndRefresh();
+								}
+							}
 						}
 					})
 					.catch((oError) => {
@@ -516,21 +926,45 @@ sap.ui.define([
 			 * Valida el formulario de novedades
 			 * @returns {boolean} true si el formulario es válido, false en caso contrario
 			 */
+			/**
+			 * Mapeo de campos del modelo a etiquetas legibles para el usuario
+			 * @private
+			 */
+			_fieldLabels: {
+				CodNovedad: "Tipo de Novedad",
+				CodTipo: "Tipo",
+				InicioNove: "Fecha/Hora Inicio",
+				EntIndis: "Ent. Indisponibilidad",
+				CodWeather: "Clima",
+				CodDispAct: "Disp. Actuantes",
+				CodAreaResp: "Área Responsable",
+				CodCausa: "Causa",
+				Equnr: "Equipo",
+				CodMotivo: "Motivo",
+				GenIndisponibilidad: "Gen. Indisponibilidad",
+				Tplnr: "Ubicación"
+			},
+
+			/**
+			 * Valida el formulario de novedades y retorna los campos faltantes
+			 * @returns {Object} {valid: boolean, missingFields: Array<string>}
+			 */
 			novedadesFormValid: function () {
 				const oNovedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
 				const oRules = {
 					CodNovedad: ["required"],
-					CodTipo: ["required"],
+					//CodTipo: ["required"],
 					InicioNove: ["required", "date"],
 					EntIndis: ["required", "date"],
 					CodWeather: ["required"],
-					CodDispAct: ["required"],
-					CodAreaResp: ["required"],
+					//CodDispAct: ["required"],
+					//CodAreaResp: ["required"],
 					CodCausa: ["required"],
 					Equnr: ["required"],
 					CodMotivo: ["required"],
 					GenIndisponibilidad: ["required"]
 				};
+
 
 				const sNovedad = oNovedadesModel.getProperty("/CodNovedad");
 				
@@ -561,9 +995,30 @@ sap.ui.define([
 
 				const oData = oNovedadesModel.getData();
 				const bHasErrors = ValidateHelper.make(oData, oRules);
+				
+				// Obtener los campos faltantes
+				const aMissingFields = [];
+				if (bHasErrors && ValidateHelper.errors && ValidateHelper.errors.length > 0) {
+					const that = this;
+					ValidateHelper.errors.forEach(function(oError) {
+						for (var sField in oError) {
+							if (oError.hasOwnProperty(sField) && oError[sField] === "required") {
+								var sLabel = that._fieldLabels[sField] || sField;
+								// Evitar duplicados
+								if (aMissingFields.indexOf(sLabel) === -1) {
+									aMissingFields.push(sLabel);
+								}
+							}
+						}
+					});
+				}
+				
 				oNovedadesModel.refresh(true);
 				
-				return !bHasErrors;
+				return {
+					valid: !bHasErrors,
+					missingFields: aMissingFields
+				};
 			}
 
 		});
