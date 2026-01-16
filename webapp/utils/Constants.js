@@ -72,26 +72,19 @@ sap.ui.define([], function () {
 		 */
 		NOVEDAD_FRAGMENT_MAPPING: {
 			TRA: {
-				PantallaGeneral: ["AUTR","NAUT","ADAP","NADA","DFOR","FORZ","DISP","INDI","ENER","ESPO","FINA","INIC","HABI","INHI","INFO","REAN","RMON","RTRI","SUSP","CREC","SREC","AUTO","MANU","R495","R500","R5005","SOLI","SULI"],
+				General: ["ADAP","AUTO","AUTR","DENE","DESC","DFOR","DISP","ENER","ESER","ESPO", "FINA","FSER","FSPO","HABI","INDI","INFO","INHI","INIC","MANU","NADA","NAUT","R495","R500","R5005","REAN","RMON","RTRI","SREC","SUSP"],
 				Alarma: ["ALAR","RTNA"],
-				CargaDeEquipos: ["VANO","INTF","CNOM","NRLI","SULI","CMAX","SNOR"],
-				VinculadoSinTension: ["otro1","otro2"],
+				CargaDeEquipos: ["CMAX","CNOM","INTF","NRLI","SULI",],
 				EnBandaFueraDeBanda: ["EBAN","FBAN"],
-				IndisponibilidadesSubindice: ["otro1","otro2"],
-				ManiobrasOperativas1: ["DESC","DENE","ESER","FSER","FSPO","ABTR","CBAR","AACO","ESSP","AINT","CNOR","AACO"],
-				ManiobrasOperativas2: ["otro1","otro2"],
-				ManiobrasOperativas3: ["otro1","otro2"]
+				ManiobrasOperativas: ["AACO","ABTR","AINT","CBAR","CNOR","ESSP"],
+			
 			},
 			TBA: {
-				PantallaGeneral: ["DI","IN","HABI","INHI","COM","RH","RA","APADECSUB","ACT SUB V","GUI","MIN FREC","NGUI","NFORM","PT","RESTR","RSSP"],
+				General: ["DI","IN","HABI","INHI","COM","RH","RA","APADECSUB","ACT SUB V","GUI","MIN FREC","NGUI","NFORM","PT","RESTR","RSSP"],
 				Alarma: ["ALARMA","FT","FTP","IFUIM","NT","RTNA"],
 				CargaDeEquipos: ["INTF","CNOM","NRESTR"],
-				VinculadoSinTension: ["otro1","otro2"],
 				EnBandaFueraDeBanda: ["EB","FB"],
-				IndisponibilidadesSubindice: ["otro1","otro2"],
-				ManiobrasOperativas1: ["CR","DF","DG","EP","FP","PFIH","PFII","SOLGEN","SPG","SSG","TORET","TORS","TORT","U10%","U5%","UNORM"],
-				ManiobrasOperativas2: ["otro1","otro2"],
-				ManiobrasOperativas3: ["otro1","otro2"]
+				ManiobrasOperativas: ["CR","DF","DG","EP","FP","PFIH","PFII","SOLGEN","SPG","SSG","TORET","TORS","TORT","U10%","U5%","UNORM"],
 			}
 		},
 

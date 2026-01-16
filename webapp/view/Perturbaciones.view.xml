@@ -506,320 +506,327 @@
                                         </IconTabBar>
                                     </VBox>
                                     <VBox width="50%" class="FlexForm">
-                                        <VBox width="100%" alignItems="Center" class="separador">
-                                            <Title text="Normalización de la Instalación" />
-                                        </VBox>
-                                        <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                            <Label text="Se energizó desde:" class="sapUiSmallMarginEnd" />
-                                            <HBox justifyContent="SpaceBetween">
-                                                <ComboBox class="sapUiSmallMarginEnd" />
-                                                <DatePicker />
+                                        <VBox  >
+                                            <VBox width="100%" alignItems="Center" class="separador normalizacion-ctn">
+                                                <Title text="Normalización de la Instalación" />
+                                            </VBox>
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                                <Label text="Se energizó desde:" class="sapUiSmallMarginEnd" />
+                                                <HBox justifyContent="SpaceBetween">
+                                                    <ComboBox class="sapUiSmallMarginEnd" />
+                                                    <DatePicker />
+                                                </HBox>
                                             </HBox>
-                                        </HBox>
-                                        <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                            <Label text="En Servicio (E/S) " class="sapUiSmallMarginEnd" />
-                                            <HBox>
-                                                <ComboBox class="sapUiSmallMarginEnd" />
-                                                <DateTimePicker editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" enabled="{= ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                                <Label text="En Servicio (E/S) " class="sapUiSmallMarginEnd" />
+                                                <HBox>
+                                                    <ComboBox class="sapUiSmallMarginEnd" />
+                                                    <DateTimePicker editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" enabled="{= ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
 
+                                                </HBox>
                                             </HBox>
-                                        </HBox>
-                                        <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                            <Label text="Fecha /hora de disponibilidad" />
-                                            <DateTimePicker editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" enabled="{= ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" value="{ 'path': 'NovedadesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" change=".onEntDispoChange" />
-                                        </HBox>
-                                        <VBox justifyContent="Start">
-                                            <Label text="Comentarios" />
-                                            <Input value="{NovedadesFormJsonModel>Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                                        </VBox>
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                                <Label text="Fecha /hora de disponibilidad" />
+                                                <DateTimePicker editable="{= ${UserDataModel>/oVisualizador} &amp;&amp; ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" enabled="{= ${utilsModel>/editableDate} &amp;&amp; !${utilsModel>/readOnlyMode}}" value="{ 'path': 'NovedadesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" change=".onEntDispoChange" />
+                                            </HBox>
+                                            <VBox justifyContent="Start">
+                                                <Label text="Comentarios" />
+                                                <Input value="{NovedadesFormJsonModel>Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                            </VBox>
 
-                                        <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
-                                            <items>
-                                                <IconTabFilter text="Aviso Normalización" design="Horizontal" showAll="true">
-                                                    <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                        <VBox>
-                                                            <Label text="Se informó a Empresa" />
-                                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                                                <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
-                                                            </ComboBox>
-                                                        </VBox>
-                                                        <VBox>
-                                                            <Label text="Se informó a Personal" />
-                                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopersnorma}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                                                <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
-                                                            </ComboBox>
-                                                        </VBox>
-                                                    </HBox>
-                                                </IconTabFilter>
-                                            </items>
-                                        </IconTabBar>
-                                        <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
-                                            <items>
-                                                <IconTabFilter text="Parte Indisponibilidad" design="Horizontal" showAll="true">
-                                                    <VBox >
-                                                        <HBox alignItems="Center" justifyContent="End">
-                                                            <Label text="La indisponibilidad se informa a CAMMESA " />
-                                                            <CheckBox text="SI " selected="{CammesaFormJsonModel>/InformaCammesa}"/>
-
+                                            <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
+                                                <items>
+                                                    <IconTabFilter text="Aviso Normalización" design="Horizontal" showAll="true">
+                                                        <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
+                                                            <VBox>
+                                                                <Label text="Se informó a Empresa" />
+                                                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                                                </ComboBox>
+                                                            </VBox>
+                                                            <VBox>
+                                                                <Label text="Se informó a Personal" />
+                                                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopersnorma}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                                                    <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+                                                                </ComboBox>
+                                                            </VBox>
                                                         </HBox>
-                                                        <VBox justifyContent="Start">
-                                                            <Label text="Comentarios CAMMESA" />
-                                                            <Input value="{CammesaFormJsonModel>/Texto}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                                    </IconTabFilter>
+                                                </items>
+                                            </IconTabBar>
+                                            <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
+                                                <items>
+                                                    <IconTabFilter text="Parte Indisponibilidad" design="Horizontal" showAll="true">
+                                                        <VBox >
+                                                            <HBox alignItems="Center" justifyContent="End">
+                                                                <Label text="La indisponibilidad se informa a CAMMESA " />
+                                                                <CheckBox text="SI " selected="{CammesaFormJsonModel>/InformaCammesa}"/>
+
+                                                            </HBox>
+                                                            <VBox justifyContent="Start">
+                                                                <Label text="Comentarios CAMMESA" />
+                                                                <Input value="{CammesaFormJsonModel>/Texto}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                                            </VBox>
+                                                            <VBox justifyContent="Start">
+                                                                <Label text="Comentario Interno" />
+                                                                <Input value="{NovedadesFormJsonModel>/Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                                            </VBox>
                                                         </VBox>
-                                                        <VBox justifyContent="Start">
-                                                            <Label text="Comentario Interno" />
-                                                            <Input value="{NovedadesFormJsonModel>/Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                                                        </VBox>
-                                                    </VBox>
-                                                </IconTabFilter>
-                                            </items>
-                                        </IconTabBar>
-                                        <VBox width="100%" alignItems="Center" class="separador sapUiSmallMarginTop">
-                                            <Title text="Pruebas Realizadas" />
+                                                    </IconTabFilter>
+                                                </items>
+                                            </IconTabBar>
                                         </VBox>
-                                        <HBox justifyContent="End">
-                                            <Button text="Agregar otra prueba" type="Transparent" />
-                                        </HBox>
-
-                                        <HBox justifyContent="SpaceBetween" alignItems="End">
-                                            <VBox>
-                                                <Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd" />
-                                                <ComboBox selectedKey="{NovedadesFormJsonModel>/NormPersonal}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                                    <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
-                                                </ComboBox>
+                                           <VBox  >
+                                            <VBox width="100%" alignItems="Center" class="separador sapUiSmallMarginTop pruebas-ctn">
+                                                <Title text="Pruebas Realizadas" />
                                             </VBox>
-                                            <VBox>
-                                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaNormPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                                            </VBox>
-                                        </HBox>
-
-                                        <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
-                                            <items>
-                                                <IconTabFilter text="Protecciones Actuantes" design="Horizontal" showAll="true">
-                                                    <HBox justifyContent="End">
-                                                        <Button text="Agregar otra ET" type="Transparent" />
-                                                    </HBox>
-                                                    <FlexBox class="FlexForm" width="100%">
-                                                        <VBox width="100%">
-                                                            <ScrollContainer width="100%">
-                                                                <Table class="no-padding-header-table">
-                                                                    <columns>
-                                                                        <Column width="100px" hAlign="Center">
-                                                                            <Text wrapping="false" text="" />
-                                                                        </Column>
-                                                                        <Column width="150px" hAlign="Center">
-                                                                            <Text wrapping="false" text="MAXIMA CORRIENTE" />
-                                                                        </Column>
-                                                                        <Column width="370px" hAlign="Center">
-                                                                            <Text wrapping="false" text="EXCITACION" />
-                                                                        </Column>
-                                                                        <Column width="110px" hAlign="Center">
-                                                                            <Text wrapping="false" text="DISPARO" />
-                                                                        </Column>
-                                                                        <Column width="200px" hAlign="Center">
-                                                                            <Text text="EXCITACION" />
-                                                                        </Column>
-                                                                        <Column width="120px" hAlign="Center">
-                                                                            <Text wrapping="false" text="DISPARO" />
-                                                                        </Column>
-                                                                        <Column width="250px" hAlign="Center">
-                                                                            <Text wrapping="false" text="" />
-                                                                        </Column>
-                                                                    </columns>
-                                                                    <items>
-                                                                        <ColumnListItem>
-                                                                            <cells>
-                                                                                <HBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="E.T" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <Input value="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="KM." class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <Input value="{SignalsListJsonModel>/Signals/0/Km}" />
-                                                                                    </VBox>
-                                                                                </HBox>
-                                                                                <HBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="INST" class="title" />
-                                                                                        <Label text="TD" class="subttitle" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="TEMP" class="title" textAlign="Center" />
-                                                                                        <Label text="T1" textAlign="Center" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="MAX" class="title" textAlign="Center" />
-                                                                                        <Label text="PLI" textAlign="Center" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                    </VBox>
-                                                                                </HBox>
-                                                                                <VBox>
-                                                                                    <Label text="EZ" class="title" textAlign="Center" />
-                                                                                    <HBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FN" textAlign="Center" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FR" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FS" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FT" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="TX" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="RX" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="T2" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="Ts2" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                    </HBox>
-                                                                                </VBox>
-                                                                                <VBox>
-                                                                                    <Label text="PZ" class="title" textAlign="Center" />
-                                                                                    <HBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="DPZ" textAlign="Center" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="RR" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                    </HBox>
-                                                                                </VBox>
-                                                                                <VBox>
-                                                                                    <Label text="ED" class="title" textAlign="Center" />
-                                                                                    <HBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FN" textAlign="Center" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FR" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FS" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="FT" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                    </HBox>
-                                                                                </VBox>
-                                                                                <VBox>
-                                                                                    <Label text="U" class="title" textAlign="Center" />
-                                                                                    <HBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text="{i18n>U}" textAlign="Center" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                        <VBox alignItems="Center">
-                                                                                            <Label text=">U" />
-                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                        </VBox>
-                                                                                    </HBox>
-                                                                                </VBox>
-                                                                                <HBox width="100px">
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="DAG" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="DISCO" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="BZ" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="PFI" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
-                                                                                    </VBox>
-                                                                                    <VBox alignItems="Center">
-                                                                                        <Label text="OSC" class="title" />
-                                                                                        <Label text="" class="title" />
-                                                                                        <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
-                                                                                    </VBox>
-                                                                                </HBox>
-                                                                            </cells>
-                                                                        </ColumnListItem>
-                                                                    </items>
-                                                                </Table>
-                                                            </ScrollContainer>
-                                                        </VBox>
-                                                    </FlexBox>
-                                                </IconTabFilter>
-                                            </items>
-                                        </IconTabBar>
-                                        <HBox justifyContent="SpaceBetween">
-                                            <HBox alignItems="Center">
-                                                <Label text="Otras Actuaciones" class="sapUiMediumMarginEnd"/>
-                                                <ComboBox />
+                                            <HBox justifyContent="End">
+                                                <Button text="Agregar otra prueba" type="Transparent" />
                                             </HBox>
-                                            <HBox alignItems="Center">
-                                                <Label text="Sin señalización de protecciones" />
+
+                                            <HBox justifyContent="SpaceBetween" alignItems="End">
+                                                <VBox>
+                                                    <Label text="Prueba a solicitud de:" class="sapUiSmallMarginEnd" />
+                                                    <ComboBox selectedKey="{NovedadesFormJsonModel>/NormPersonal}" items="{PersonalHabilitadoModel>/Todos}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                                        <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+                                                    </ComboBox>
+                                                </VBox>
+                                                <VBox>
+                                                    <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaNormPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
+                                                </VBox>
+                                            </HBox>
+
+                                            <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
+                                                <items>
+                                                    <IconTabFilter text="Protecciones Actuantes" design="Horizontal" showAll="true">
+                                                        <HBox justifyContent="End">
+                                                            <Button text="Agregar otra ET" type="Transparent" />
+                                                        </HBox>
+                                                        <FlexBox class="FlexForm" width="100%">
+                                                            <VBox width="100%">
+                                                                <ScrollContainer width="100%">
+                                                                    <Table class="no-padding-header-table">
+                                                                        <columns>
+                                                                            <Column width="100px" hAlign="Center">
+                                                                                <Text wrapping="false" text="" />
+                                                                            </Column>
+                                                                            <Column width="150px" hAlign="Center">
+                                                                                <Text wrapping="false" text="MAXIMA CORRIENTE" />
+                                                                            </Column>
+                                                                            <Column width="370px" hAlign="Center">
+                                                                                <Text wrapping="false" text="EXCITACION" />
+                                                                            </Column>
+                                                                            <Column width="110px" hAlign="Center">
+                                                                                <Text wrapping="false" text="DISPARO" />
+                                                                            </Column>
+                                                                            <Column width="200px" hAlign="Center">
+                                                                                <Text text="EXCITACION" />
+                                                                            </Column>
+                                                                            <Column width="120px" hAlign="Center">
+                                                                                <Text wrapping="false" text="DISPARO" />
+                                                                            </Column>
+                                                                            <Column width="250px" hAlign="Center">
+                                                                                <Text wrapping="false" text="" />
+                                                                            </Column>
+                                                                        </columns>
+                                                                        <items>
+                                                                            <ColumnListItem>
+                                                                                <cells>
+                                                                                    <HBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="E.T" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <Input value="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="KM." class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <Input value="{SignalsListJsonModel>/Signals/0/Km}" />
+                                                                                        </VBox>
+                                                                                    </HBox>
+                                                                                    <HBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="INST" class="title" />
+                                                                                            <Label text="TD" class="subttitle" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="TEMP" class="title" textAlign="Center" />
+                                                                                            <Label text="T1" textAlign="Center" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="MAX" class="title" textAlign="Center" />
+                                                                                            <Label text="PLI" textAlign="Center" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                        </VBox>
+                                                                                    </HBox>
+                                                                                    <VBox>
+                                                                                        <Label text="EZ" class="title" textAlign="Center" />
+                                                                                        <HBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FN" textAlign="Center" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FR" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FS" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FT" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="TX" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="RX" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="T2" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="Ts2" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                        </HBox>
+                                                                                    </VBox>
+                                                                                    <VBox>
+                                                                                        <Label text="PZ" class="title" textAlign="Center" />
+                                                                                        <HBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="DPZ" textAlign="Center" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="RR" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                        </HBox>
+                                                                                    </VBox>
+                                                                                    <VBox>
+                                                                                        <Label text="ED" class="title" textAlign="Center" />
+                                                                                        <HBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FN" textAlign="Center" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FR" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FS" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="FT" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                        </HBox>
+                                                                                    </VBox>
+                                                                                    <VBox>
+                                                                                        <Label text="U" class="title" textAlign="Center" />
+                                                                                        <HBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text="{i18n>U}" textAlign="Center" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                            <VBox alignItems="Center">
+                                                                                                <Label text=">U" />
+                                                                                                <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                            </VBox>
+                                                                                        </HBox>
+                                                                                    </VBox>
+                                                                                    <HBox width="100px">
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="DAG" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Rrpi}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="DISCO" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="BZ" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="PFI" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
+                                                                                        </VBox>
+                                                                                        <VBox alignItems="Center">
+                                                                                            <Label text="OSC" class="title" />
+                                                                                            <Label text="" class="title" />
+                                                                                            <CheckBox selected="{SignalsListJsonModel>/Signals/0/Bz}" />
+                                                                                        </VBox>
+                                                                                    </HBox>
+                                                                                </cells>
+                                                                            </ColumnListItem>
+                                                                        </items>
+                                                                    </Table>
+                                                                </ScrollContainer>
+                                                            </VBox>
+                                                        </FlexBox>
+                                                    </IconTabFilter>
+                                                </items>
+                                            </IconTabBar>
+                                            <HBox justifyContent="SpaceBetween">
+                                                <HBox alignItems="Center">
+                                                    <Label text="Otras Actuaciones" class="sapUiMediumMarginEnd"/>
+                                                    <ComboBox />
+                                                </HBox>
+                                                <HBox alignItems="Center">
+                                                    <Label text="Sin señalización de protecciones" />
+                                                    <CheckBox />
+                                                </HBox>
+                                            </HBox>
+                                            <HBox width="100%" alignItems="Center" justifyContent="End">
+                                                <Label text="Sin Excitacíon de fase" />
                                                 <CheckBox />
                                             </HBox>
-                                        </HBox>
-                                        <HBox width="100%" alignItems="Center" justifyContent="End">
-                                            <Label text="Sin Excitacíon de fase" />
-                                            <CheckBox />
-                                        </HBox>
-                                        <VBox justifyContent="Start">
-                                            <Label text="Comentarios" />
-                                            <Input value="{NovedadesFormJsonModel>Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                            <VBox justifyContent="Start">
+                                                <Label text="Comentarios" />
+                                                <Input value="{NovedadesFormJsonModel>Comentarios}" enabled="{= !${utilsModel>/readOnlyMode}}" />
+                                            </VBox>
+                                            <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
+                                                <items>
+                                                    <IconTabFilter text="Avisos (Prueba)" design="Horizontal" showAll="true">
+                                                        <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
+                                                            <VBox>
+                                                                <Label text="Se informó a Empresa" />
+                                                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
+                                                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                                                </ComboBox>
+                                                            </VBox>
+                                                            <VBox>
+                                                                <Label text="Se informó al Técnico" />
+                                                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
+                                                                    <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
+                                                                </ComboBox>
+                                                            </VBox>
+
+                                                        </HBox>
+                                                    </IconTabFilter>
+                                                </items>
+                                            </IconTabBar>
                                         </VBox>
-                                        <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent" class="sapUiSmallMarginTop">
-                                            <items>
-                                                <IconTabFilter text="Avisos (Prueba)" design="Horizontal" showAll="true">
-                                                    <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                        <VBox>
-                                                            <Label text="Se informó a Empresa" />
-                                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true">
-                                                                <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
-                                                            </ComboBox>
-                                                        </VBox>
-                                                        <VBox>
-                                                            <Label text="Se informó al Técnico" />
-                                                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/TecnicosEt}" showSecondaryValues="true">
-                                                                <core:ListItem key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Nombre}" additionalText="{PersonalHabilitadoModel>Legajo}" />
-                                                            </ComboBox>
-                                                        </VBox>
-                                                    </HBox>
-                                                </IconTabFilter>
-                                            </items>
-                                        </IconTabBar>
                                     </VBox>
                                 </HBox>
+
                             </FlexBox>
+
                         </IconTabFilter>
                         <IconTabFilter text="Consecuentes">
                             <core:Fragment fragmentName="transener.registrocronologicoeventos.fragments.perturbaciones.Perturbaciones" type="XML"/>

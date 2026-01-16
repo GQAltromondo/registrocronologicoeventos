@@ -46,10 +46,10 @@ sap.ui.define([
         oEditModel.setProperty("/editableMode", bIsEditMode);
       }
 
-      // Leer los datos del modelo NovedadesFormJsonModel
-      var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+      // Leer los datos del modelo NovedadLGFormJsonModel
+      var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
       if (!oNovedadModel) {
-        Logger.debug("NovedadesFormJsonModel no encontrado en _onRouteMatched");
+        Logger.debug("NovedadLGFormJsonModel no encontrado en _onRouteMatched");
         return;
       }
 
@@ -60,7 +60,7 @@ sap.ui.define([
         // Las novedades tienen el ID en el campo Id, no en IdNovedad
         var sIdNovedad = oNovedadData?.Id || oNovedadData?.IdNovedad;
         if (!oNovedadData || Object.keys(oNovedadData).length === 0 || !sIdNovedad) {
-          Logger.debug("NovedadesFormJsonModel no tiene datos válidos en _onRouteMatched, esperando...");
+          Logger.debug("NovedadLGFormJsonModel no tiene datos válidos en _onRouteMatched, esperando...");
           // Esperar un momento y reintentar (los datos pueden estar cargándose)
           var that = this;
           setTimeout(function() {
@@ -69,7 +69,7 @@ sap.ui.define([
             if (oRetryData && Object.keys(oRetryData).length > 0 && sRetryId) {
               that._processNovedadData(oRetryData, sMode, oNovedadModel, oView);
             } else {
-              Logger.warn("NovedadesFormJsonModel aún no tiene datos después de esperar");
+              Logger.warn("NovedadLGFormJsonModel aún no tiene datos después de esperar");
             }
           }, 300);
           return;
@@ -221,9 +221,9 @@ sap.ui.define([
       }
       
       // Actualizar el modelo con el CodNovedad seleccionado (puede ser vacío)
-      var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+      var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
       if (!oNovedadModel) {
-        Logger.error("onNovedadSelected: NovedadesFormJsonModel no encontrado");
+        Logger.error("onNovedadSelected: NovedadLGFormJsonModel no encontrado");
         ErrorHandler.handleError("Modelo de novedades no disponible", "Seleccionar tipo de novedad", true);
         return;
       }
@@ -272,9 +272,9 @@ sap.ui.define([
         return;
       }
 
-      var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+      var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
       if (!oNovedadModel) {
-        Logger.error("onSelectionChange: NovedadesFormJsonModel no encontrado");
+        Logger.error("onSelectionChange: NovedadLGFormJsonModel no encontrado");
         return;
       }
       
@@ -307,7 +307,7 @@ sap.ui.define([
       }
       // Para otros campos, actualizar según el binding
       else {
-        var sModelPath = sBindingPath.replace(/^.*NovedadesFormJsonModel>\//, "").replace(/^.*\//, "");
+        var sModelPath = sBindingPath.replace(/^.*NovedadLGFormJsonModel>\//, "").replace(/^.*\//, "");
         if (sModelPath) {
           Logger.debug("Actualizando campo en modelo: " + sModelPath + " = " + sSelectedKey);
           oNovedadModel.setProperty("/" + sModelPath, sSelectedKey);

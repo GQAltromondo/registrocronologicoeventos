@@ -559,13 +559,13 @@ sap.ui.define([
 				aPromises.push(MotivosService.loadModel(oNovedadData.CodNovedad, oNovedadData.Empresa));
 				aPromises.push(CausasService.loadModel(oNovedadData.CodNovedad, "", oNovedadData.Empresa));
 			}
-			if (oNovedadData.IdNovedad && oNovedadData.Empresa) {
+			if (oNovedadData.Id && oNovedadData.Empresa) {
 				aPromises.push(LicenciaService.loadList(oNovedadData.Empresa, oNovedadData.IdNovedad));
 			}
 			
 			Promise.all(aPromises).then(() => {
 				// Establecer los datos en el modelo
-				var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+				var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
 				oNovedadModel.setData(oNovedadData);
 
 				// Configurar el modo de edición
