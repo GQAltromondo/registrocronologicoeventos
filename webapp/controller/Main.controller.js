@@ -372,7 +372,8 @@ sap.ui.define([
 		}
 		,
 		onSelectedSociety: function () {
-			var empresa = this.dialogSociety.getModel("Empresa").getData().Code;
+			//var empresa = this.dialogSociety.getModel("Empresa").getData().Code || "100";
+			var empresa =  "100";
 
 			if (empresa !== "" && typeof empresa !== "undefined") {
 

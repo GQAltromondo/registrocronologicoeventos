@@ -13,6 +13,7 @@
                             <FlexBox class="sapUiSmallMargin" direction="Column">
                                 <HBox width="100%">
                                     <VBox width="50%" class="FlexForm">
+                                    <VBox class="general-ctn">
                                         <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
                                             <Label text="{i18n>novelty}:" />
                                             <CheckBox id="chkRecierre" text="Recierre" selected="{formPerturbacionesModel>/chkRecierre}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}" />
@@ -504,10 +505,11 @@
                                                 </IconTabFilter>
                                             </items>
                                         </IconTabBar>
+                                         </VBox> 
                                     </VBox>
                                     <VBox width="50%" class="FlexForm">
-                                        <VBox  >
-                                            <VBox width="100%" alignItems="Center" class="separador normalizacion-ctn">
+                                        <VBox class="normalizacion-ctn">
+                                            <VBox width="100%" alignItems="Center" class="separador normalizacion-title">
                                                 <Title text="Normalización de la Instalación" />
                                             </VBox>
                                             <HBox justifyContent="SpaceBetween" alignItems="Center">
@@ -576,8 +578,8 @@
                                                 </items>
                                             </IconTabBar>
                                         </VBox>
-                                           <VBox  >
-                                            <VBox width="100%" alignItems="Center" class="separador sapUiSmallMarginTop pruebas-ctn">
+                                        <VBox class="pruebas-ctn">
+                                            <VBox width="100%" alignItems="Center" class="separador sapUiSmallMarginTop pruebas-title">
                                                 <Title text="Pruebas Realizadas" />
                                             </VBox>
                                             <HBox justifyContent="End">

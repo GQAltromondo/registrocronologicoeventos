@@ -6,16 +6,40 @@ sap.ui.define([
 ], function (ModelHelper, FioriHelper, Logger, ErrorHandler) {
     "use strict";
     return {
+        isLocalDev: function () {
+            try {
+                const loc = window.location || {};
+                const hostname = (loc.hostname || "").toLowerCase();
+                const port = String(loc.port || "");
+                const host = (loc.host || "").toLowerCase();
+
+                const isLoopback = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+                const isPort8080Classic = port === "8080" || host.endsWith(":8080");
+
+                // BAS/AppStudio típico: "port8080-workspaces-....applicationstudio.cloud.sap"
+                const isBASPort8080 = hostname.startsWith("port8080-");
+
+                // Por si corrés preview con otros puertos en BAS (opcional, no molesta)
+                const isBASPortXXXX = /^port\d+-/.test(hostname);
+
+                return isLoopback || isPort8080Classic || isBASPort8080 || isBASPortXXXX;
+            } catch (e) {
+                return false;
+            }
+        },
+
         loadModel: async function (callback) {
             this.callback = callback;
-            const url = sap.ui.getCore().getModel("appCurrentInfo").appUrl + "/user-api/currentUser";
+
             const oModel = new sap.ui.model.json.JSONModel();
+
             const mock = {
-                firstname: "Dummy",
-                lastname: "User",
+                firstName: "Dummy",
+                lastName: "User",
                 email: "dummy.user@com",
                 name: "dummy.user@com",
                 displayName: "Dummy User (dummy.user@com)",
+                login_name: "dummy.user@com",
                 groups: [
                     "Mantenimiento_GerRegional",
                     "Examinadores_PT15",
@@ -35,29 +59,40 @@ sap.ui.define([
                 ]
             };
 
+            if (this.isLocalDev()) {
+                oModel.setData(mock);
+                this.onReadUserApiSuccess(mock);
+                this.onSuccessUserApi(mock);
+                return;
+            }
+
             try {
-                // Load user data
+                const url = sap.ui.getCore().getModel("appCurrentInfo").appUrl + "/user-api/currentUser";
+
                 oModel.loadData(url);
                 await oModel.dataLoaded();
 
                 const userData = oModel.getData();
 
-                // If API call failed or no name is returned, use mock data
                 if (!userData.name) {
                     oModel.setData(mock);
+                    this.onReadUserApiSuccess(mock);
+                    this.onSuccessUserApi(mock);
                     return;
                 }
 
-                // Fetch additional user info
                 await this.fetchUserDetails(userData.name, oModel);
             } catch (error) {
                 Logger.error("Error loading user data", error);
                 oModel.setData(mock);
+                this.onReadUserApiSuccess(mock);
+                this.onSuccessUserApi(mock);
             }
         },
 
         fetchUserDetails: async function (userName, oModel) {
-            const cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl + `/IAS/service/scim/Users?filter=userName eq "${userName}"`;
+            const cUrl = sap.ui.getCore().getModel("appCurrentInfo").appUrl +
+                `/IAS/service/scim/Users?filter=userName eq "${userName}"`;
 
             try {
                 const response = await $.ajax({
@@ -65,15 +100,13 @@ sap.ui.define([
                     contentType: "application/scim+json",
                     url: cUrl,
                     dataType: "json",
-                    async: true // Making this truly async
+                    async: true
                 });
 
                 if (response && response.Resources) {
-                    const oModelUser = new sap.ui.model.json.JSONModel();
-                    oModelUser.setData(response.Resources);
                     const aDatosUsuario = this.armarDatos(response.Resources);
                     this.onReadUserApiSuccess(aDatosUsuario);
-                    this.onSuccessUserApi(aDatosUsuario)
+                    this.onSuccessUserApi(aDatosUsuario);
                     oModel.setData(aDatosUsuario);
                 } else {
                     throw new Error("Invalid API response");
@@ -82,18 +115,16 @@ sap.ui.define([
                 Logger.error("Error fetching user details", error);
                 this.onReadUserApiError(error);
             }
-        }
-        ,
+        },
 
         armarDatos: function (datos) {
-
             var aGroupsTemporal = datos[0].corporateGroups ? datos[0].corporateGroups : datos[0].groups;
 
             var aGroups = aGroupsTemporal.map(function (fila) {
                 return fila.value;
             });
 
-            var aUserData = {
+            return {
                 firstName: datos[0].name.givenName,
                 lastName: datos[0].name.familyName,
                 email: datos[0].emails[0].value,
@@ -101,17 +132,12 @@ sap.ui.define([
                 displayName: datos[0].displayName,
                 login_name: datos[0].userName,
                 groups: aGroups
-
-
             };
-
-            return aUserData;
-
         },
 
         getRoles: function (groupData) {
             var aData = [];
-            if (groupData.constructor === Array) {
+            if (groupData && groupData.constructor === Array) {
                 aData = aData.concat(groupData);
             } else {
                 if (groupData !== "") {
@@ -121,110 +147,72 @@ sap.ui.define([
             return aData;
         },
 
-        onReadUserApiSuccess: function (data, textStatus, jqXHR) {
-
+        onReadUserApiSuccess: function (data) {
             ModelHelper.getModel("UserJsonModel").setData({
                 nombre: data.firstName,
                 apellido: data.lastName,
                 login_name: data.login_name,
                 email: data.email,
-                // roles: ["Supervisor_MantenimienTto"],
-
-                // Paso 1 para creacion de licencias.
-                // roles: ["ope_solic-lic_transener", "ope_solic-lic_transener"],
-                // (Nuevo rol ope_solic-lic_transba Issue #518).
-                // roles: ["ope_solic-lic_transba"],
-
-                // Paso 2 Coordinador.
-                // roles: ["Coordinador_Mantenimiento"],
-                // roles: ["Coordinador_Mantenimiento"],
-
-                // Paso 3 Tramitado -> tramita u observa.
-                //roles: ["Tramitador"],
-
-                // Paso 4 Entraga, devolución y cancelación definitiva.
-                //roles: ["ope_jefe_cot"],
-                //roles: ["Jefe_COT"]
-                // roles: ["ope_programacion_cotdt"],
-                //roles:["Programacion_COTDT"]
-                // roles: ["ope_oper-turno_cot"],
-
-                // IMPORTANTE: deployear siempre con este descomentado.
-                // ##########################################################################
-                // ############################## IMPORTANTE ################################
-                // ##########################################################################
                 roles: this.getRoles(data.groups)
-                // ##########################################################################
-                // ##########################################################################
             });
         },
+
         onSuccessUserApi: function (data) {
             var UserDataModel = data;
-            // UserDataModel.oVisualizador = this.ValidateVisualizador(UserDataModel.groups);
-            UserDataModel.oVisualizador = true
+            UserDataModel.oVisualizador = true;
             UserDataModel.viewEquipos = this.validateViewEquipos(UserDataModel.groups);
 
             UserDataModel.DateNow = new Date();
-            var oModel = ModelHelper.getModel("UserDataModel")
+            var oModel = ModelHelper.getModel("UserDataModel");
             oModel.setData(UserDataModel);
 
             setInterval(function () {
                 oModel.setProperty("/DateNow", new Date());
-            }, 60 * 1000); // 60 * 1000 milsec
+            }, 60 * 1000);
         },
-        onErrorUserApi: function () { },
-        ValidateVisualizador: function (Groups) {
 
+        onErrorUserApi: function () { },
+
+        ValidateVisualizador: function (Groups) {
             if (typeof Groups === "string") {
                 Groups = [Groups];
             }
-
             return !Groups.some(group => group === "ope_visualizador" || group === "Visualizador");
-            return !Groups.some(group => group === "ope_visualizador_tr_tb" || group === "Visualizador");
         },
-        validateViewEquipos: function (groups) {
 
+        validateViewEquipos: function (groups) {
             const roles = [
                 "Programacion_COTDT", "Programacion_COT", "Jefe_COTDT", "Jefe_COT",
                 "ope_programacion_cotdt", "ope_programacion_cot", "ope_jefe_cotdt", "ope_jefe_cot"
             ];
 
-
             if (typeof groups === "string") {
                 groups = [groups];
             }
 
-
             return groups.some(group => roles.includes(group));
         },
+
         onReadUserApiError: function (jqXHR, textStatus, error) {
-            //verifies if session is still active
             var sessionTimeoutResponseCode = 503;
-            if (error.response.statusCode === sessionTimeoutResponseCode) {
-                //session timeout
+            if (error && error.response && error.response.statusCode === sessionTimeoutResponseCode) {
                 FioriHelper.showSessionTimeoutMessageBox();
                 return;
             }
 
-            //gets error
-            var errorText = error.response.body;
-            //parses error
-            var contentType = error.response.headers["Content-Type"];
+            var errorText = error && error.response ? error.response.body : "";
+            var contentType = error && error.response && error.response.headers ? (error.response.headers["Content-Type"] || "") : "";
+
             if (contentType.indexOf("text/html") >= 0) {
-                //HTML
-                errorText = $(error.response.body).text();
+                errorText = $(errorText).text();
             } else if (contentType.indexOf("application/json") >= 0) {
-                //JSON
                 try {
                     var oError = JSON.parse(errorText);
                     errorText = oError.error.message.value;
                 } catch (ex) {
-                    //error in parsing
-                    errorText = error.response.body;
+                    errorText = error && error.response ? error.response.body : "";
                 }
             }
-        },
-
-
+        }
     };
 });

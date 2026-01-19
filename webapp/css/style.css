@@ -133,18 +133,33 @@
 .sapMITBItem {
     font-weight: bold;
 }
-
+.general-ctn{
+        padding: 10px;
+    background: #F5FCFF;
+    border-radius: 10px;
+    margin: 5px;
+}
 .normalizacion-ctn {
     padding: 10px;
-    background: #ffda9e;
- font-weight: 600;
-    .title {
-       
-    }
+    background: #FFFAF2;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.normalizacion-title {
+    font-weight: 600;
+    background-color: #ffda9e;
 }
 
 .pruebas-ctn {
     padding: 10px;
+    background-color: #F1FDF5;
+
+    font-weight: 600;
+    margin: 5px;
+}
+
+.pruebas-title {
+    font-weight: 600;
     background-color: #d8f8e1;
-  font-weight: 600;
 }
