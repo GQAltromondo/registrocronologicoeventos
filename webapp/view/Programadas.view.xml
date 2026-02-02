@@ -1,4 +1,4 @@
-<mvc:View controllerName="transener.registrocronologicoeventos.controller.Programadas"
+<mvc:View xmlns:vbm="sap.ui.vbm" controllerName="transener.registrocronologicoeventos.controller.Programadas"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
@@ -9,19 +9,239 @@
     <Page id="ProgramadasPage" title="Tareas Programadas" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
 
         <content>
-            <FlexBox class="sapUiSmallMargin " direction="Column">
+            <FlexBox direction="Column" class="wrapper">
+                <HBox class="container">
+                    <VBox>
+                        <Label text="{i18n>Ubicacion}" showColon="true" class="title"/>
+                        <ComboBox id="cmbLugar" selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbStyle">
+                            <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
+                        </ComboBox>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>CammesaEq}" showColon="true" class="title"/>
+                        <ComboBox id="cmbEquipo" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
+                        </ComboBox>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>statusEqCammesa}" showColon="true" class="title"/>
+                        <ComboBox id="cmbStatusEquipo" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
+                        </ComboBox>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>ltAsociadas}" showColon="true" class="title"/>
+                        <ComboBox id="cmbLLTT" selectionChange=".onSelectionChange" selectedKey="{LicencesListJsonModel>/Licences}" items="{ path: 'LicencesListJsonModel>/Licences', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                            <core:Item key="{Licences>IdLicencia}" text="{Licences>IdLicencia}"/>
+                        </ComboBox>
+                    </VBox>
+
+                </HBox>
+                <HBox class="container">
+                    <VBox class="halfConte border_ctn">
+                        <HBox justifyContent="SpaceBetween">
+                            <Label text="Equipo Cammesa F/S" class="sapUiSmallMarginBottom" showColon="true"/>
+                            <Button text="Consecuentes" class="sapUiLargeMarginEnd btn"/>
+                        </HBox>
+                        <VBox >
+                            <Label text="Se descargo" />
+                            <HBox justifyContent="SpaceBetween">
+                                <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                </ComboBox>
+                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
+                        </VBox>
+                        <VBox >
+                            <Label text="Se desenergizo" />
+                            <HBox justifyContent="SpaceBetween">
+                                <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                </ComboBox>
+                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                    <VBox class="halfConte border_ctn">
+                        <Label text="Equipo E/S a traves de" class="sapUiSmallMarginBottom" showColon="true"/>
+                        <HBox justifyContent="SpaceBetween" height="51px">
+                            <CheckBox text="Barra de transferencia" enabled="{= !${utilsModel>/readOnlyMode}}" class="checkBox"/>
+                            <CheckBox text="Seleccionador de paso" enabled="{= !${utilsModel>/readOnlyMode}}" class="checkBox"/>
+                            <CheckBox text="Acoplador" enabled="{= !${utilsModel>/readOnlyMode}}" class="checkBox"/>
+                        </HBox>
+                        <VBox >
+                            <Label text="Equipo a intervenir" />
+                            <HBox justifyContent="SpaceBetween">
+                                <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                </ComboBox>
+                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </HBox>
+                <HBox class="container">
+                    <VBox class="halfConte">
+                        <Label text="Falla de equipos durante la maniobra" showColon="true"/>
+                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                            <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                        </ComboBox>
+                        <Label text="Se informó a Empresa"/>
+                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                            <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                        </ComboBox>
+                    </VBox>
+                    <VBox class="halfConte">
+                        <Label text="Comentarios"/>
+                        <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                            <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                        </ComboBox>
+                    </VBox>
+                </HBox>
+                <Panel headerText="Normalizacion de la instalación">
+                    <HBox class="container">
+                        <VBox class="halfConte border_ctn">
+
+                            <Label text="Equipo Cammesa E/S" class="sapUiSmallMarginBottom" showColon="true"/>
+
+                            <VBox >
+                                <Label text="Se energizó desde" showColon="true" />
+                                <HBox justifyContent="SpaceBetween">
+                                    <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                        <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                    </ComboBox>
+                                    <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                </HBox>
+                            </VBox>
+                            <VBox >
+                                <Label text="En Servicio" showColon="true" />
+                                <HBox justifyContent="SpaceBetween">
+                                    <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                        <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                    </ComboBox>
+                                    <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                        <VBox class="halfConte border_ctn">
+                            <HBox alignItems="Center" justifyContent="SpaceBetween">
+                                <Label text="E/S a través de interruptor propio" />
+                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                    <HBox class="container">
+
+                        <VBox class="halfConte">
+                            <Label text="Comentarios"/>
+                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                            </ComboBox>
+                        </VBox>
+                        <VBox class="halfConte">
+                            <Label text="Falla de equipos durante la maniobra" showColon="true"/>
+                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                            </ComboBox>
+                        </VBox>
+
+                    </HBox>
+                    <VBox class="container border_ctn">
+                        <Label text="Avisos"/>
+
+                        <HBox >
+
+                            <VBox class="halfConte">
+                                <Label text="Se informó a Empresa"/>
+                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                </ComboBox>
+                            </VBox>
+                            <VBox class="halfConte">
+                                <Label text="Comentarios" showColon="true"/>
+                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                </ComboBox>
+                            </VBox>
+
+                        </HBox>
+                    </VBox>
+                </Panel>
+                <Panel headerText="Indisponibilidades">
+                    <VBox class="container border_ctn">
+                        <HBox class="container" >
+                            <VBox width="100%">
+                                <HBox class="HBoxContent">
+                                    <Label text="Causa" showColon="true" />
+                                    <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                        <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                    </ComboBox>
+                                </HBox>
+                                <HBox class="HBoxContent">
+                                    <Label text="Motivo" showColon="true" />
+                                    <ComboBox selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                        <core:Item key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>CodigoMotivo}"/>
+                                    </ComboBox>
+                                </HBox>
+                            </VBox>
+                            <VBox width="100%">
+                                <HBox class="HBoxContent">
+                                    <Label text="Indisponible" showColon="true" />
+                                    <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                </HBox>
+                                <HBox class="HBoxContent">
+                                    <Label text="Disponible" showColon="true" />
+                                    <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNov', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                </HBox>
+                            </VBox>
+                            <VBox width="100%">
+                                <HBox class="HBoxContent">
+                                    <Label text="Referencia" class="sapUiTinyMarginEnd"/>
+                                    <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>
+                                </HBox>
+                                <HBox class="HBoxContent">
+                                    <Label text="SubIndice" class="sapUiTinyMarginEnd"/>
+                                    <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>
+                                </HBox>
+                            </VBox>
+
+                        </HBox>
+                        <HBox >
+                            <VBox class="halfConte">
+                                <Label text="Comentarios (Parte de Indisponibilidad)"/>
+                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                </ComboBox>
+                                <HBox alignItems="Center">
+                                    <Label text="La indisponibilidad se informa a CAMMESA :" />
+                                    <CheckBox   />
+                                </HBox>
+                            </VBox>
+                            <VBox class="halfConte">
+                                <Label text="Comentarios" showColon="true"/>
+                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoempnorma}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                </ComboBox>
+                            </VBox>
+
+                        </HBox>
+                    </VBox>
+                </Panel>
+
+
+
                 <HBox width="100%">
                     <VBox width="50%" class="FlexForm">
                         <HBox class="HBoxContainer">
                             <HBox width="50%" justifyContent="SpaceBetween" alignItems="Center">
                                 <Label text="{i18n>estacion}:" class="sapUiTinyMarginEnd"/>
                                 <HBox>
-                                    <ComboBox id="cmbLugarId" width="80px" selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <!-- <ComboBox id="cmbLugarId" width="80px" selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                         <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
-                                    </ComboBox>
-                                    <ComboBox id="cmbLugar" selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    </ComboBox> -->
+                                    <!-- <ComboBox id="cmbLugar" selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                         <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}"/>
-                                    </ComboBox>
+                                    </ComboBox> -->
                                 </HBox>
                             </HBox>
                             <HBox width="50%" justifyContent="End" alignItems="Center">
@@ -33,23 +253,23 @@
                             <HBox width="50%" alignItems="Center">
                                 <Label text="Equipo CAMMESA:" wrapping="true" class="sapUiMediumMarginEnd"/>
                                 <HBox>
-                                    <ComboBox id="cmbEquipoId" width="80px" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                        <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
-                                    </ComboBox>
-                                    <ComboBox id="cmbEquipo" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <!-- <ComboBox id="cmbEquipoId" width="80px" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
+                                        </ComboBox> -->
+                                    <!-- <ComboBox id="cmbEquipo" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                         <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>DescEquipo}" />
-                                    </ComboBox>
+                                    </ComboBox> -->
                                 </HBox>
                             </HBox>
                             <HBox width="50%" alignItems="Center">
                                 <Label text="LLTT asociadas:" class="sapUiMediumMarginEnd"/>
                                 <HBox>
-                                    <ComboBox id="cmbLLTT" width="90px" selectionChange=".onSelectionChange" selectedKey="{LicencesListJsonModel>/Licences}" items="{ path: 'LicencesListJsonModel>/Licences', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                    <!-- <ComboBox id="cmbLLTT" width="90px" selectionChange=".onSelectionChange" selectedKey="{LicencesListJsonModel>/Licences}" items="{ path: 'LicencesListJsonModel>/Licences', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                         <core:Item key="{Licences>IdLicencia}" text="{Licences>IdLicencia}"/>
                                     </ComboBox>
                                     <ComboBox id="cmbLLTTID" width="120px" selectionChange=".onSelectionChange" selectedKey="{LicencesListJsonModel>/Licences}" items="{ path: 'LicencesListJsonModel>/Licences', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                         <core:Item key="{Licences>IdLicencia}" text="{Licences>IdLicencia}"/>
-                                    </ComboBox>
+                                    </ComboBox> -->
                                 </HBox>
                             </HBox>
                         </HBox>
@@ -121,7 +341,7 @@
                             </HBox>
                             <HBox class="HBoxWrapper">
                                 <Label text="Fecha/Hora"/>
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                             </HBox>
                         </HBox>
                         <HBox class="HBoxContainer">

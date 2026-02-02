@@ -9,7 +9,7 @@
 			<Page id="page" title="{i18n>title}" class="sapUiNoContentPadding">
 				<content>
 					<Panel headerText="Filtrar" expandable="true" expanded="true">
-						<FlexBox justifyContent="SpaceBetween">
+						<FlexBox justifyContent="SpaceBetween" class="container">
 							<VBox width="40%">
 								<HBox justifyContent="SpaceBetween" alignItems="Center">
 									<Label text="{i18n>place} / {i18n>ET}:"/>

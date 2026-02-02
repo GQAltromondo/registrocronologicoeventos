@@ -32,7 +32,7 @@ sap.ui.define([
       var oArgs = oEvent.getParameter("arguments") || {};
       var sMode = (oArgs.mode || Constants.EDIT_MODES.VIEW).toLowerCase();
       var oView = this.getView();
-      
+
       if (!oView) {
         Logger.error("Vista no disponible en _onRouteMatched");
         return;
@@ -54,7 +54,7 @@ sap.ui.define([
       }
 
       var oNovedadData = oNovedadModel.getData();
-      
+
       // Verificar si los datos están vacíos o no válidos (solo para modo EDIT/VIEW)
       if (sMode !== Constants.EDIT_MODES.CREATE) {
         // Las novedades tienen el ID en el campo Id, no en IdNovedad
@@ -63,7 +63,7 @@ sap.ui.define([
           Logger.debug("NovedadLGFormJsonModel no tiene datos válidos en _onRouteMatched, esperando...");
           // Esperar un momento y reintentar (los datos pueden estar cargándose)
           var that = this;
-          setTimeout(function() {
+          setTimeout(function () {
             var oRetryData = oNovedadModel.getData();
             var sRetryId = oRetryData?.Id || oRetryData?.IdNovedad;
             if (oRetryData && Object.keys(oRetryData).length > 0 && sRetryId) {
@@ -96,7 +96,7 @@ sap.ui.define([
         this._clearFragmentContainer();
         return;
       }
-      
+
       // Si hay Tplnr (ubicación), cargar los equipos correspondientes
       if (oNovedadData.Tplnr) {
         var empresa = this._getEmpresa(oView);
@@ -131,10 +131,10 @@ sap.ui.define([
       }
 
       var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
-      var empresa = oUtilsModel?.getProperty("/Empresa") || 
-                    oUtilsModel?.getProperty("/CodEmpresa") ||
-                    ModelHelper.getModel("Empresa", oView)?.getProperty("/selectedSociety");
-      
+      var empresa = oUtilsModel?.getProperty("/Empresa") ||
+        oUtilsModel?.getProperty("/CodEmpresa") ||
+        ModelHelper.getModel("Empresa", oView)?.getProperty("/selectedSociety");
+
       return empresa || Constants.EMPRESAS.DEFAULT;
     },
 
@@ -153,11 +153,11 @@ sap.ui.define([
 
       var oView = this.getView();
       var empresa = sEmpresa || this._getEmpresa(oView);
-      
+
       // Determinar qué mapeo usar según la empresa
       var sMappingKey = empresa === Constants.EMPRESAS.TRA ? "TRA" : "TBA";
       var oMapping = Constants.NOVEDAD_FRAGMENT_MAPPING[sMappingKey];
-      
+
       if (!oMapping) {
         Logger.warn("No se encontró mapeo para empresa: " + empresa);
         return null;
@@ -219,7 +219,7 @@ sap.ui.define([
         Logger.error("onNovedadSelected: vista no disponible");
         return;
       }
-      
+
       // Actualizar el modelo con el CodNovedad seleccionado (puede ser vacío)
       var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
       if (!oNovedadModel) {
@@ -277,24 +277,24 @@ sap.ui.define([
         Logger.error("onSelectionChange: NovedadLGFormJsonModel no encontrado");
         return;
       }
-      
+
       // Obtener el binding path para determinar qué campo cambió
       var sBindingPath = oSource.getBindingPath("selectedKey");
       if (!sBindingPath) {
         Logger.debug("onSelectionChange: no se encontró binding path");
         return;
       }
-      
+
       // Normalizar el binding path (puede tener diferentes formatos)
       var sNormalizedPath = sBindingPath.replace(/^.*\//, ""); // Obtener solo el nombre del campo
-      
+
       // Si el cambio es en el ComboBox de ubicación (Tplnr)
       if (sNormalizedPath === "Tplnr" || sBindingPath.indexOf("/Tplnr") !== -1) {
         Logger.debug("Cambio en ubicación (Tplnr): " + sSelectedKey);
         // Actualizar el modelo con la nueva ubicación
         oNovedadModel.setProperty("/Tplnr", sSelectedKey);
         oNovedadModel.setProperty("/Equnr", ""); // Limpiar equipo seleccionado
-        
+
         // Cargar equipos para la nueva ubicación usando onUbicacionChange de BaseController
         if (sSelectedKey) {
           this.onUbicacionChange(oEvent);
@@ -380,10 +380,10 @@ sap.ui.define([
         }
 
         // Verificar que el fragmento sea un ManagedObject válido antes de agregarlo
-        var isValidControl = function(oControl) {
-          return oControl && 
-                 typeof oControl === "object" && 
-                 (oControl.isA && typeof oControl.isA === "function");
+        var isValidControl = function (oControl) {
+          return oControl &&
+            typeof oControl === "object" &&
+            (oControl.isA && typeof oControl.isA === "function");
         };
 
         if (Array.isArray(oFrag)) {
@@ -403,7 +403,7 @@ sap.ui.define([
         }
 
         Logger.debug("Fragmento cargado exitosamente: " + sFragmentPath);
-        
+
         // Inicializar modelos específicos según el fragmento cargado
         if (sFragmentPath.indexOf("Alarma") !== -1) {
           this._initializeAlarmaModels(oView);
@@ -424,15 +424,14 @@ sap.ui.define([
     _initializeAlarmaModels: function (oView) {
       try {
         // Inicializar AlarmaModel con 4 elementos
-        var oAlarmaModel = ModelHelper.getModel("AlarmaModel", oView);
-        oAlarmaModel.setData({
-          Alarmas: [
-            { Codigo: "ALM1", Descripcion: "Alarma Tipo 1" },
-            { Codigo: "ALM2", Descripcion: "Alarma Tipo 2" },
-            { Codigo: "ALM3", Descripcion: "Alarma Tipo 3" },
-            { Codigo: "ALM4", Descripcion: "Alarma Tipo 4" }
-          ]
-        });
+        var oAlarmaModel = new sap.ui.model.json.JSONModel();
+        oAlarmaModel.loadData(
+          sap.ui.require.toUrl("transener/tuapp/model/Alarmas.json")
+        );
+
+        oView.setModel(oAlarmaModel, "AlarmaModel");
+
+
 
         // Inicializar AlarmaJsonModel con valores por defecto
         var oAlarmaJsonModel = ModelHelper.getModel("AlarmaJsonModel", oView);
