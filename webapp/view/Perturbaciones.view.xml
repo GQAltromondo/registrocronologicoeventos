@@ -41,7 +41,7 @@
                     </HBox>
                     <HBox justifyContent="SpaceBetween">
                         <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-                        <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press=".navToConsecuentes"/>
+                        <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes"/>
                     </HBox>
                 </VBox>
                 <VBox class="container border_ctn sapUiSmallMarginBottom">

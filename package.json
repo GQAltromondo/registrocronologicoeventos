@@ -24,7 +24,8 @@
     "int-tests": "fiori run --open 'test/integration/opaTests.qunit.html'",
     "build:cf": "ui5 build preload --clean-dest --config ui5-deploy.yaml --include-task=generateCachebusterInfo",
     "build:mta": "rimraf resources mta_archives && mbt build",
-    "undeploy": "cf undeploy transenerregistrocronologicoeventos --delete-services --delete-service-keys --delete-service-brokers"
+    "undeploy": "cf undeploy transenerregistrocronologicoeventos --delete-services --delete-service-keys --delete-service-brokers",
+      "build-deploy": "npm run build && npm run deploy"
   },
   "devDependencies": {
     "@ui5/cli": "^3.0.0",

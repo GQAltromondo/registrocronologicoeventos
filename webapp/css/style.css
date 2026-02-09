@@ -248,3 +248,7 @@ padding: 1rem 5px ;
 .IconTitle .sapMITBText span{
 font-size: 17px;
 }
+
+.topBorder{
+    border-top: 1px solid black;
+}

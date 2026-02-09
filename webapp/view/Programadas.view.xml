@@ -41,7 +41,7 @@
                     <VBox class="halfConte border_ctn">
                         <HBox justifyContent="SpaceBetween">
                             <Label text="Equipo Cammesa F/S" class="sapUiSmallMarginBottom" showColon="true"/>
-                            <Button text="Consecuentes" class="sapUiLargeMarginEnd btn"/>
+                            <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press=".navToConsecuentes"/>
                         </HBox>
                         <VBox >
                             <Label text="Se descargo" />
