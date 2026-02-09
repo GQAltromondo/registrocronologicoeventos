@@ -55,10 +55,6 @@
     margin-bottom: 10px;
 }
 
-.sapMITBContent {
-    background-color: #fff !important;
-}
-
 .FlexForm {
     background-color: #d3d3d33d;
     border-radius: .25rem;
@@ -70,11 +66,16 @@
     padding-right: unset;
 }
 
-/* Enter your custom styles here */
-/* Enter your custom styles here */
 .tabbedBar .sapMITBHead .sapMITH {
     text-align: center;
 }
+.sapMITH{
+  background-color:  transparent !important;
+}
+
+.sapMITBContent{
+padding: 1rem 5px ;
+} 
 
 .btn {
     min-width: 80px;
@@ -115,13 +116,6 @@
 
 }
 
-.TabBackground {
-    background-color: #FFF;
-}
-
-.containerDialog {
-    width: 1300px;
-}
 
 .sapMITBItem {
     font-weight: bold;
@@ -144,6 +138,8 @@
 .normalizacion-title {
     font-weight: 600;
     background-color: #ffda9e;
+    border-radius: 5px;
+    padding:10px;
 }
 
 .pruebas-ctn {
@@ -163,14 +159,17 @@
 
 .wrapper {
     width: 100%;
-    max-width: 1300px;
+    max-width: 1600px;
     margin: auto;
     padding: 10px;
+    border:solid 1px black;
+    border-radius: 5px;
+    
 }
 
 .container {
     width: 100%;
-   
+
     justify-content: space-between;
     padding: 5px;
 }
@@ -186,31 +185,58 @@
 .halfConte {
     width: 50%;
     padding: 10px;
-   
+
     border-radius: 10px;
     margin: 2px;
 }
 
-.checkBox{
+.checkBox {
     font-weight: 500;
 }
 
-.cmbLG{
+.cmbLG {
     min-width: 100%;
 }
-.btn{
-    padding: 20px;
-}
-.sapMPanelContent{
-    padding:0;
+
+.cmbMD {
+    width: 300px !important;
+    max-width: 300px !important;
 }
 
-.HBoxContent{
+.btn {
+    padding: 20px;
+}
+
+.sapMPanelContent {
+    padding: 0;
+}
+
+.HBoxContent {
     align-items: center;
     justify-content: space-between;
     width: 300px;
 }
-.border_ctn{
+
+.border_ctn {
     border-radius: 10px;
     border: solid 1px grey;
 }
+
+.border_ctn_2 {
+    border-radius: 10px;
+    border: solid 1px grey;
+    background-color: #FFF;
+    padding: 10px;
+}
+
+.border_ctn_3 {
+    border-radius: 10px;
+    border: solid 1px grey;
+    background-color: gainsboro;
+     padding: 10px;
+}
+
+.paddingSM{
+    padding: 10px;
+}
+

@@ -1,20 +1,12 @@
 sap.ui.define([
 	"transener/registrocronologicoeventos/controller/BaseController",
-	"sap/m/MessageToast",
-	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator",
-	"sap/ui/model/json/JSONModel",
-	"sap/ui/core/Fragment",
-	"sap/m/MessageStrip",
-	"transener/registrocronologicoeventos/services/UserDataService",
-	"transener/registrocronologicoeventos/services/PerturbacionesService",
 	"transener/registrocronologicoeventos/utils/formatter",
 	"transener/registrocronologicoeventos/utils/ModelHelper",
 	"transener/registrocronologicoeventos/utils/Constants",
-	"sap/ui/core/routing/History"
-], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageStrip, userDataService,
-	PerturbacionesService,
-	formatter, ModelHelper, Constants, History) {
+	"transener/registrocronologicoeventos/services/EquiposService",
+    "transener/registrocronologicoeventos/services/CausasService",
+
+], function (BaseController,formatter, ModelHelper, Constants, EquiposService,CausasService) {
 	"use strict";
 	var oDialog = null;
 
@@ -35,7 +27,7 @@ sap.ui.define([
 			// Modo (create/edit/view) para reutilizar la vista
 			const oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
 			const oUtilsModel = ModelHelper.getModel("utilsModel", oView);
-			
+
 			if (oEditModel) {
 				oEditModel.setProperty("/mode", sMode);
 				// Si es modo "view", configurar readOnlyMode en utilsModel
@@ -51,9 +43,7 @@ sap.ui.define([
 					}
 				}
 			}
-
-			// Importante: NO necesitás recargar nada si venís desde Main,
-			// porque Main ya llenó los modelos antes de navegar.
+			this.getNSInfo()
 		},
 
 		_loadPerturbacionById: function (sIdNovedad) {
@@ -83,6 +73,18 @@ sap.ui.define([
 				});
 			});
 		},
-
+		getNSInfo: function () {
+			var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+			const oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData()
+			EquiposService.LoadEquipos(oNovedad.Tplnr, Empresa)
+			CausasService.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa)
+		},
+		onMotivoChange: function () {
+			var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+			const NovedadModel = ModelHelper.getModel("NovedadesFormJsonModel")
+			const oNovedad = NovedadModel.getData()
+			NovedadModel.setProperty("/CodCausa", "")
+			CausasService.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa)
+		}
 	});
 });

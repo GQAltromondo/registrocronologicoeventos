@@ -75,20 +75,20 @@ sap.ui.define([
 		_onRefreshData: function (sChannel, sEvent, oData) {
 			Logger.debug("Main.controller._onRefreshData: Evento recibido, refrescando datos");
 			var oView = this.getView();
-			
+
 			// Verificar que la vista esté disponible antes de refrescar
 			if (!oView) {
 				Logger.warn("Main.controller._onRefreshData: Vista no disponible, esperando...");
 				// Esperar un momento y reintentar
 				var that = this;
-				setTimeout(function() {
+				setTimeout(function () {
 					if (that.getView() && typeof that.onSearchLGuard === "function") {
 						that.onSearchLGuard();
 					}
 				}, 300);
 				return;
 			}
-			
+
 			// Refrescar la búsqueda llamando a onSearchLGuard
 			if (typeof this.onSearchLGuard === "function") {
 				this.onSearchLGuard();
@@ -122,13 +122,17 @@ sap.ui.define([
 			ModelHelper.getModel('oPerturbacionesModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oTProgramadasModel', oView).setData({ data: [], count: 0 })
 			ModelHelper.getModel('oGeneralModel', oView).setData({ data: [], count: 0 })
+			ModelHelper.getModel('StatusModel', oView).setData({
+				Status: [{ Codigo: "E/S", Descripcion: "En Servicio" },
+				{ Codigo: "F/S", Descripcion: "Fuera de Servicio" }
+				], count: 0
+			})
 
 			this.loadModelsData()
 		},
 		loadModelsData: function () {
 			var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
 			ClimasService.loadModel()
-			CausasService.loadModel()
 			DispActuantesService.loadModel();
 			EstadoTiempoService.loadModel();
 			TipificacionesFallasService.loadModel();
@@ -233,8 +237,8 @@ sap.ui.define([
 			// 	Equipos: [],
 			// 	busy: true
 			// });
-		// EquiposService.LoadEquipos(sKey, Empresa);
-						EquiposService.LoadLTEquipos(sKey, Empresa);
+			// EquiposService.LoadEquipos(sKey, Empresa);
+			EquiposService.LoadLTEquipos(sKey, Empresa);
 			if (!estacion) {
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
@@ -373,7 +377,7 @@ sap.ui.define([
 		,
 		onSelectedSociety: function () {
 			//var empresa = this.dialogSociety.getModel("Empresa").getData().Code || "100";
-			var empresa =  "100";
+			var empresa = "100";
 
 			if (empresa !== "" && typeof empresa !== "undefined") {
 
@@ -463,7 +467,7 @@ sap.ui.define([
 		 */
 		onEditNove: function (oEvent) {
 			var oSrc = oEvent.getSource();
-			
+
 			// Obtener el contexto de la fila desde oGeneralModel
 			var oCtx = oSrc.getBindingContext("oGeneralModel");
 			if (!oCtx) {
@@ -496,17 +500,17 @@ sap.ui.define([
 					// Para novedades de GuardiasListSet: mapear datos directamente sin buscar en servidor
 					this._editNovedadFromGuardiasList(oRow);
 					break;
-					
+
 				case "PERT":
 					// Para perturbaciones: bloquear, cargar datos y navegar a vista de Perturbaciones
 					this._editPerturbacionOrProgramadaFromGeneral(strId);
 					break;
-					
+
 				case "PROG":
 					// Para programadas: bloquear, cargar datos y navegar a vista de Programadas
 					this._editPerturbacionOrProgramadaFromGeneral(strId);
 					break;
-					
+
 				default:
 					MessageBox.alert("Tipo de registro no reconocido: " + sType);
 					Logger.warn("onEditNove: tipo de registro no reconocido", { type: sType, row: oRow });
@@ -523,29 +527,29 @@ sap.ui.define([
 		_editNovedadFromGuardiasList: function (oRow) {
 			var oView = this.getView();
 			var that = this;
-			
+
 			// Obtener los datos originales de GuardiasListSet
 			var oRawData = oRow.__raw || oRow;
-			
+
 			// Mostrar indicador de carga
 			var oBusyDialog = this.crearDialogoBusy();
 			oBusyDialog.setText("Cargando datos de la novedad...");
 			this.abrirDialogoBusy(oBusyDialog);
-			
+
 			// Limpiar modelos anteriores
 			this._clearAllFormModels(oView);
-			
+
 			// Mapear los datos de GuardiasListSet al formato de NovedadesFormJsonModel
 			var oNovedadData = {
 				Id: oRawData.Id || oRow.IdNovedad || "",
 				InicioNove: oRawData.Fechahora || oRawData.InicioNove || null,
-				Tplnr: oRawData.LugarFormat	|| oRawData.Tplnr || "",
+				Tplnr: oRawData.LugarFormat || oRawData.Tplnr || "",
 				Equnr: oRawData.Equipo || oRawData.Equnr || "",
 				CodNovedad: oRawData.Tiponovedad || oRawData.CodNovedad || "",
 				Empresa: oRawData.Empresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety"),
 				Novedad: oRawData.Novedad || ""
 			};
-			
+
 			// Normalizar campos
 			if (!oNovedadData.CodNovedad && (oRawData.TipoNovedad || oRawData.Tiponovedad)) {
 				oNovedadData.CodNovedad = oRawData.TipoNovedad || oRawData.Tiponovedad;
@@ -553,7 +557,7 @@ sap.ui.define([
 			if (!oNovedadData.Equnr && oRawData.Equipo) {
 				oNovedadData.Equnr = oRawData.Equipo;
 			}
-			
+
 			// Cargar datos relacionados si hay CodNovedad
 			var aPromises = [];
 			if (oNovedadData.CodNovedad && oNovedadData.Empresa) {
@@ -563,7 +567,7 @@ sap.ui.define([
 			if (oNovedadData.Id && oNovedadData.Empresa) {
 				aPromises.push(LicenciaService.loadList(oNovedadData.Empresa, oNovedadData.IdNovedad));
 			}
-			
+
 			Promise.all(aPromises).then(() => {
 				// Establecer los datos en el modelo
 				var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
@@ -598,83 +602,7 @@ sap.ui.define([
 			});
 		},
 
-		/**
-		 * Callback de éxito para cargar novedad y navegar a vista de Novedades
-		 * @param {Object} oSelectedNovedad - Datos de la novedad cargada
-		 */
-		onSuccessLoadCallbackNovedad: function (oSelectedNovedad) {
-			// Las novedades tienen el ID en el campo Id, no en IdNovedad
-			var sIdNovedad = oSelectedNovedad.Id || oSelectedNovedad.IdNovedad;
-			if (!sIdNovedad) {
-				MessageBox.alert("Novedad de Servicio", "Esta novedad no existe.");
-				return;
-			}
-
-			// Normalizar: asegurar que IdNovedad esté presente para compatibilidad
-			if (!oSelectedNovedad.IdNovedad && oSelectedNovedad.Id) {
-				oSelectedNovedad.IdNovedad = oSelectedNovedad.Id;
-			}
-
-			var oView = this.getView();
-			var that = this;
-			
-			// Mostrar indicador de carga
-			var oBusyDialog = this.crearDialogoBusy();
-			oBusyDialog.setText("Cargando datos de la novedad...");
-			this.abrirDialogoBusy(oBusyDialog);
-			
-			// Mapear campos que pueden venir con nombres diferentes del servidor (antes de usarlos)
-			if (!oSelectedNovedad.CodNovedad && (oSelectedNovedad.Tiponovedad || oSelectedNovedad.TipoNovedad)) {
-				oSelectedNovedad.CodNovedad = oSelectedNovedad.Tiponovedad || oSelectedNovedad.TipoNovedad;
-			}
-			if (!oSelectedNovedad.Equnr && oSelectedNovedad.Equipo) {
-				oSelectedNovedad.Equnr = oSelectedNovedad.Equipo;
-			}
-			
-			// Limpiar modelos anteriores ANTES de cargar datos nuevos
-			this._clearAllFormModels(oView);
-			
-			// Cargar datos relacionados si es necesario
-			Promise.all([
-				MotivosService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.Empresa),
-				CausasService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.CodMotivo, oSelectedNovedad.Empresa),
-				LicenciaService.loadList(oSelectedNovedad.Empresa, sIdNovedad)
-			]).then(() => {
-				// Establecer los datos en el modelo NovedadesFormJsonModel
-				var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
-				oNovedadModel.setData(oSelectedNovedad);
-
-				// Configurar modelos relacionados (Cammesa, Comentarios, Consecuentes)
-				this.setNavigationPropertiesData(oSelectedNovedad);
-
-				// Configurar el modo de edición
-				var oEditModel = ModelHelper.getModel("editModel", oView);
-				if (oEditModel) {
-					oEditModel.setProperty("/mode", Constants.EDIT_MODES.EDIT);
-					oEditModel.setProperty("/editableMode", true);
-				}
-
-				// Resetear readOnlyMode
-				var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
-				if (oUtilsModel) {
-					oUtilsModel.setProperty("/readOnlyMode", false);
-				}
-
-				// Cerrar indicador de carga
-				that.cerrarDialogoBusy(oBusyDialog);
-
-				// Navegar a la vista de Novedades SOLO cuando los datos estén listos
-				setTimeout(() => {
-					that.getOwnerComponent().getRouter().navTo(
-						"Novedades",
-						{ mode: Constants.EDIT_MODES.EDIT }
-					);
-				}, 100); // Pequeño delay para asegurar que los modelos se actualicen
-			}).catch((oError) => {
-				that.cerrarDialogoBusy(oBusyDialog);
-				ErrorHandler.handleODataError(oError, "cargar datos de novedad", true);
-			});
-		},
+		
 
 		/**
 		 * Edita una perturbación o programada desde la tabla General
@@ -710,7 +638,7 @@ sap.ui.define([
 		onEditNoveLG: function (oEvent) {
 			var oButton = oEvent.getSource();
 			var oRow = oButton.getParent().getParent(); // Obtener la fila de la tabla
-			
+
 			// Obtener el contexto de la fila
 			var oContext = oRow.getBindingContext("oNovedadesModel");
 			if (!oContext) {
@@ -982,7 +910,7 @@ sap.ui.define([
 		},
 		// onCheckBoxSelect ahora se hereda de BaseController
 		// novedadesFormValid ahora se hereda de BaseController
-		
+
 		filtersInformeDiario: function () {
 			var that = this;
 			var model = ModelHelper.getModel("InformeFiltersJsonModel");
@@ -5148,7 +5076,7 @@ sap.ui.define([
 
 		},
 
-		
+
 
 		onOpenDialogNovedades: function () {
 			// Crear el diálogo si no existe
@@ -5367,10 +5295,10 @@ sap.ui.define([
 				if (!oSelectedNovedad.Equnr && oSelectedNovedad.Equipo) {
 					oSelectedNovedad.Equnr = oSelectedNovedad.Equipo;
 				}
-				
+
 				// Limpiar modelos anteriores antes de cargar datos nuevos
 				this._clearAllFormModels(this.getView());
-				
+
 				// Llamadas asincrónicas para cargar datos relacionados
 				Promise.all([
 					MotivosService.loadModel(oSelectedNovedad.CodNovedad, oSelectedNovedad.Empresa),
@@ -5378,7 +5306,7 @@ sap.ui.define([
 					LicenciaService.loadList(oSelectedNovedad.Empresa, oSelectedNovedad.IdNovedad || oSelectedNovedad.Id)
 				]).then(() => {
 					this.setNavigationPropertiesData(oSelectedNovedad);
-					
+
 					// Aplicar flags de perturbaciones si corresponde
 					const sFrag = this._getFragmentByNovedad(oSelectedNovedad);
 					if (sFrag.includes("formPerturbaciones")) {
@@ -5406,8 +5334,8 @@ sap.ui.define([
 
 					if (sFrag.includes("formProgramadas")) {
 						this.getOwnerComponent().getRouter().navTo(
-							"Programadas", 
-							{ mode: Constants.EDIT_MODES.VIEW }, 
+							"Programadas",
+							{ mode: Constants.EDIT_MODES.VIEW },
 							{ query: { id: oSelectedNovedad.IdNovedad } }
 						);
 						return;
@@ -5436,10 +5364,10 @@ sap.ui.define([
 				if (!oSelectedNovedad.Equnr && oSelectedNovedad.Equipo) {
 					oSelectedNovedad.Equnr = oSelectedNovedad.Equipo;
 				}
-				
+
 				// Limpiar modelos anteriores antes de cargar datos nuevos
 				this._clearAllFormModels(this.getView());
-				
+
 				// var oUtilsJsonModel = this.getView().getModel("UtilsJsonModel");
 				// var codNovedad = oSelectedNovedad.CodNovedad;
 
@@ -5513,18 +5441,18 @@ sap.ui.define([
 					element.ENSRow = (element.Corte / 60) * element.Potencia;
 				});
 			}
-			
+
 			// Mapear campos que pueden venir con nombres diferentes del servidor
 			// TipoNovedad/Tiponovedad -> CodNovedad
 			if (!oSelectedNovedad.CodNovedad && (oSelectedNovedad.Tiponovedad || oSelectedNovedad.TipoNovedad)) {
 				oSelectedNovedad.CodNovedad = oSelectedNovedad.Tiponovedad || oSelectedNovedad.TipoNovedad;
 			}
-			
+
 			// Equipo -> Equnr
 			if (!oSelectedNovedad.Equnr && oSelectedNovedad.Equipo) {
 				oSelectedNovedad.Equnr = oSelectedNovedad.Equipo;
 			}
-			
+
 			ModelHelper.getModel("NovedadesFormJsonModel", this.getView()).setData(oSelectedNovedad);
 
 			ModelHelper.getModel("ConsequentListJsonModel", this.getView()).setData({

@@ -104,17 +104,17 @@ sap.ui.define([
 			var filters = [];
 			filters.push(new sap.ui.model.Filter({
 				path: "TipoNovedad",
-				value1: "P",
+				value1: codNovedad,
 				operator: sap.ui.model.FilterOperator.EQ
 			}));
 			filters.push(new sap.ui.model.Filter({
 				path: "Motivo",
-				value1: "1",
+				value1: codMotivo,
 				operator: sap.ui.model.FilterOperator.EQ
 			}));
 			filters.push(new sap.ui.model.Filter({
 				path: "Empresa",
-				value1: "100",
+				value1: empresa,
 				operator: sap.ui.model.FilterOperator.EQ
 			}));
 			var model = this._getCausas();
