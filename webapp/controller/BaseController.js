@@ -996,7 +996,13 @@ sap.ui.define([
 				valid: !bHasErrors,
 				missingFields: aMissingFields
 			};
-		}
+		},
+		navToConsecuentes:function(){
+			this.getOwnerComponent().getRouter().navTo(
+							"Consecuentes",
+							{ mode: "edit" }
+						);
+		},
 
 	});
 });

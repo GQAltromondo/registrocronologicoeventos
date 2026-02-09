@@ -137,7 +137,8 @@ padding: 1rem 5px ;
 
 .normalizacion-title {
     font-weight: 600;
-    background-color: #ffda9e;
+    font-size: 17px;
+    /* background-color: #ffda9e; */
     border-radius: 5px;
     padding:10px;
 }
@@ -236,7 +237,14 @@ padding: 1rem 5px ;
      padding: 10px;
 }
 
+.border_ctn_3 .sapMHBox  {
+   gap:10%
+}
+
 .paddingSM{
     padding: 10px;
 }
 
+.IconTitle .sapMITBText span{
+font-size: 17px;
+}

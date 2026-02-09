@@ -1,9 +1,9 @@
-<mvc:View controllerName="transener.registrocronologicoeventos.controller.Perturbaciones"
+<mvc:View controllerName="transener.registrocronologicoeventos.controller.Consecuentes"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <Page id="PerturbacionesPage" title="Perturbaciones / Desconexiones" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
+    <Page id="ConsecuentesPage" title="Consecuentes" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
 
         <content>
             <FlexBox direction="Column" class="wrapper">
@@ -41,7 +41,7 @@
                     </HBox>
                     <HBox justifyContent="SpaceBetween">
                         <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-                        <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press=".navToConsecuentes"/>
+                        <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes"/>
                     </HBox>
                 </VBox>
                 <VBox class="container border_ctn sapUiSmallMarginBottom">

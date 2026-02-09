@@ -151,6 +151,11 @@
           "name": "Novedades",
           "pattern": "novedades/{mode}",
           "target": "Novedades"
+        },
+         {
+          "name": "Consecuentes",
+          "pattern": "consecuentes/{mode}",
+          "target": "Consecuentes"
         }
       ],
       "targets": {
@@ -172,6 +177,11 @@
         "Novedades": {
           "type": "View",
           "name": "Novedades",
+          "viewLevel": 2
+        },
+         "Consecuentes": {
+          "type": "View",
+          "name": "Consecuentes",
           "viewLevel": 2
         }
       }
