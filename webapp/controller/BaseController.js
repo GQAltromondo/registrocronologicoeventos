@@ -997,11 +997,17 @@ sap.ui.define([
 				missingFields: aMissingFields
 			};
 		},
-		navToConsecuentes:function(){
-			this.getOwnerComponent().getRouter().navTo(
-							"Consecuentes",
-							{ mode: "edit" }
-						);
+		navToConsecuentes: function () {
+			try {
+				this.getRouter().navTo(
+					"Consecuentes",
+					{ mode: Constants.EDIT_MODES.EDIT }
+				);
+				Logger.debug("Navegando a Consecuentes en modo edit");
+			} catch (oError) {
+				Logger.error("Error al navegar a Consecuentes", oError);
+				ErrorHandler.handleError(oError, "navegar a Consecuentes", true);
+			}
 		},
 
 	});
