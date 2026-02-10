@@ -12,31 +12,22 @@
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Tipo de Novedad" class="sapUiSmallMarginEnd labels" />
                                 <HBox>
-                                    <ComboBox width="90px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }">
-                                        <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo}" />
-                                    </ComboBox>
                                     <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }">
-                                        <core:Item key="{Novedades>Codigo}" text="{Novedades>Descripcion}" />
+                                        <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}" />
                                     </ComboBox>
                                 </HBox>
                             </HBox>
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Ubicacion" showColon="true" class="sapUiSmallMarginEnd labels" />
                                 <HBox>
-                                    <ComboBox width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                        <core:Item key="{Estaciones>Codigo}" text="{path: 'Estaciones>Codigo'}" />
-                                    </ComboBox>
                                     <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                        <core:Item key="{Estaciones>Codigo}" text="{path: 'Estaciones>Descripcion'}" />
+                                        <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
                                     </ComboBox>
                                 </HBox>
                             </HBox>
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Equipo" class="sapUiSmallMarginEnd labels" showColon="true" />
-                                <HBox>
-                                    <ComboBox width="90px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-                                        <core:Item key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo}" />
-                                    </ComboBox>
+                                <HBox>    
                                     <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
                                             <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                     </ComboBox>

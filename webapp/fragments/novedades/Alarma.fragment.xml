@@ -8,12 +8,8 @@
                             <HBox justifyContent="Start" alignItems="Center">
                                 <Label text="Codigo de Alarma" class="sapUiSmallMarginEnd labels" />
                                 <HBox>
-                                    <!-- El modelo AlarmasModel.json es un array simple, por eso el path es '/' y las propiedades van en minúsculas -->
-                                    <ComboBox width="90px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
-                                        <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo}" />
-                                    </ComboBox>
                                     <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
-                                        <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>nombre}" />
+                                        <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo} - {AlarmaModel>nombre}" />
                                     </ComboBox>
                                 </HBox>
                             </HBox>

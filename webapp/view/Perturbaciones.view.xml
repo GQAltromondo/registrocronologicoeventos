@@ -54,8 +54,8 @@
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
                         <VBox class="paddingSM" width="20%">
                             <Label text="ET" showColon="true" />
-                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
+                             <ComboBox  selectedKey="{NovedadesProtecciones>/Et1}" valueState="{NovedadesProtecciones>/Et1State}" valueStateText="{NovedadesProtecciones>/Et1StateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
+                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
                             </ComboBox>
                         </VBox>
                         <VBox width="30%">
@@ -107,8 +107,8 @@
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
                         <VBox class="paddingSM" width="20%">
                             <Label text="ET" showColon="true" />
-                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
+                               <ComboBox  selectedKey="{NovedadesProtecciones>/Et2}" valueState="{NovedadesProtecciones>/Et2State}" valueStateText="{NovedadesProtecciones>/Et2StateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
+                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
                             </ComboBox>
                         </VBox>
                       <VBox width="30%">
@@ -157,47 +157,48 @@
                         </VBox>
                     </HBox>
                     <HBox class="container" justifyContent="SpaceBetween">
+                      <HBox alignItems="Center">
+                            <Label text="Motivo" showColon="true" class="sapUiSmallMarginEnd"/>
+                            <ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
+                            </ComboBox>
+                        </HBox>
                         <HBox alignItems="Center">
                             <Label text="Causa" showColon="true" class="sapUiSmallMarginEnd"/>
                             <ComboBox selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" valueState="{NovedadesFormJsonModel>/CodCausaState}" valueStateText="{NovedadesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                 <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
                             </ComboBox>
                         </HBox>
-                        <HBox alignItems="Center">
-                            <Label text="Motivo" showColon="true" class="sapUiSmallMarginEnd"/>
-                            <ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
-                            </ComboBox>
-                        </HBox>
+                      
                     </HBox>
-                    <Label text="Afectaciones" showColon="true" class="sapUiSmallMargin title"/>
+                    <Label text="Afectaciones" showColon="true" class="sapUiSmallMargin title" />
                     <VBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
                         <HBox class="container">
                             <VBox>
                                 <Label text="Pot Cortada [MW]" showColon="true" />
-                                <Input/>
+                                <Input value="{ENSListJsonModel/>Potencia}"/>
                             </VBox>
                             <VBox>
                                 <Label text="Perd. de aporte [MW]" showColon="true" />
-                                <Input/>
+                                   <Input value="{ENSListJsonModel/>Potencia}"/>
                             </VBox>
                             <VBox>
                                 <Label text="Fecha/Hora de Reposicion" showColon="true" />
-                                <DatePicker/>
+                                <DatePicker  value="{ENSListJsonModel/>RepTime}"/>/>
                             </VBox>
                         </HBox>
                         <HBox class="container">
                             <VBox>
                                 <Label text="Factor de Reduc" showColon="true" />
-                                <Input/>
+                             <Input value="{ENSListJsonModel/>Potencia}"/>
                             </VBox>
                             <VBox>
                                 <Label text="ENS [MWh]" showColon="true" />
-                                <Input/>
+                                <Input value="{ENSListJsonModel/>ENSRow}"/>
                             </VBox>
                             <VBox>
-                                <Label text="Comentarios" showColon="true" />
-                                <TextArea/>
+                                <Label text="Comentarios" showColon="true" width="70%" />
+                                <TextArea value="{ENSListJsonModel/>Comments}"/>
                             </VBox>
                         </HBox>
                     </VBox>
@@ -219,7 +220,7 @@
                     </VBox>
                 </VBox>
               
-                    <VBox class="container ">
+                    <VBox class="container">
                     <HBox >
                     <Title text="Normalizacion" titleStyle="Auto" class="normalizacion-title"/>
                     </HBox>
@@ -331,16 +332,16 @@
                                     <Label text="Comentarios" showColon="true"/>
                                     <TextArea value="{InformaCammesa>/Texto}" width="100%"/>
                                 </VBox>
-<Label text="Protecciones Actuantes correspondiente a la prueba"/>
+                                <Label text="Protecciones Actuantes correspondiente a la prueba"/>
                                 <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
-                                  <VBox class="paddingSM" width="20%">
+                                  <VBox class="paddingSM" width="20%" >
                                         <Label text="ET" showColon="true" />
                                         <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                             <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                         </ComboBox>
                                     </VBox>
                                     <VBox  width="30%">
-                                        <Title text="Protección Actuante" titleStyle="Auto" showColon="true" />
+                                        <Title text="Protección Actuante" titleStyle="Auto" />
                                         <VBox class="border_ctn_3">
                                             <HBox>
                                                 <CheckBox text="Diferencial"/>
