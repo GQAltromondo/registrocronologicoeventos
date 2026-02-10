@@ -12,22 +12,12 @@ sap.ui.define([
   "use strict";
 
   return BaseController.extend("transener.registrocronologicoeventos.controller.Novedades", {
-    /**
-     * Inicializa el controlador
-     * Configura el router para detectar cuando se navega a esta vista
-     */
+
     onInit: function () {
       this.getOwnerComponent().getRouter()
         .getRoute("Novedades")
         .attachPatternMatched(this._onRouteMatched, this);
     },
-
-    /**
-     * Maneja el evento cuando se navega a la vista Novedades
-     * Configura el modo de edición y carga datos iniciales si existen
-     * @param {sap.ui.base.Event} oEvent - Evento de navegación
-     * @private
-     */
     _onRouteMatched: function (oEvent) {
       var oArgs = oEvent.getParameter("arguments") || {};
       var sMode = (oArgs.mode || Constants.EDIT_MODES.VIEW).toLowerCase();
@@ -80,14 +70,6 @@ sap.ui.define([
       this._processNovedadData(oNovedadData, sMode, oNovedadModel, oView);
     },
 
-    /**
-     * Procesa los datos de la novedad y carga fragmentos/equipos según corresponda
-     * @param {Object} oNovedadData - Datos de la novedad
-     * @param {string} sMode - Modo de edición (create/edit/view)
-     * @param {sap.ui.model.json.JSONModel} oNovedadModel - Modelo de novedades
-     * @param {sap.ui.core.mvc.View} oView - Vista actual
-     * @private
-     */
     _processNovedadData: function (oNovedadData, sMode, oNovedadModel, oView) {
       // Si está en modo CREATE, limpiar CodNovedad y fragmentos
       if (sMode === Constants.EDIT_MODES.CREATE) {
@@ -118,12 +100,6 @@ sap.ui.define([
       }
     },
 
-    /**
-     * Obtiene el código de empresa del modelo
-     * @param {sap.ui.core.mvc.View} oView - Vista actual
-     * @returns {string} Código de empresa o Constants.EMPRESAS.DEFAULT si no se encuentra
-     * @private
-     */
     _getEmpresa: function (oView) {
       if (!oView) {
         Logger.warn("Vista no disponible en _getEmpresa, usando empresa por defecto");
@@ -138,13 +114,6 @@ sap.ui.define([
       return empresa || Constants.EMPRESAS.DEFAULT;
     },
 
-    /**
-     * Encuentra el nombre del fragmento basado en el código de novedad y la empresa
-     * @param {string} sCodNovedad - Código de novedad
-     * @param {string} sEmpresa - Código de empresa (opcional, se obtiene del modelo si no se proporciona)
-     * @returns {string|null} Nombre del fragmento o null si no se encuentra
-     * @private
-     */
     _findFragmentByCodNovedad: function (sCodNovedad, sEmpresa) {
       if (!sCodNovedad) {
         Logger.warn("_findFragmentByCodNovedad: sCodNovedad no proporcionado");
@@ -182,11 +151,6 @@ sap.ui.define([
       return sFragmentName;
     },
 
-    /**
-     * Carga el fragmento correspondiente a un código de novedad
-     * @param {string} sCodNovedad - Código de novedad
-     * @private
-     */
     _loadFragmentByCodNovedad: function (sCodNovedad) {
       if (!sCodNovedad) {
         Logger.warn("_loadFragmentByCodNovedad: sCodNovedad no proporcionado");
@@ -200,12 +164,6 @@ sap.ui.define([
       }
     },
 
-    /**
-     * Maneja la selección de un tipo de novedad
-     * Actualiza el modelo y carga el fragmento correspondiente
-     * Si se deselecciona (valor vacío), limpia el fragmento
-     * @param {sap.ui.base.Event} oEvent - Evento de selección
-     */
     onNovedadSelected: function (oEvent) {
       var oSource = oEvent.getSource();
       if (!oSource) {
@@ -253,11 +211,6 @@ sap.ui.define([
       this._showNovedadFragment(sFragmentPath);
     },
 
-    /**
-     * Maneja el cambio de selección en ComboBoxes
-     * Actualiza el modelo y dispara acciones relacionadas (ej: cargar equipos)
-     * @param {sap.ui.base.Event} oEvent - Evento de cambio de selección
-     */
     onSelectionChange: function (oEvent) {
       var oSource = oEvent.getSource();
       if (!oSource) {
@@ -415,18 +368,12 @@ sap.ui.define([
         ErrorHandler.handleError(e, "Cargar fragmento de novedad", true);
       }
     },
-
-    /**
-     * Inicializa los modelos AlarmaModel y AlarmaJsonModel para el fragmento Alarma
-     * @param {sap.ui.core.mvc.View} oView - Vista actual
-     * @private
-     */
     _initializeAlarmaModels: function (oView) {
       try {
         // Inicializar AlarmaModel con 4 elementos
         var oAlarmaModel = new sap.ui.model.json.JSONModel();
         oAlarmaModel.loadData(
-          sap.ui.require.toUrl("transener/tuapp/model/Alarmas.json")
+          sap.ui.require.toUrl("transener/registrocronologicoeventos/model/AlarmasModel.json")
         );
 
         oView.setModel(oAlarmaModel, "AlarmaModel");
