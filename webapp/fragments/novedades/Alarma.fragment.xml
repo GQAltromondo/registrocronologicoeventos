@@ -5,12 +5,16 @@
                 <HBox width="100%" class="sapUiSmallMarginBottom FlexForm">
                     <HBox width="100%" class="sapUiSmallMarginBotton ">
                         <VBox width="100%">
-                            <HBox justifyContent="Start" alignItems="Center">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center">
                                 <Label text="Codigo de Alarma" class="sapUiSmallMarginEnd labels" />
                                 <HBox>
                                     <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
                                         <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo} - {AlarmaModel>nombre}" />
                                     </ComboBox>
+                                 
+                                </HBox>
+                                <HBox >
+                                   <TextArea  width="100%"/>
                                 </HBox>
                             </HBox>
                             <HBox width="100%" justifyContent="Start">

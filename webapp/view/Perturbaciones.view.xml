@@ -38,11 +38,16 @@
                                 <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                             </ComboBox>
                         </VBox>
+
+                        <VBox>
+                                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+
+                         </VBox>
+                         <VBox>
+                                                 <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
+</VBox>
                     </HBox>
-                    <HBox justifyContent="SpaceBetween">
-                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-                        <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
-                    </HBox>
+                 
                 </VBox>
                 <VBox class="container border_ctn sapUiSmallMarginBottom">
                     <HBox class="container">
@@ -171,29 +176,29 @@
                                     <CheckBox text="T0"/>
                                     <CheckBox text="T1"/>
                                     <CheckBox text="LI"/>
-                                       <CheckBox text="DAG"/>
+                                    <CheckBox text="DAG"/>
                                     <CheckBox text="U>"/>
-                                     <CheckBox text="U"/>
+                                    <CheckBox text="U"/>
                                 </HBox>
                                 <HBox >
                                     <CheckBox text="PD|PZ"/>
                                     <CheckBox text="PZ"/>
                                     <CheckBox text="PD"/>
-                                      <CheckBox text="LI"/>
+                                    <CheckBox text="LI"/>
                                 </HBox>
                                 <HBox >
-                                     <CheckBox text="PFI"/>
+                                    <CheckBox text="PFI"/>
                                     <CheckBox text="DISC"/>
                                     <CheckBox text="SIN"/>
-                                      <CheckBox text="BZ"/>
+                                    <CheckBox text="BZ"/>
 
- <HBox >
-                                    <Label text="OTRAS" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <HBox >
+                                        <Label text="OTRAS" showColon="true" class="sapUiSmallMarginBeginEnd"/>
+                                        <TextArea />
 
+                                    </HBox>
                                 </HBox>
-                                </HBox>
-                               
+
                             </VBox>
                         </VBox>
                         <VBox width="30%">
@@ -206,7 +211,7 @@
                                     <CheckBox text="FT"/>
                                 </HBox>
                                 <HBox>
-                                  <CheckBox text="TX"/>
+                                    <CheckBox text="TX"/>
                                     <CheckBox text="RX"/>
                                     <CheckBox text="TS2"/>
                                     <CheckBox text="SIN"/>
@@ -219,6 +224,48 @@
                             </VBox>
                         </VBox>
                     </HBox>
+                    <Table id="tableProtecciones" items="{path: 'NovedadesProtecciones>/Protecciones'}" growing="true" growingScrollToLoad="true">
+
+                        <columns>
+                            <Column>
+                                <header>
+                                    <Text text="ET" />
+                                </header>
+                            </Column>
+
+                            <Column>
+                                <header>
+                                    <Text text="Distancia" />
+                                </header>
+                            </Column>
+
+                            <Column>
+                                <header>
+                                    <Text text="Protección Actuante" />
+                                </header>
+                            </Column>
+
+                            <Column>
+                                <header>
+                                    <Text text="Excitación" />
+                                </header>
+                            </Column>
+
+                        </columns>
+
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{NovedadesProtecciones>ET}" />
+                                    <Text text="{NovedadesProtecciones>Distancia}" />
+                                    <Text text="{NovedadesProtecciones>ProteccionActuante}" />
+                                    <Text text="{NovedadesProtecciones>Exitacion}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+
+                    </Table>
+
                     <HBox class="container" justifyContent="SpaceBetween">
                         <HBox alignItems="Center">
                             <Label text="Motivo" showColon="true" class="sapUiSmallMarginEnd"/>
@@ -237,7 +284,7 @@
                     <Label text="Afectaciones" showColon="true" class="sapUiSmallMargin title" />
 
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
-                        <VBox width="20%" >
+                        <VBox width="20%">
                             <VBox >
 
                                 <Label text="Pot Cortada [MW]" showColon="true" />
@@ -249,7 +296,7 @@
                             </VBox>
 
                         </VBox>
-                           <VBox width="30%" >
+                        <VBox width="30%">
 
                             <VBox>
                                 <Label text="Perd. de aporte [MW]" showColon="true" />
@@ -260,15 +307,15 @@
                                 <Input value="{ENSListJsonModel>/ENSRegisters/0/ENSRow}"/>
                             </VBox>
                         </VBox>
-                          <VBox width="30%" >
-                       
+                        <VBox width="30%">
+
                             <VBox>
                                 <Label text="Fecha/Hora de Reposicion" showColon="true" />
 
                                 <DateTimePicker value="{ 'path': 'ENSListJsonModel>/ENSRegisters/0/Reptime', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
 
                             </VBox>
-                                 <VBox>
+                            <VBox>
                                 <Label text="Comentarios" showColon="true" width="70%" />
                                 <TextArea value="{ENSListJsonModel>/ENSRegisters/0/Comments}" width="100%"/>
                             </VBox>
@@ -282,14 +329,14 @@
                             <VBox>
                                 <Label text="Se informó a Empresa" showColon="true" />
                                 <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
-                            <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
-                        </ComboBox>
+                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
+                                </ComboBox>
                             </VBox>
                             <VBox>
                                 <Label text="Se informó a personal de Transener" showColon="true" />
-                                 <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/InformoPersona}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                                            <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
-                                        </ComboBox>
+                                <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/InformoPersona}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                                    <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                                </ComboBox>
                             </VBox>
 
                         </HBox>
@@ -484,6 +531,56 @@
                                     <Label text="Comentarios"/>
                                     <TextArea width="100%"></TextArea>
                                 </VBox>
+                                <Table
+    id="tablaTestProtecciones"
+    items="{TestProtecciones>/PruebasProtecciones}"
+    growing="true">
+
+    <columns>
+        <Column>
+            <header>
+                <Text text="Solicitada por" />
+            </header>
+        </Column>
+
+        <Column>
+            <header>
+                <Text text="ET" />
+            </header>
+        </Column>
+
+        <Column>
+            <header>
+                <Text text="Protección" />
+            </header>
+        </Column>
+
+        <Column>
+            <header>
+                <Text text="Excitación" />
+            </header>
+        </Column>
+
+        <Column>
+            <header>
+                <Text text="Comentario" />
+            </header>
+        </Column>
+    </columns>
+
+    <items>
+        <ColumnListItem>
+            <cells>
+                <Input value="{TestProtecciones>SolicitadaPor}" />
+                <Input value="{TestProtecciones>ET}" />
+                <Input value="{TestProtecciones>Proteccion}" />
+                <Input value="{TestProtecciones>Excitacion}" />
+                <Input value="{TestProtecciones>Comentario}" />
+            </cells>
+        </ColumnListItem>
+    </items>
+
+</Table>
                             </VBox>
                         </IconTabFilter>
                     </items>

@@ -66,6 +66,38 @@ sap.ui.define([
 				Logger.debug("Main.controller: Suscrito al evento 'Main' 'onInit' para refrescar datos");
 			}
 			this.loadSociety()
+
+			 var oData = {
+        Protecciones: [
+            {
+                ET: "ET 500",
+                Distancia: "120 km",
+                ProteccionActuante: "DPZ",
+                Exitacion: "Alta"
+            }
+        ]
+    };
+
+    // Crear modelo JSON
+    var oModel = new sap.ui.model.json.JSONModel(oData);
+
+    // Asignarlo a la vista con nombre
+    this.getView().setModel(oModel, "NovedadesProtecciones");
+
+	 var oData2 = {
+        PruebasProtecciones: [
+            {
+                SolicitadaPor: "Operaciones",
+                ET: "ET 500",
+                Proteccion: "DPZ",
+                Excitacion: "Alta",
+                Comentario: "Prueba inicial"
+            }
+        ]
+    };
+
+    var oModel = new sap.ui.model.json.JSONModel(oData2);
+    this.getView().setModel(oModel, "TestProtecciones");
 		},
 
 		loadSociety: async function () {
