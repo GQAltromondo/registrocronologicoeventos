@@ -158,20 +158,10 @@ sap.ui.define([
 				oProteccionesModel.setProperty("/Et2State", "None");
 			}
 			
-			// Actualizar los ComboBox de ET en la vista si existen
-			const oEt1ComboBox = oView.byId("proteccionEt1");
-			const oEt2ComboBox = oView.byId("proteccionEt2");
+			// Refrescar el modelo para actualizar los bindings en la vista
+			oProteccionesModel.refresh(true);
 			
-			if (oEt1ComboBox && sExtremoA) {
-				oEt1ComboBox.setSelectedKey(sExtremoA);
-			}
-			
-			if (oEt2ComboBox && sExtremoB) {
-				oEt2ComboBox.setSelectedKey(sExtremoB);
-			} else if (oEt2ComboBox && sExtremoC) {
-				oEt2ComboBox.setSelectedKey(sExtremoC);
-			}
-		},
+			},
 		
 		/**
 		 * Agrega las protecciones de los HBox a la lista
