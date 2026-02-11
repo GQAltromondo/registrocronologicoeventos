@@ -39,11 +39,11 @@
                             </ComboBox>
                         </VBox>
 
-                        <HBox>
+                        <HBox alignItems="End">
                                                 <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
 
                          </HBox>
-                         <HBox>
+                         <HBox alignItems="End">
                                                  <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
 </HBox>
                     </HBox>
@@ -53,7 +53,7 @@
                     <HBox class="container">
                         <HBox justifyContent="SpaceBetween" alignItems="Center" class="container">
                             <Title text="Protecciones Actuantes"/>
-                            <Button icon="sap-icon://add"/>
+                            <Button icon="sap-icon://add" press="onAddProteccion"/>
                         </HBox>
                     </HBox>
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" visible="{= ${Empresa>/selectedSociety} === '100' }">
@@ -67,22 +67,22 @@
                             <Label text="Protección Actuante" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox>
-                                    <CheckBox text="Diferencial"/>
-                                    <CheckBox text="DPO"/>
-                                    <CheckBox text="Impedancia"/>
+                                    <CheckBox text="Diferencial" selected="{NovedadesProtecciones>/Diferencial1}"/>
+                                    <CheckBox text="DPO" selected="{NovedadesProtecciones>/DPO1}"/>
+                                    <CheckBox text="Impedancia" selected="{NovedadesProtecciones>/Impedancia1}"/>
                                 </HBox>
                                 <HBox>
-                                    <CheckBox text="Máxima Corriente"/>
-                                    <CheckBox text="PFI"/>
-                                    <CheckBox text="U>"/>
+                                    <CheckBox text="Máxima Corriente" selected="{NovedadesProtecciones>/MaximaCorriente1}"/>
+                                    <CheckBox text="PFI" selected="{NovedadesProtecciones>/PFI1}"/>
+                                    <CheckBox text="U>" selected="{NovedadesProtecciones>/U1}"/>
                                 </HBox>
                                 <HBox>
-                                    <CheckBox text="Sin señalizacion de protecciones"/>
+                                    <CheckBox text="Sin señalizacion de protecciones" selected="{NovedadesProtecciones>/SinSenal1}"/>
 
                                 </HBox>
                                 <HBox>
                                     <Label text="Otras Actuaciones" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <TextArea value="{NovedadesProtecciones>/OtrasActuaciones1}" />
 
                                 </HBox>
                             </VBox>
@@ -92,18 +92,18 @@
                             <Label text="Excitaciones" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox>
-                                    <CheckBox text="R"/>
-                                    <CheckBox text="S"/>
-                                    <CheckBox text="T"/>
-                                    <CheckBox text="Tierra"/>
+                                    <CheckBox text="R" selected="{NovedadesProtecciones>/R1}"/>
+                                    <CheckBox text="S" selected="{NovedadesProtecciones>/S1}"/>
+                                    <CheckBox text="T" selected="{NovedadesProtecciones>/T1}"/>
+                                    <CheckBox text="Tierra" selected="{NovedadesProtecciones>/Tierra1}"/>
                                 </HBox>
                                 <HBox>
-                                    <CheckBox text="Sin Excitación de fase"/>
+                                    <CheckBox text="Sin Excitación de fase" selected="{NovedadesProtecciones>/SinExcitacion1}"/>
 
                                 </HBox>
                                 <HBox>
                                     <Label text="Loc de Falla" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <TextArea value="{NovedadesProtecciones>/LocFalla1}" />
 
                                 </HBox>
                             </VBox>
@@ -120,22 +120,22 @@
                             <Label text="Protección Actuante" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox >
-                                    <CheckBox text="Diferencial"/>
-                                    <CheckBox text="DPO"/>
-                                    <CheckBox text="Impedancia"/>
+                                    <CheckBox text="Diferencial" selected="{NovedadesProtecciones>/Diferencial2}"/>
+                                    <CheckBox text="DPO" selected="{NovedadesProtecciones>/DPO2}"/>
+                                    <CheckBox text="Impedancia" selected="{NovedadesProtecciones>/Impedancia2}"/>
                                 </HBox>
                                 <HBox >
-                                    <CheckBox text="Máxima Corriente"/>
-                                    <CheckBox text="PFI"/>
-                                    <CheckBox text="U>"/>
+                                    <CheckBox text="Máxima Corriente" selected="{NovedadesProtecciones>/MaximaCorriente2}"/>
+                                    <CheckBox text="PFI" selected="{NovedadesProtecciones>/PFI2}"/>
+                                    <CheckBox text="U>" selected="{NovedadesProtecciones>/U2}"/>
                                 </HBox>
                                 <HBox >
-                                    <CheckBox text="Sin señalizacion de protecciones"/>
+                                    <CheckBox text="Sin señalizacion de protecciones" selected="{NovedadesProtecciones>/SinSenal2}"/>
 
                                 </HBox>
                                 <HBox >
                                     <Label text="Otras Actuaciones" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <TextArea value="{NovedadesProtecciones>/OtrasActuaciones2}" />
 
                                 </HBox>
                             </VBox>
@@ -144,18 +144,18 @@
                             <Label text="Excitaciones" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox>
-                                    <CheckBox text="R"/>
-                                    <CheckBox text="S"/>
-                                    <CheckBox text="T"/>
-                                    <CheckBox text="Tierra"/>
+                                    <CheckBox text="R" selected="{NovedadesProtecciones>/R2}"/>
+                                    <CheckBox text="S" selected="{NovedadesProtecciones>/S2}"/>
+                                    <CheckBox text="T" selected="{NovedadesProtecciones>/T2}"/>
+                                    <CheckBox text="Tierra" selected="{NovedadesProtecciones>/Tierra2}"/>
                                 </HBox>
                                 <HBox>
-                                    <CheckBox text="Sin Excitación de fase"/>
+                                    <CheckBox text="Sin Excitación de fase" selected="{NovedadesProtecciones>/SinExcitacion2}"/>
 
                                 </HBox>
                                 <HBox>
                                     <Label text="Loc de Falla" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <TextArea value="{NovedadesProtecciones>/LocFalla2}" />
 
                                 </HBox>
                             </VBox>

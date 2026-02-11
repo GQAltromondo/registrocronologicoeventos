@@ -28,7 +28,39 @@ sap.ui.define([
 					Et1: "",
 					Et2: "",
 					Et1State: "None",
-					Et2State: "None"
+					Et2State: "None",
+					// Protecciones actuantes HBox 1
+					Diferencial1: false,
+					DPO1: false,
+					Impedancia1: false,
+					MaximaCorriente1: false,
+					PFI1: false,
+					U1: false,
+					SinSenal1: false,
+					OtrasActuaciones1: "",
+					// Excitaciones HBox 1
+					R1: false,
+					S1: false,
+					T1: false,
+					Tierra1: false,
+					SinExcitacion1: false,
+					LocFalla1: "",
+					// Protecciones actuantes HBox 2
+					Diferencial2: false,
+					DPO2: false,
+					Impedancia2: false,
+					MaximaCorriente2: false,
+					PFI2: false,
+					U2: false,
+					SinSenal2: false,
+					OtrasActuaciones2: "",
+					// Excitaciones HBox 2
+					R2: false,
+					S2: false,
+					T2: false,
+					Tierra2: false,
+					SinExcitacion2: false,
+					LocFalla2: ""
 				});
 			}
 		},
@@ -166,52 +198,84 @@ sap.ui.define([
 				oProteccionesModel.setData({
 					Protecciones: [],
 					Et1: "",
-					Et2: ""
+					Et2: "",
+					Et1State: "None",
+					Et2State: "None",
+					// Protecciones actuantes HBox 1
+					Diferencial1: false,
+					DPO1: false,
+					Impedancia1: false,
+					MaximaCorriente1: false,
+					PFI1: false,
+					U1: false,
+					SinSenal1: false,
+					OtrasActuaciones1: "",
+					// Excitaciones HBox 1
+					R1: false,
+					S1: false,
+					T1: false,
+					Tierra1: false,
+					SinExcitacion1: false,
+					LocFalla1: "",
+					// Protecciones actuantes HBox 2
+					Diferencial2: false,
+					DPO2: false,
+					Impedancia2: false,
+					MaximaCorriente2: false,
+					PFI2: false,
+					U2: false,
+					SinSenal2: false,
+					OtrasActuaciones2: "",
+					// Excitaciones HBox 2
+					R2: false,
+					S2: false,
+					T2: false,
+					Tierra2: false,
+					SinExcitacion2: false,
+					LocFalla2: ""
 				});
 			}
 			
 			const aProtecciones = oProteccionesModel.getProperty("/Protecciones") || [];
 			
-			// Función helper para recolectar datos de un HBox de protecciones
+			// Función helper para recolectar datos de un HBox de protecciones desde el modelo
 			const collectProteccionData = function (sPrefix) {
 				const oData = {
-					Et: oView.byId("proteccion" + sPrefix + "Et" + (sPrefix === "1" ? "1" : "2"))?.getSelectedKey() || "",
+					Et: oProteccionesModel.getProperty("/Et" + sPrefix) || "",
 					Protecciones: [],
 					Excitaciones: [],
-					OtrasActuaciones: oView.byId("proteccion" + sPrefix + "OtrasActuaciones")?.getValue() || "",
-					LocFalla: oView.byId("proteccion" + sPrefix + "LocFalla")?.getValue() || ""
+					OtrasActuaciones: oProteccionesModel.getProperty("/OtrasActuaciones" + sPrefix) || "",
+					LocFalla: oProteccionesModel.getProperty("/LocFalla" + sPrefix) || ""
 				};
 				
-				// Recolectar protecciones actuantes seleccionadas
+				// Recolectar protecciones actuantes seleccionadas desde el modelo
 				const aProteccionesActuantes = [
-					{ id: "Diferencial", text: "Diferencial" },
-					{ id: "DPO", text: "DPO" },
-					{ id: "Impedancia", text: "Impedancia" },
-					{ id: "MaxCorriente", text: "Máxima Corriente" },
-					{ id: "PFI", text: "PFI" },
-					{ id: "U", text: "U>" },
-					{ id: "SinSenal", text: "Sin señalizacion de protecciones" }
+					{ modelKey: "Diferencial" + sPrefix, text: "Diferencial" },
+					{ modelKey: "DPO" + sPrefix, text: "DPO" },
+					{ modelKey: "Impedancia" + sPrefix, text: "Impedancia" },
+					{ modelKey: "MaximaCorriente" + sPrefix, text: "Máxima Corriente" },
+					{ modelKey: "PFI" + sPrefix, text: "PFI" },
+					{ modelKey: "U" + sPrefix, text: "U>" },
+					{ modelKey: "SinSenal" + sPrefix, text: "Sin señalizacion de protecciones" }
 				];
 				
 				aProteccionesActuantes.forEach(function(oProt) {
-					const oCheckBox = oView.byId("proteccion" + sPrefix + oProt.id);
-					if (oCheckBox && oCheckBox.getSelected()) {
+					if (oProteccionesModel.getProperty("/" + oProt.modelKey)) {
 						oData.Protecciones.push(oProt.text);
 					}
 				});
 				
-				// Recolectar excitaciones seleccionadas
+				// Recolectar excitaciones seleccionadas desde el modelo
 				const aExcitaciones = [
-					{ id: "ExR", text: "R" },
-					{ id: "ExS", text: "S" },
-					{ id: "ExT", text: "T" },
-					{ id: "ExTierra", text: "Tierra" },
-					{ id: "SinExcitacion", text: "Sin Excitación de fase" }
+					{ modelKey: "R" + sPrefix, text: "R" },
+					{ modelKey: "S" + sPrefix, text: "S" },
+					{ modelKey: "T" + sPrefix, text: "T" },
+					{ modelKey: "Tierra" + sPrefix, text: "Tierra" },
+					{ modelKey: "SinExcitacion" + sPrefix, text: "Sin Excitación de fase" }
 				];
 				
 				aExcitaciones.forEach(function(oExc) {
-					const oCheckBox = oView.byId("proteccion" + sPrefix + oExc.id);
-					if (oCheckBox && oCheckBox.getSelected()) {
+					if (oProteccionesModel.getProperty("/" + oExc.modelKey)) {
 						oData.Excitaciones.push(oExc.text);
 					}
 				});
