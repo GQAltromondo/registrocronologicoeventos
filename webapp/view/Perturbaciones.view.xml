@@ -34,7 +34,7 @@
                         </VBox>
                         <VBox>
                             <Label text="{i18n>CammesaEq}" showColon="true" class="title"/>
-                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                            <ComboBox selectionChange=".onEquipoChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                 <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                             </ComboBox>
                         </VBox>
