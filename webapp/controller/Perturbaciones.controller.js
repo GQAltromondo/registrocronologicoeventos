@@ -140,23 +140,14 @@ sap.ui.define([
 			// Actualizar el modelo de protecciones
 			const oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
 			
-			// Asignar ExtremoA a Et1
-			if (sExtremoA) {
-				oProteccionesModel.setProperty("/Et1", sExtremoA);
-				oProteccionesModel.setProperty("/Et1State", "None");
-			}
+			// Asignar ExtremoA a Et1 (siempre, incluso si está vacío)
+			oProteccionesModel.setProperty("/Et1", sExtremoA);
+			oProteccionesModel.setProperty("/Et1State", "None");
 			
-			// Asignar ExtremoB a Et2
-			if (sExtremoB) {
-				oProteccionesModel.setProperty("/Et2", sExtremoB);
-				oProteccionesModel.setProperty("/Et2State", "None");
-			}
-			
-			// Si hay ExtremoC pero no hay ExtremoB, asignar ExtremoC a Et2
-			if (!sExtremoB && sExtremoC) {
-				oProteccionesModel.setProperty("/Et2", sExtremoC);
-				oProteccionesModel.setProperty("/Et2State", "None");
-			}
+			// Asignar ExtremoB a Et2, o ExtremoC si no hay ExtremoB (siempre, incluso si está vacío)
+			const sEt2Value = sExtremoB || sExtremoC || "";
+			oProteccionesModel.setProperty("/Et2", sEt2Value);
+			oProteccionesModel.setProperty("/Et2State", "None");
 			
 			// Refrescar el modelo para actualizar los bindings en la vista
 			oProteccionesModel.refresh(true);

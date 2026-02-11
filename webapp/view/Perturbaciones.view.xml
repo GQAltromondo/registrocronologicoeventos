@@ -39,13 +39,13 @@
                             </ComboBox>
                         </VBox>
 
-                        <VBox>
+                        <HBox>
                                                 <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
 
-                         </VBox>
-                         <VBox>
+                         </HBox>
+                         <HBox>
                                                  <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
-</VBox>
+</HBox>
                     </HBox>
                  
                 </VBox>
