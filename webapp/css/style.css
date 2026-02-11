@@ -237,6 +237,13 @@ padding: 1rem 5px ;
      padding: 10px;
 }
 
+.border_ctn_4{
+    border-radius: 10px;
+    border: solid 1px grey;
+    background-color: gainsboro;
+     padding: 10px;
+}
+
 .border_ctn_3 .sapMHBox  {
    gap:10%
 }

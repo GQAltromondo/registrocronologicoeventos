@@ -5,7 +5,7 @@
 
     <Page id="NovedadesPage" title="Novedades del sistema LG" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
         <content>
-            <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
+            <FlexBox class="wrapper" direction="Column">
                 <HBox width="100%">
                     <HBox width="100%" class="sapUiSmallMarginBotton mainFrame FlexForm">
                         <VBox width="50%">
@@ -43,23 +43,12 @@
                                 <Label text="Fecha/Hora" class="sapUiSmallMarginEnd labels" showColon="true" />
                                 <DateTimePicker value="{ 'path': 'NovedadLGFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" valueState="{NovedadLGFormJsonModel>/InicioNoveState}" valueStateText="{NovedadLGFormJsonModel>/InicioNoveStateMessage}" />
                             </HBox>
-                            <!-- <ComboBox id="noveltyComboBox" change="onComboBoxChange">
-                                <core:Item key="Alarma" text="Alarma" />
-                                <core:Item key="CargaDeEquipos" text="Carga de Equipos" />
-                                <core:Item key="VinculadoSinTension" text="Vinculado y sin tensión" />
-                                <core:Item key="EnBandaFueraDeBanda" text="En Banda o Fuera de Banda" />
-                                <core:Item key="IndisponibilidadesSubindice" text="Indisponibilidades Subíndice" />
-                                <core:Item key="ManiobrasOperativas1" text="Maniobras Operativas" />
-                                <core:Item key="ManiobrasOperativas2" text="Maniobras Operativas 2" />
-                                <core:Item key="ManiobrasOperativas3" text="Maniobras Operativas 3" />
-                                <core:Item key="PantallaGeneral" text="Pantalla General" />
-                            </ComboBox> -->
                         </VBox>
                     </HBox>
                 </HBox>
-
+    <VBox id="fragContainer" width="100%" class="sapUiSmallMarginTop"/>
             </FlexBox>
-            <VBox id="fragContainer" width="100%" class="sapUiSmallMarginTop"/>
+        
         </content>
 
         <footer>
