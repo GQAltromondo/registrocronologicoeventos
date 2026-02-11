@@ -17,18 +17,20 @@
 							</ComboBox>
 						</HBox>
 						<HBox alignItems="Center" class="container" width="40%">
-							<Label class="sapUiMediumMarginBeginEnd" text="Referencia"></Label>
-							<Input ></Input>
+							<Label class="sapUiMediumMarginBeginEnd" text="Referencia" />
+							<Input value="{NovedadesFormJsonModel>/IdNovedad}" editable="false"/>
 						</HBox>
 					</HBox>
 					<HBox justifyContent="SpaceBetween">
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="Equipo CAMMESA"></Label>
-							<ComboBox ></ComboBox>
+						     <ComboBox selectedKey="{ConsecuentesFormJsonModel>/Equnr}" valueState="{ConsecuentesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{ConsecuentesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
+                            </ComboBox>
 						</HBox>
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="LLTT asociadas"></Label>
-							<Input ></Input>
+							<Input  value="{LicencesListJsonModel/Licences>/0}"/>
 						</HBox>
 					</HBox>
 
@@ -36,24 +38,30 @@
 				<HBox class="container topBorder">
 					<HBox alignItems="Center" justifyContent="SpaceBetween" width="40%">
 						<Label class="sapUiMediumMarginBeginEnd" text="Indisponible desde"></Label>
-						<DatePicker/>
+
+						<DateTimePicker  value="{ 'path': 'ConsecuentesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>/>
 					</HBox>
 					<HBox alignItems="Center" justifyContent="SpaceBetween" width="40%">
 						<Label class="sapUiMediumMarginBeginEnd" text="Disponible desde"></Label>
-						<DatePicker/>
+						<DateTimePicker  value="{ 'path': 'ConsecuentesFormJsonModel>/EntDisp', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>/>
 					</HBox>
 				</HBox>
 
 				<VBox class="container topBorder">
 					<HBox class="container">
 						<HBox alignItems="Center">
-							<Label class="sapUiMediumMarginBeginEnd" text="Causa"></Label>
-							<ComboBox ></ComboBox>
+							<Label class="sapUiMediumMarginBeginEnd" text="Motivo"></Label>
+						   <ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{ConsecuentesFormJsonModel>/CodMotivo}" valueState="{ConsecuentesFormJsonModel>/CodMotivoState}" valueStateText="{ConsecuentesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
+                            </ComboBox>
 						</HBox>
 						<HBox alignItems="Center">
-							<Label class="sapUiMediumMarginBeginEnd" text="Motivo"></Label>
-							<ComboBox ></ComboBox>
+							<Label class="sapUiMediumMarginBeginEnd" text="Causa"></Label>
+						  <ComboBox selectionChange=".onSelectionChange" selectedKey="{ConsecuentesFormJsonModel>/CodCausa}" valueState="{ConsecuentesFormJsonModel>/CodCausaState}" valueStateText="{ConsecuentesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
+                            </ComboBox>
 						</HBox>
+					
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Vinculado y sin tensíon"></Label>
 							<CheckBox/>
@@ -62,15 +70,15 @@
 					<VBox class="container">
 						<VBox >
 							<Label text="Comentarios"></Label>
-							<TextArea width="100%"/>
+							<TextArea  value="{ConsecuentesFormJsonModel>/Texto}" width="100%"/>
 							<HBox alignItems="Center">
 								<Label text="La indisponibilidad se informa a CAMMESA" class="sapUiSmallMarginEnd"/>
-								<CheckBox text="SI"></CheckBox>
+								<CheckBox selected="{ConsecuentesFormJsonModel>/InformaCammesa}" text="SI"></CheckBox>
 							</HBox>
 						</VBox>
 						<VBox >
 							<Label text="Comentarios Generales"></Label>
-							<TextArea width="100%"/>
+							<TextArea  value="{ConsecuentesFormJsonModel>/Comentario}" width="100%"/>
 						</VBox>
 					</VBox>
 				</VBox>
@@ -81,48 +89,44 @@
 					<t:Column width='200px'>
 						<Label text="{i18n>CammesaEq}"/>
 						<t:template>
-							<!--<Text text="{parts: [{path: 'ConsequentListJsonModel>InicioNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						<Text text="{ConsequentListJsonModel>Equnr}"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='200px'>
 						<Label text="{i18n>fs}"/>
-						<t:template>
-							<!--<Text text="{parts: [{path: 'ConsequentListJsonModel>FechaFinNove'}], formatter: '.formatter.formatDateWithoutGMT'}"/>-->
-							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						<t:template>	
+							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='200px'>
 						<Label text="{i18n>indisDesde}"/>
-						<t:template>
-							<!--<Text text="{ConsequentListJsonModel>Tplnr}"/>-->
-							<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" selectedKey="{ConsequentListJsonModel>Tplnr}">
-								<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
-							</ComboBox>
+						<t:template>				
+							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>EntIndisp', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='150px'>
 						<Label text="{i18n>es}"/>
 						<t:template>
-							<Text text="{ConsequentListJsonModel>Equnr}"/>
+							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>FechaFinNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='150px'>
 						<Label text="{i18n>dispDesde}"/>
 						<t:template>
-							<Text text="{parts:[{path:'ConsequentListJsonModel>CodNovedad'}],formatter:'.formatter.novedadType'}"/>
+							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>EntDisp', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+							
 						</t:template>
 					</t:Column>
 					<t:Column width='250px'>
 						<Label text="{i18n>comentarios}"/>
 						<t:template>
-							<Text text="{ConsequentListJsonModel>CodUbFalla}"/>
+							<Text text="{ConsequentListJsonModel>Comment}"/>
 						</t:template>
 					</t:Column>
 					<t:Column>
 						<Label text="{i18n>infCammesa}"/>
 						<t:template>
-							<Text text="{ConsequentListJsonModel>fromDate}"/>
+							<Text text="{ConsequentListJsonModel>InformaCammesa}"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="180px">
