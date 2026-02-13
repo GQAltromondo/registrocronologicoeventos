@@ -3,12 +3,8 @@ jQuery.sap.require("transener/registrocronologicoeventos/libs/jszip");
 sap.ui.define([
 	"transener/registrocronologicoeventos/controller/BaseController",
 	"sap/m/MessageToast",
-	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator",
-	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/Fragment",
 	"sap/m/MessageBox",
-	"sap/m/MessageStrip",
 	"sap/m/VBox",
 	"sap/m/Dialog",
 	"transener/registrocronologicoeventos/services/UserService",
@@ -36,18 +32,19 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/Logger",
 	"transener/registrocronologicoeventos/utils/ErrorHandler",
 	"transener/registrocronologicoeventos/utils/Constants",
-	"transener/registrocronologicoeventos/utils/BusyDialogHelper"
-], function (BaseController, MessageToast, Filter, FilterOperator, JSONModel, Fragment, MessageBox, MessageStrip, VBox, Dialog, UserService,
+	"transener/registrocronologicoeventos/utils/BusyDialogHelper",
+	"transener/registrocronologicoeventos/utils/SocietyHelper",
+], function (BaseController, MessageToast,  Fragment, MessageBox, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
 	PersonalHabilitadoService, LicenciaService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
-	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper) {
+	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper,SocietyHelper) {
 	"use strict";
 
 
-	return BaseController.extend("transener.registrocronologicoeventos.controller.Main", {
+	return BaseController.extend("transener.registrocronologicoeventos,SocietyHelper.controller.Main", {
 		formatter: formatter,
 		onInit: function () {
 			const oView = this.getView()
@@ -99,131 +96,19 @@ sap.ui.define([
 			var oModel = new sap.ui.model.json.JSONModel(oData2);
 			this.getView().setModel(oModel, "TestProtecciones");
 		},
+		loadSociety: function () {
+			var that = this;
+			var oModelOperaciones = oDataService.getModel();
 
-		loadSociety: async function () {
-			const that = this;
-			let oBusyDialog = that.crearDialogoBusy();
-			that.abrirDialogoBusy(oBusyDialog);
-
-			const bIsLocal = window.location.hostname.includes("applicationstudio.cloud.sap");
-
-			if (bIsLocal) {
-				that.InitSociety();
-				that.cerrarDialogoBusy(oBusyDialog);
-				return;
-			}
-
-			let oModelOperaciones = this.getOwnerComponent().getModel("operaciones");
-
-			try {
-				await new Promise((resolve, reject) => {
-					oModelOperaciones.read("/EmpresaUsuarioSet", {
-						success: function (data) {
-							resolve(data);
-							let empresa = data.results[0].Empresa;
-							if (empresa == 999) {
-								that.InitSociety();
-							} else {
-								ModelHelper.getModel(that.getView(), "Empresa").setProperty("/selectedSociety", empresa)
-								that.society = empresa;
-							
-							that.loadModels();
-
-
-							}
-							that.cerrarDialogoBusy(oBusyDialog);
-						},
-						error: function (oError) {
-							reject(oError);
-							that.cerrarDialogoBusy(oBusyDialog);
-						}
-					});
-				});
-			} catch (err) {
-				console.log(err);
-				throw err;
-			}
-
-
-		},
-		InitSociety: function () {
-			var oNavigation = performance.getEntriesByType("navigation")[0];
-			if (!sessionStorage.getItem("empresa") || (oNavigation && oNavigation.type !== "reload")) {
-				this.dialogSociety = new sap.m.Dialog({
-					type: sap.m.DialogType.Message,
-					title: "Selección de Empresa",
-					escapeHandler: function (oPromise) {
-						oPromise.reject();
-					},
-					content: [
-						new sap.m.VBox({
-							items: [
-								new sap.m.Label({ text: "Debe seleccionar la empresa:" }),
-								new sap.m.Select({
-									selectedKey: "{Society>/Code}",
-									change: [this.ValidateCombo, this],
-									items: {
-										path: "Society>/Empresas",
-										template: new sap.ui.core.Item({
-											key: "{Society>Code}",
-											text: "{Society>Name}"
-										})
-									}
-								})
-							]
-						})
-					],
-					buttons: [
-						new sap.m.Button({
-							icon: "sap-icon://save",
-							type: sap.m.ButtonType.Emphasized,
-							text: "Guardar",
-							press: [this.onSelectedSociety, this]
-						})
-					]
-				});
-
-
-				var oModel = new sap.ui.model.json.JSONModel({
-					Code: "",
-					Empresas: [
-						{ Code: "", Name: "Elija Uno" },
-						{ Code: "100", Name: "TRANSENER S.A." },
-						{ Code: "300", Name: "TRANSBA S.A." }
-					]
-				});
-
-				this.dialogSociety.setModel(oModel, "Society");
-				this.dialogSociety.open();
-			} else {
-				this.society = sessionStorage.getItem("empresa");
-
-			}
-		}
-		,
-		onSelectedSociety: function () {
-			var empresa = this.dialogSociety.getModel("Society").getData().Code;
-
-			if (empresa !== "" && typeof empresa !== "undefined") {
-
-				ModelHelper.getModel(this.getView(), "Empresa").setProperty("/selectedSociety", empresa);
-				that.loadModels();
-				this.dialogSociety.close();
-			} else {
-				//TODO
-				/*MessageBox.alert("Debe seleccionar una de empresa!", {
-					title: "Selección de Empresa"
-				});*/
-			}
-		},
-		ValidateCombo: function (oEvent) {
-			var society = this.dialogSociety.getModel("Society").getData().Code;
-			//  sessionStorage.setItem("empresa", society);
-			if (society !== "") {
-				oEvent.getSource().setValueState("None");
-			} else {
-				oEvent.getSource().setValueState("Error");
-			}
+			SocietyHelper.loadSociety(
+				this,
+				oModelOperaciones,
+				function (sEmpresa) {
+					// Callback cuando se carga/selecciona empresa
+					that.society = sEmpresa;
+				
+				}
+			);
 		},
 		_onRefreshData: function (sChannel, sEvent, oData) {
 			Logger.debug("Main.controller._onRefreshData: Evento recibido, refrescando datos");
@@ -303,16 +188,9 @@ sap.ui.define([
 		// getBaseURL ahora se hereda de BaseController
 
 		onAfterRendering: function () {
-			this.loadSociety();
+		
 			this._initializeDefaultDates();
 		},
-
-		/**
-		 * Inicializa los filtros de fecha con valores por defecto:
-		 * - Hasta: fecha del día actual (23:59:59)
-		 * - Desde: un mes atrás desde el día actual (00:00:00)
-		 * @private
-		 */
 		_initializeDefaultDates: function () {
 			var that = this;
 			var oView = this.getView();
@@ -396,50 +274,7 @@ sap.ui.define([
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
 		},
-		loadSociety: async function () {
-			const that = this;
-			let oBusyDialog = that.crearDialogoBusy();
-			that.abrirDialogoBusy(oBusyDialog);
-
-			const bIsLocal = window.location.hostname.includes("applicationstudio.cloud.sap");
-
-			if (bIsLocal) {
-				that.InitSociety();
-				that.cerrarDialogoBusy(oBusyDialog);
-				return;
-			}
-
-			let oModelOperaciones = oDataService.getModel();
-
-			try {
-				await new Promise((resolve, reject) => {
-					oModelOperaciones.read("/EmpresaUsuarioSet", {
-						success: function (data) {
-							resolve(data);
-							let empresa = data.results[0].Empresa;
-							if (empresa == 999) {
-								that.InitSociety();
-							} else {
-								ModelHelper.getModel("Empresa", that.getView()).setProperty("/selectedSociety", empresa)
-								that.society = empresa;
-
-								that.loadModels()
-							}
-							that.cerrarDialogoBusy(oBusyDialog);
-						},
-						error: function (oError) {
-							reject(oError);
-							that.cerrarDialogoBusy(oBusyDialog);
-						}
-					});
-				});
-			} catch (err) {
-				Logger.error("Error en operación asíncrona", err);
-				throw err;
-			}
-
-
-		},
+		
 		crearDialogoBusy: function () {
 			let oDialogoBusy = new sap.m.BusyDialog({
 				title: "Actualizando datos...",
