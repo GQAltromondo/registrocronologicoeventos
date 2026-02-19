@@ -290,46 +290,172 @@ sap.ui.define([
 			const oProteccion1 = collectProteccionData("1");
 			const oProteccion2 = collectProteccionData("2");
 			
-			// Crear objeto para la tabla
-			const createProteccionItem = function(oProt) {
+			// Crear objeto para la tabla con datos completos para poder editar después
+			var that = this;
+			const createProteccionItem = function(oProt, sPrefix) {
 				if (!oProt.Et) {
-					return null; // No agregar si no hay ET seleccionada
+					return null;
 				}
+				
+				// Guardar los valores individuales de los checkboxes para restaurar al editar
+				var oFormData = {};
+				var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
+				var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
+				
+				aProtFields.forEach(function(sField) {
+					oFormData[sField] = !!oProteccionesModel.getProperty("/" + sField + sPrefix);
+				});
+				aExcFields.forEach(function(sField) {
+					oFormData[sField] = !!oProteccionesModel.getProperty("/" + sField + sPrefix);
+				});
+				oFormData.OtrasActuaciones = oProt.OtrasActuaciones || "";
+				oFormData.LocFalla = oProt.LocFalla || "";
+				oFormData.Km = oProt.Km || "";
+				oFormData.EtPrefix = sPrefix;
 				
 				return {
 					ET: oProt.Et,
 					LocFalla: oProt.LocFalla || "",
 					Km: oProt.Km || "",
 					ProteccionActuante: oProt.Protecciones.join(", ") || "",
-					Exitacion: oProt.Excitaciones.join(", ") || ""
+					Exitacion: oProt.Excitaciones.join(", ") || "",
+					_formData: oFormData
 				};
 			};
 			
+			var iAdded = 0;
+			
 			// Agregar protecciones a la lista si tienen ET seleccionada
 			if (oProteccion1.Et) {
-				const oItem1 = createProteccionItem(oProteccion1);
+				const oItem1 = createProteccionItem(oProteccion1, "1");
 				if (oItem1) {
 					aProtecciones.push(oItem1);
+					iAdded++;
+					this._resetProteccionFields("1");
 				}
 			}
 			
 			if (oProteccion2.Et) {
-				const oItem2 = createProteccionItem(oProteccion2);
+				const oItem2 = createProteccionItem(oProteccion2, "2");
 				if (oItem2) {
 					aProtecciones.push(oItem2);
+					iAdded++;
+					this._resetProteccionFields("2");
 				}
 			}
 			
-			// Actualizar el modelo directamente en el array
+			// Actualizar el modelo
 			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
 			oProteccionesModel.updateBindings();
 			
-			// Mostrar mensaje de confirmación
-			if (aProtecciones.length > 0) {
-				sap.m.MessageToast.show("Se agregaron " + aProtecciones.length + " protección(es) a la lista");
+			if (iAdded > 0) {
+				sap.m.MessageToast.show("Se agregó " + iAdded + " protección(es) a la lista");
 			} else {
 				sap.m.MessageBox.warning("Debe seleccionar al menos una ET para agregar protecciones");
 			}
+		},
+		
+		/**
+		 * Resetea los campos del formulario de protecciones para un prefijo dado
+		 * @param {string} sPrefix - "1" o "2"
+		 * @private
+		 */
+		_resetProteccionFields: function (sPrefix) {
+			const oView = this.getView();
+			const oModel = ModelHelper.getModel("NovedadesProtecciones", oView);
+			
+			var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
+			var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
+			
+			aProtFields.forEach(function(sField) {
+				oModel.setProperty("/" + sField + sPrefix, false);
+			});
+			aExcFields.forEach(function(sField) {
+				oModel.setProperty("/" + sField + sPrefix, false);
+			});
+			oModel.setProperty("/OtrasActuaciones" + sPrefix, "");
+			oModel.setProperty("/LocFalla" + sPrefix, "");
+			oModel.setProperty("/Km" + sPrefix, "");
+		},
+		
+		/**
+		 * Edita una protección: carga los datos de la fila en el HBox 1 y la elimina de la lista
+		 */
+		onEditProteccion: function (oEvent) {
+			const oView = this.getView();
+			const oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
+			
+			// Obtener el índice de la fila
+			const oItem = oEvent.getSource().getParent().getParent();
+			const sPath = oItem.getBindingContextPath("NovedadesProtecciones");
+			const iIndex = parseInt(sPath.split("/").pop(), 10);
+			
+			const aProtecciones = oProteccionesModel.getProperty("/Protecciones") || [];
+			if (iIndex < 0 || iIndex >= aProtecciones.length) {
+				return;
+			}
+			
+			const oRow = aProtecciones[iIndex];
+			const oFormData = oRow._formData;
+			
+			if (!oFormData) {
+				sap.m.MessageToast.show("No se pueden recuperar los datos para editar");
+				return;
+			}
+			
+			// Determinar a qué HBox cargar (siempre al 1)
+			var sPrefix = "1";
+			
+			// Restaurar ET
+			oProteccionesModel.setProperty("/Et" + sPrefix, oRow.ET || "");
+			
+			// Restaurar checkboxes de protecciones actuantes
+			var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
+			aProtFields.forEach(function(sField) {
+				oProteccionesModel.setProperty("/" + sField + sPrefix, !!oFormData[sField]);
+			});
+			
+			// Restaurar checkboxes de excitaciones
+			var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
+			aExcFields.forEach(function(sField) {
+				oProteccionesModel.setProperty("/" + sField + sPrefix, !!oFormData[sField]);
+			});
+			
+			// Restaurar textos
+			oProteccionesModel.setProperty("/OtrasActuaciones" + sPrefix, oFormData.OtrasActuaciones || "");
+			oProteccionesModel.setProperty("/LocFalla" + sPrefix, oFormData.LocFalla || "");
+			oProteccionesModel.setProperty("/Km" + sPrefix, oFormData.Km || "");
+			
+			// Eliminar la fila de la lista
+			aProtecciones.splice(iIndex, 1);
+			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
+			oProteccionesModel.refresh(true);
+			
+			sap.m.MessageToast.show("Protección cargada para edición");
+		},
+		
+		/**
+		 * Elimina una protección de la lista
+		 */
+		onDeleteProteccion: function (oEvent) {
+			const oView = this.getView();
+			const oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
+			
+			// Obtener el índice de la fila
+			const oItem = oEvent.getSource().getParent().getParent();
+			const sPath = oItem.getBindingContextPath("NovedadesProtecciones");
+			const iIndex = parseInt(sPath.split("/").pop(), 10);
+			
+			const aProtecciones = oProteccionesModel.getProperty("/Protecciones") || [];
+			if (iIndex < 0 || iIndex >= aProtecciones.length) {
+				return;
+			}
+			
+			aProtecciones.splice(iIndex, 1);
+			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
+			oProteccionesModel.refresh(true);
+			
+			sap.m.MessageToast.show("Protección eliminada");
 		}
 	});
 });

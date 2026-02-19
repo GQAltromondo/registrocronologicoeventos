@@ -251,6 +251,12 @@
                                 </header>
                             </Column>
 
+                            <Column width="6rem" hAlign="Center">
+                                <header>
+                                    <Text text="Acciones" />
+                                </header>
+                            </Column>
+
                         </columns>
 
                         <items>
@@ -260,6 +266,10 @@
                                     <Text text="{= ${Empresa>/selectedSociety} === '100' ? ${NovedadesProtecciones>LocFalla} : ${NovedadesProtecciones>Km}}" />
                                     <Text text="{NovedadesProtecciones>ProteccionActuante}" />
                                     <Text text="{NovedadesProtecciones>Exitacion}" />
+                                    <HBox>
+                                        <Button icon="sap-icon://edit" type="Transparent" press=".onEditProteccion" tooltip="Editar"/>
+                                        <Button icon="sap-icon://delete" type="Transparent" press=".onDeleteProteccion" tooltip="Eliminar"/>
+                                    </HBox>
                                 </cells>
                             </ColumnListItem>
                         </items>
