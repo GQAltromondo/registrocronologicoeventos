@@ -40,14 +40,14 @@
                         </VBox>
 
                         <HBox alignItems="End">
-                                                <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
 
-                         </HBox>
-                         <HBox alignItems="End">
-                                                 <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
-</HBox>
+                        </HBox>
+                        <HBox alignItems="End">
+                            <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
+                        </HBox>
                     </HBox>
-                 
+
                 </VBox>
                 <VBox class="container border_ctn sapUiSmallMarginBottom">
                     <HBox class="container">
@@ -172,7 +172,7 @@
                             <Label text="Protección Actuante" showColon="true" />
                             <VBox class="border_ctn_4">
                                 <HBox >
-                                    <CheckBox text="|>" selected="{NovedadesProtecciones>/TBA_Flecha1}"/>
+                                    <Label text="|>"/>
                                     <CheckBox text="T0" selected="{NovedadesProtecciones>/TBA_T01}"/>
                                     <CheckBox text="T1" selected="{NovedadesProtecciones>/TBA_T11}"/>
                                     <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI1}"/>
@@ -181,10 +181,11 @@
                                     <CheckBox text="U" selected="{NovedadesProtecciones>/TBA_U1}"/>
                                 </HBox>
                                 <HBox >
-                                    <CheckBox text="PD|PZ" selected="{NovedadesProtecciones>/TBA_PDPZ1}"/>
+                                    <Label text="PD|PZ" />
                                     <CheckBox text="PZ" selected="{NovedadesProtecciones>/TBA_PZ1}"/>
                                     <CheckBox text="PD" selected="{NovedadesProtecciones>/TBA_PD1}"/>
                                     <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI2_1}"/>
+                                     <CheckBox text="RRPI" selected="{NovedadesProtecciones>/TBA_LI2_1}"/>
                                 </HBox>
                                 <HBox >
                                     <CheckBox text="PFI" selected="{NovedadesProtecciones>/TBA_PFI1}"/>
@@ -213,6 +214,7 @@
                                 <HBox>
                                     <CheckBox text="TX" selected="{NovedadesProtecciones>/TBA_TX1}"/>
                                     <CheckBox text="RX" selected="{NovedadesProtecciones>/TBA_RX1}"/>
+                                     <CheckBox text="T2" selected="{NovedadesProtecciones>/TBA_T21}"/>
                                     <CheckBox text="TS2" selected="{NovedadesProtecciones>/TBA_TS21}"/>
                                     <CheckBox text="SIN" selected="{NovedadesProtecciones>/TBA_SINEx1}"/>
                                 </HBox>
@@ -541,56 +543,53 @@
                                     <Label text="Comentarios"/>
                                     <TextArea width="100%"></TextArea>
                                 </VBox>
-                                <Table
-    id="tablaTestProtecciones"
-    items="{TestProtecciones>/PruebasProtecciones}"
-    growing="true">
+                                <Table id="tablaTestProtecciones" items="{TestProtecciones>/PruebasProtecciones}" growing="true">
 
-    <columns>
-        <Column>
-            <header>
-                <Text text="Solicitada por" />
-            </header>
-        </Column>
+                                    <columns>
+                                        <Column>
+                                            <header>
+                                                <Text text="Solicitada por" />
+                                            </header>
+                                        </Column>
 
-        <Column>
-            <header>
-                <Text text="ET" />
-            </header>
-        </Column>
+                                        <Column>
+                                            <header>
+                                                <Text text="ET" />
+                                            </header>
+                                        </Column>
 
-        <Column>
-            <header>
-                <Text text="Protección" />
-            </header>
-        </Column>
+                                        <Column>
+                                            <header>
+                                                <Text text="Protección" />
+                                            </header>
+                                        </Column>
 
-        <Column>
-            <header>
-                <Text text="Excitación" />
-            </header>
-        </Column>
+                                        <Column>
+                                            <header>
+                                                <Text text="Excitación" />
+                                            </header>
+                                        </Column>
 
-        <Column>
-            <header>
-                <Text text="Comentario" />
-            </header>
-        </Column>
-    </columns>
+                                        <Column>
+                                            <header>
+                                                <Text text="Comentario" />
+                                            </header>
+                                        </Column>
+                                    </columns>
 
-    <items>
-        <ColumnListItem>
-            <cells>
-                <Input value="{TestProtecciones>SolicitadaPor}" />
-                <Input value="{TestProtecciones>ET}" />
-                <Input value="{TestProtecciones>Proteccion}" />
-                <Input value="{TestProtecciones>Excitacion}" />
-                <Input value="{TestProtecciones>Comentario}" />
-            </cells>
-        </ColumnListItem>
-    </items>
+                                    <items>
+                                        <ColumnListItem>
+                                            <cells>
+                                                <Input value="{TestProtecciones>SolicitadaPor}" />
+                                                <Input value="{TestProtecciones>ET}" />
+                                                <Input value="{TestProtecciones>Proteccion}" />
+                                                <Input value="{TestProtecciones>Excitacion}" />
+                                                <Input value="{TestProtecciones>Comentario}" />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
 
-</Table>
+                                </Table>
                             </VBox>
                         </IconTabFilter>
                     </items>

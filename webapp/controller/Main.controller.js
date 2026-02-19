@@ -34,13 +34,13 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/Constants",
 	"transener/registrocronologicoeventos/utils/BusyDialogHelper",
 	"transener/registrocronologicoeventos/utils/SocietyHelper",
-], function (BaseController, MessageToast,  Fragment, MessageBox, VBox, Dialog, UserService,
+], function (BaseController, MessageToast, Fragment, MessageBox, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
 	PersonalHabilitadoService, LicenciaService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
-	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper,SocietyHelper) {
+	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper, SocietyHelper) {
 	"use strict";
 
 
@@ -104,9 +104,9 @@ sap.ui.define([
 				this,
 				oModelOperaciones,
 				function (sEmpresa) {
-					// Callback cuando se carga/selecciona empresa
+					that.loadModels()
 					that.society = sEmpresa;
-				
+
 				}
 			);
 		},
@@ -188,7 +188,7 @@ sap.ui.define([
 		// getBaseURL ahora se hereda de BaseController
 
 		onAfterRendering: function () {
-		
+
 			this._initializeDefaultDates();
 		},
 		_initializeDefaultDates: function () {
@@ -274,7 +274,7 @@ sap.ui.define([
 				this.getView().byId("EquipoFilter").setEnabled(true);
 			}
 		},
-		
+
 		crearDialogoBusy: function () {
 			let oDialogoBusy = new sap.m.BusyDialog({
 				title: "Actualizando datos...",
