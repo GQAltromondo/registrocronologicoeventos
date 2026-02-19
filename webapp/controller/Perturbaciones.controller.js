@@ -62,7 +62,16 @@ sap.ui.define([
 					Tierra2: false,
 					SinExcitacion2: false,
 					LocFalla2: "",
-					Km2: ""
+					Km2: "",
+					// Campos TBA (empresa 300) - Protecciones
+					TBA_Flecha1: false, TBA_T01: false, TBA_T11: false, TBA_LI1: false,
+					TBA_DAG1: false, TBA_UMayor1: false, TBA_U1: false,
+					TBA_PDPZ1: false, TBA_PZ1: false, TBA_PD1: false, TBA_LI2_1: false,
+					TBA_PFI1: false, TBA_DISC1: false, TBA_SIN1: false, TBA_BZ1: false,
+					TBA_OtrasActuaciones1: "",
+					// Campos TBA (empresa 300) - Excitaciones
+					TBA_FN1: false, TBA_FR1: false, TBA_FS1: false, TBA_FT1: false,
+					TBA_TX1: false, TBA_RX1: false, TBA_TS21: false, TBA_SINEx1: false
 				});
 			}
 		},
@@ -240,78 +249,122 @@ sap.ui.define([
 			
 			const aProtecciones = oProteccionesModel.getProperty("/Protecciones") || [];
 			
-			// Función helper para recolectar datos de un HBox de protecciones desde el modelo
-			const collectProteccionData = function (sPrefix) {
+			// Determinar empresa activa
+			const sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "100";
+			const bIsTBA = sEmpresa === "300";
+			
+			// Función helper para recolectar datos según la empresa
+			const collectProteccionData = function (sPrefix, sEtKey) {
+				var sEt = sEtKey || ("Et" + sPrefix);
 				const oData = {
-					Et: oProteccionesModel.getProperty("/Et" + sPrefix) || "",
+					Et: oProteccionesModel.getProperty("/" + sEt) || "",
 					Protecciones: [],
 					Excitaciones: [],
-					OtrasActuaciones: oProteccionesModel.getProperty("/OtrasActuaciones" + sPrefix) || "",
-					LocFalla: oProteccionesModel.getProperty("/LocFalla" + sPrefix) || "",
-					Km: oProteccionesModel.getProperty("/Km" + sPrefix) || ""
+					OtrasActuaciones: "",
+					LocFalla: "",
+					Km: "",
+					Empresa: sEmpresa
 				};
 				
-				// Recolectar protecciones actuantes seleccionadas desde el modelo
-				const aProteccionesActuantes = [
-					{ modelKey: "Diferencial" + sPrefix, text: "Diferencial" },
-					{ modelKey: "DPO" + sPrefix, text: "DPO" },
-					{ modelKey: "Impedancia" + sPrefix, text: "Impedancia" },
-					{ modelKey: "MaximaCorriente" + sPrefix, text: "Máxima Corriente" },
-					{ modelKey: "PFI" + sPrefix, text: "PFI" },
-					{ modelKey: "U" + sPrefix, text: "U>" },
-					{ modelKey: "SinSenal" + sPrefix, text: "Sin señalizacion de protecciones" }
-				];
-				
-				aProteccionesActuantes.forEach(function(oProt) {
-					if (oProteccionesModel.getProperty("/" + oProt.modelKey)) {
-						oData.Protecciones.push(oProt.text);
-					}
-				});
-				
-				// Recolectar excitaciones seleccionadas desde el modelo
-				const aExcitaciones = [
-					{ modelKey: "R" + sPrefix, text: "R" },
-					{ modelKey: "S" + sPrefix, text: "S" },
-					{ modelKey: "T" + sPrefix, text: "T" },
-					{ modelKey: "Tierra" + sPrefix, text: "Tierra" },
-					{ modelKey: "SinExcitacion" + sPrefix, text: "Sin Excitación de fase" }
-				];
-				
-				aExcitaciones.forEach(function(oExc) {
-					if (oProteccionesModel.getProperty("/" + oExc.modelKey)) {
-						oData.Excitaciones.push(oExc.text);
-					}
-				});
+				if (bIsTBA) {
+					// Empresa 300 (TBA) - campos con prefijo TBA_
+					var aTBAProtFields = [
+						{ modelKey: "TBA_Flecha" + sPrefix, text: "|>" },
+						{ modelKey: "TBA_T0" + sPrefix, text: "T0" },
+						{ modelKey: "TBA_T1" + sPrefix, text: "T1" },
+						{ modelKey: "TBA_LI" + sPrefix, text: "LI" },
+						{ modelKey: "TBA_DAG" + sPrefix, text: "DAG" },
+						{ modelKey: "TBA_UMayor" + sPrefix, text: "U>" },
+						{ modelKey: "TBA_U" + sPrefix, text: "U" },
+						{ modelKey: "TBA_PDPZ" + sPrefix, text: "PD|PZ" },
+						{ modelKey: "TBA_PZ" + sPrefix, text: "PZ" },
+						{ modelKey: "TBA_PD" + sPrefix, text: "PD" },
+						{ modelKey: "TBA_LI2_" + sPrefix, text: "LI" },
+						{ modelKey: "TBA_PFI" + sPrefix, text: "PFI" },
+						{ modelKey: "TBA_DISC" + sPrefix, text: "DISC" },
+						{ modelKey: "TBA_SIN" + sPrefix, text: "SIN" },
+						{ modelKey: "TBA_BZ" + sPrefix, text: "BZ" }
+					];
+					aTBAProtFields.forEach(function(oProt) {
+						if (oProteccionesModel.getProperty("/" + oProt.modelKey)) {
+							oData.Protecciones.push(oProt.text);
+						}
+					});
+					
+					var aTBAExcFields = [
+						{ modelKey: "TBA_FN" + sPrefix, text: "FN" },
+						{ modelKey: "TBA_FR" + sPrefix, text: "FR" },
+						{ modelKey: "TBA_FS" + sPrefix, text: "FS" },
+						{ modelKey: "TBA_FT" + sPrefix, text: "FT" },
+						{ modelKey: "TBA_TX" + sPrefix, text: "TX" },
+						{ modelKey: "TBA_RX" + sPrefix, text: "RX" },
+						{ modelKey: "TBA_TS2" + sPrefix, text: "TS2" },
+						{ modelKey: "TBA_SINEx" + sPrefix, text: "SIN" }
+					];
+					aTBAExcFields.forEach(function(oExc) {
+						if (oProteccionesModel.getProperty("/" + oExc.modelKey)) {
+							oData.Excitaciones.push(oExc.text);
+						}
+					});
+					
+					oData.OtrasActuaciones = oProteccionesModel.getProperty("/TBA_OtrasActuaciones" + sPrefix) || "";
+					oData.Km = oProteccionesModel.getProperty("/Km" + sPrefix) || "";
+				} else {
+					// Empresa 100 (TRA) - campos originales
+					var aProtFields = [
+						{ modelKey: "Diferencial" + sPrefix, text: "Diferencial" },
+						{ modelKey: "DPO" + sPrefix, text: "DPO" },
+						{ modelKey: "Impedancia" + sPrefix, text: "Impedancia" },
+						{ modelKey: "MaximaCorriente" + sPrefix, text: "Máxima Corriente" },
+						{ modelKey: "PFI" + sPrefix, text: "PFI" },
+						{ modelKey: "U" + sPrefix, text: "U>" },
+						{ modelKey: "SinSenal" + sPrefix, text: "Sin señalizacion de protecciones" }
+					];
+					aProtFields.forEach(function(oProt) {
+						if (oProteccionesModel.getProperty("/" + oProt.modelKey)) {
+							oData.Protecciones.push(oProt.text);
+						}
+					});
+					
+					var aExcFields = [
+						{ modelKey: "R" + sPrefix, text: "R" },
+						{ modelKey: "S" + sPrefix, text: "S" },
+						{ modelKey: "T" + sPrefix, text: "T" },
+						{ modelKey: "Tierra" + sPrefix, text: "Tierra" },
+						{ modelKey: "SinExcitacion" + sPrefix, text: "Sin Excitación de fase" }
+					];
+					aExcFields.forEach(function(oExc) {
+						if (oProteccionesModel.getProperty("/" + oExc.modelKey)) {
+							oData.Excitaciones.push(oExc.text);
+						}
+					});
+					
+					oData.OtrasActuaciones = oProteccionesModel.getProperty("/OtrasActuaciones" + sPrefix) || "";
+					oData.LocFalla = oProteccionesModel.getProperty("/LocFalla" + sPrefix) || "";
+				}
 				
 				return oData;
 			};
 			
-			// Recolectar datos de ambos HBox
-			const oProteccion1 = collectProteccionData("1");
-			const oProteccion2 = collectProteccionData("2");
-			
-			// Crear objeto para la tabla con datos completos para poder editar después
-			var that = this;
-			const createProteccionItem = function(oProt, sPrefix) {
+			// Crear objeto para la tabla guardando datos completos para editar después
+			const createProteccionItem = function(oProt, sPrefix, sEtKey) {
 				if (!oProt.Et) {
 					return null;
 				}
 				
-				// Guardar los valores individuales de los checkboxes para restaurar al editar
-				var oFormData = {};
-				var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
-				var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
+				// Snapshot de todos los campos del modelo para restaurar al editar
+				var oFormData = { Empresa: sEmpresa, EtPrefix: sPrefix, EtKey: sEtKey || ("Et" + sPrefix) };
+				var oModelData = oProteccionesModel.getData();
+				var sFieldPrefix = bIsTBA ? "TBA_" : "";
 				
-				aProtFields.forEach(function(sField) {
-					oFormData[sField] = !!oProteccionesModel.getProperty("/" + sField + sPrefix);
+				// Guardar todos los campos con el sufijo correspondiente
+				Object.keys(oModelData).forEach(function(sKey) {
+					if (sKey.endsWith(sPrefix) && sKey !== "Et" + sPrefix && sKey !== "Protecciones") {
+						oFormData[sKey] = oModelData[sKey];
+					}
 				});
-				aExcFields.forEach(function(sField) {
-					oFormData[sField] = !!oProteccionesModel.getProperty("/" + sField + sPrefix);
-				});
-				oFormData.OtrasActuaciones = oProt.OtrasActuaciones || "";
-				oFormData.LocFalla = oProt.LocFalla || "";
-				oFormData.Km = oProt.Km || "";
-				oFormData.EtPrefix = sPrefix;
+				// Guardar también el Et
+				oFormData["Et"] = oProt.Et;
 				
 				return {
 					ET: oProt.Et,
@@ -325,22 +378,38 @@ sap.ui.define([
 			
 			var iAdded = 0;
 			
-			// Agregar protecciones a la lista si tienen ET seleccionada
-			if (oProteccion1.Et) {
-				const oItem1 = createProteccionItem(oProteccion1, "1");
-				if (oItem1) {
-					aProtecciones.push(oItem1);
-					iAdded++;
-					this._resetProteccionFields("1");
+			if (bIsTBA) {
+				// Empresa 300: un solo HBox, usa Et2 y campos TBA_ con sufijo 1
+				const oProteccionTBA = collectProteccionData("1", "Et2");
+				if (oProteccionTBA.Et) {
+					const oItem = createProteccionItem(oProteccionTBA, "1", "Et2");
+					if (oItem) {
+						aProtecciones.push(oItem);
+						iAdded++;
+						this._resetProteccionFields("1", true);
+					}
 				}
-			}
-			
-			if (oProteccion2.Et) {
-				const oItem2 = createProteccionItem(oProteccion2, "2");
-				if (oItem2) {
-					aProtecciones.push(oItem2);
-					iAdded++;
-					this._resetProteccionFields("2");
+			} else {
+				// Empresa 100: dos HBox
+				const oProteccion1 = collectProteccionData("1");
+				const oProteccion2 = collectProteccionData("2");
+				
+				if (oProteccion1.Et) {
+					const oItem1 = createProteccionItem(oProteccion1, "1");
+					if (oItem1) {
+						aProtecciones.push(oItem1);
+						iAdded++;
+						this._resetProteccionFields("1", false);
+					}
+				}
+				
+				if (oProteccion2.Et) {
+					const oItem2 = createProteccionItem(oProteccion2, "2");
+					if (oItem2) {
+						aProtecciones.push(oItem2);
+						iAdded++;
+						this._resetProteccionFields("2", false);
+					}
 				}
 			}
 			
@@ -358,28 +427,45 @@ sap.ui.define([
 		/**
 		 * Resetea los campos del formulario de protecciones para un prefijo dado
 		 * @param {string} sPrefix - "1" o "2"
+		 * @param {boolean} bIsTBA - true si es empresa 300
 		 * @private
 		 */
-		_resetProteccionFields: function (sPrefix) {
+		_resetProteccionFields: function (sPrefix, bIsTBA) {
 			const oView = this.getView();
 			const oModel = ModelHelper.getModel("NovedadesProtecciones", oView);
 			
-			var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
-			var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
-			
-			aProtFields.forEach(function(sField) {
-				oModel.setProperty("/" + sField + sPrefix, false);
-			});
-			aExcFields.forEach(function(sField) {
-				oModel.setProperty("/" + sField + sPrefix, false);
-			});
-			oModel.setProperty("/OtrasActuaciones" + sPrefix, "");
-			oModel.setProperty("/LocFalla" + sPrefix, "");
-			oModel.setProperty("/Km" + sPrefix, "");
+			if (bIsTBA) {
+				// Campos TBA (empresa 300)
+				var aTBAProtFields = ["TBA_Flecha", "TBA_T0", "TBA_T1", "TBA_LI", "TBA_DAG", "TBA_UMayor", "TBA_U",
+					"TBA_PDPZ", "TBA_PZ", "TBA_PD", "TBA_LI2_", "TBA_PFI", "TBA_DISC", "TBA_SIN", "TBA_BZ"];
+				var aTBAExcFields = ["TBA_FN", "TBA_FR", "TBA_FS", "TBA_FT", "TBA_TX", "TBA_RX", "TBA_TS2", "TBA_SINEx"];
+				
+				aTBAProtFields.forEach(function(sField) {
+					oModel.setProperty("/" + sField + sPrefix, false);
+				});
+				aTBAExcFields.forEach(function(sField) {
+					oModel.setProperty("/" + sField + sPrefix, false);
+				});
+				oModel.setProperty("/TBA_OtrasActuaciones" + sPrefix, "");
+				oModel.setProperty("/Km" + sPrefix, "");
+			} else {
+				// Campos TRA (empresa 100)
+				var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
+				var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
+				
+				aProtFields.forEach(function(sField) {
+					oModel.setProperty("/" + sField + sPrefix, false);
+				});
+				aExcFields.forEach(function(sField) {
+					oModel.setProperty("/" + sField + sPrefix, false);
+				});
+				oModel.setProperty("/OtrasActuaciones" + sPrefix, "");
+				oModel.setProperty("/LocFalla" + sPrefix, "");
+			}
 		},
 		
 		/**
-		 * Edita una protección: carga los datos de la fila en el HBox 1 y la elimina de la lista
+		 * Edita una protección: carga los datos de la fila en el formulario y la elimina de la lista
 		 */
 		onEditProteccion: function (oEvent) {
 			const oView = this.getView();
@@ -403,28 +489,17 @@ sap.ui.define([
 				return;
 			}
 			
-			// Determinar a qué HBox cargar (siempre al 1)
-			var sPrefix = "1";
+			// Restaurar el ET en la key correcta
+			var sEtKey = oFormData.EtKey || "Et1";
+			oProteccionesModel.setProperty("/" + sEtKey, oFormData.Et || oRow.ET || "");
 			
-			// Restaurar ET
-			oProteccionesModel.setProperty("/Et" + sPrefix, oRow.ET || "");
-			
-			// Restaurar checkboxes de protecciones actuantes
-			var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
-			aProtFields.forEach(function(sField) {
-				oProteccionesModel.setProperty("/" + sField + sPrefix, !!oFormData[sField]);
+			// Restaurar todos los campos guardados en _formData
+			var sPrefix = oFormData.EtPrefix || "1";
+			Object.keys(oFormData).forEach(function(sKey) {
+				if (sKey !== "Empresa" && sKey !== "EtPrefix" && sKey !== "EtKey" && sKey !== "Et") {
+					oProteccionesModel.setProperty("/" + sKey, oFormData[sKey]);
+				}
 			});
-			
-			// Restaurar checkboxes de excitaciones
-			var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
-			aExcFields.forEach(function(sField) {
-				oProteccionesModel.setProperty("/" + sField + sPrefix, !!oFormData[sField]);
-			});
-			
-			// Restaurar textos
-			oProteccionesModel.setProperty("/OtrasActuaciones" + sPrefix, oFormData.OtrasActuaciones || "");
-			oProteccionesModel.setProperty("/LocFalla" + sPrefix, oFormData.LocFalla || "");
-			oProteccionesModel.setProperty("/Km" + sPrefix, oFormData.Km || "");
 			
 			// Eliminar la fila de la lista
 			aProtecciones.splice(iIndex, 1);
