@@ -185,7 +185,7 @@
                                     <CheckBox text="PZ" selected="{NovedadesProtecciones>/TBA_PZ1}"/>
                                     <CheckBox text="PD" selected="{NovedadesProtecciones>/TBA_PD1}"/>
                                     <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI2_1}"/>
-                                     <CheckBox text="RRPI" selected="{NovedadesProtecciones>/TBA_LI2_1}"/>
+                                     <CheckBox text="RRPI" selected="{NovedadesProtecciones>/RRPI_1}"/>
                                 </HBox>
                                 <HBox >
                                     <CheckBox text="PFI" selected="{NovedadesProtecciones>/TBA_PFI1}"/>

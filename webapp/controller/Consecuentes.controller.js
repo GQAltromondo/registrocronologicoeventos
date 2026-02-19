@@ -59,6 +59,56 @@ sap.ui.define([
             const oNovedad = NovedadModel.getData()
             NovedadModel.setProperty("/CodCausa","")
             CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa)
+        },
+
+        onAddConsecuente: function () {
+            var oView = this.getView();
+            var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+            var oFormData = oFormModel.getData() || {};
+
+            if (!oFormData.Equnr) {
+                sap.m.MessageBox.warning("Debe seleccionar un Equipo.");
+                return;
+            }
+
+            var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+
+            var oNewItem = {
+                Equnr: oFormData.Equnr || "",
+                Tplnr: oFormData.Tplnr || "",
+                InicioNove: oFormData.EntIndis || null,
+                EntIndisp: oFormData.EntIndis || null,
+                FechaFinNove: null,
+                EntDisp: oFormData.EntDisp || null,
+                Comment: oFormData.Texto || "",
+                Comentario: oFormData.Comentario || "",
+                InformaCammesa: oFormData.InformaCammesa ? "S" : "N",
+                CodMotivo: oFormData.CodMotivo || "",
+                CodCausa: oFormData.CodCausa || "",
+                VinculadoSinTension: oFormData.VinculadoSinTension || false
+            };
+
+            aConsecuentes.push(oNewItem);
+            oListModel.setProperty("/Consequents", aConsecuentes);
+            oListModel.refresh(true);
+
+            // Limpiar el formulario manteniendo ubicación y referencia
+            var sTplnr = oFormData.Tplnr;
+            oFormModel.setData({
+                Tplnr: sTplnr,
+                Equnr: "",
+                EntIndis: null,
+                EntDisp: null,
+                CodMotivo: "",
+                CodCausa: "",
+                Texto: "",
+                Comentario: "",
+                InformaCammesa: false,
+                VinculadoSinTension: false
+            });
+
+            sap.m.MessageToast.show("Consecuente agregado a la lista");
         }
     });
 });

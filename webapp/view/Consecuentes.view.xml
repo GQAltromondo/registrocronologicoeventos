@@ -64,7 +64,7 @@
 					
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Vinculado y sin tensíon"></Label>
-							<CheckBox/>
+							<CheckBox selected="{ConsecuentesFormJsonModel>/VinculadoSinTension}"/>
 						</HBox>
 					</HBox>
 					<VBox class="container">
@@ -83,7 +83,7 @@
 					</VBox>
 				</VBox>
 				<HBox justifyContent="End" >
-					<Button text="Agregar" class="sapUiSmallMargin"/>
+					<Button text="Agregar" class="sapUiSmallMargin" press=".onAddConsecuente" type="Emphasized"/>
 				</HBox>
 				<t:Table id="consecuentes" rows="{ path: 'ConsequentListJsonModel>/Consequents', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 					<t:Column width='200px'>
