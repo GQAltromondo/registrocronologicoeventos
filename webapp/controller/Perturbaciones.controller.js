@@ -287,50 +287,38 @@ sap.ui.define([
 			const oProteccion1 = collectProteccionData("1");
 			const oProteccion2 = collectProteccionData("2");
 			
-			// Crear texto descriptivo para la lista
-			const formatProteccionText = function(oProt) {
+			// Crear objeto para la tabla
+			const createProteccionItem = function(oProt) {
 				if (!oProt.Et) {
 					return null; // No agregar si no hay ET seleccionada
 				}
 				
-				let sText = "ET: " + oProt.Et;
-				if (oProt.Protecciones.length > 0) {
-					sText += " | Protecciones: " + oProt.Protecciones.join(", ");
-				}
-				if (oProt.Excitaciones.length > 0) {
-					sText += " | Excitaciones: " + oProt.Excitaciones.join(", ");
-				}
-				if (oProt.OtrasActuaciones) {
-					sText += " | Otras: " + oProt.OtrasActuaciones;
-				}
-				if (oProt.LocFalla) {
-					sText += " | Loc Falla: " + oProt.LocFalla;
-				}
-				
-				return sText;
+				return {
+					ET: oProt.Et,
+					Distancia: oProt.LocFalla || "",
+					ProteccionActuante: oProt.Protecciones.join(", ") || "",
+					Exitacion: oProt.Excitaciones.join(", ") || ""
+				};
 			};
 			
 			// Agregar protecciones a la lista si tienen ET seleccionada
 			if (oProteccion1.Et) {
-				const sText1 = formatProteccionText(oProteccion1);
-				if (sText1) {
-					aProtecciones.push({
-						Proteccion: sText1
-					});
+				const oItem1 = createProteccionItem(oProteccion1);
+				if (oItem1) {
+					aProtecciones.push(oItem1);
 				}
 			}
 			
 			if (oProteccion2.Et) {
-				const sText2 = formatProteccionText(oProteccion2);
-				if (sText2) {
-					aProtecciones.push({
-						Proteccion: sText2
-					});
+				const oItem2 = createProteccionItem(oProteccion2);
+				if (oItem2) {
+					aProtecciones.push(oItem2);
 				}
 			}
 			
-			// Actualizar el modelo
+			// Actualizar el modelo directamente en el array
 			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
+			oProteccionesModel.updateBindings();
 			
 			// Mostrar mensaje de confirmación
 			if (aProtecciones.length > 0) {
