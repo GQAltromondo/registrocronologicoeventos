@@ -226,6 +226,71 @@
                             </VBox>
                         </VBox>
                     </HBox>
+                    <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" visible="{= ${Empresa>/selectedSociety} === '300' }">
+                        <VBox class="paddingSM" width="20%">
+                            <Label text="ET" showColon="true" />
+                            <ComboBox selectedKey="{NovedadesProtecciones>/Et1}" valueState="{NovedadesProtecciones>/Et1State}" valueStateText="{NovedadesProtecciones>/Et1StateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
+                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
+                            </ComboBox>
+                        </VBox>
+                        <VBox width="30%">
+                            <Label text="Protección Actuante" showColon="true" />
+                            <VBox class="border_ctn_4">
+                                <HBox >
+                                    <Label text="|>"/>
+                                    <CheckBox text="T0" selected="{NovedadesProtecciones>/TBA_T02}"/>
+                                    <CheckBox text="T1" selected="{NovedadesProtecciones>/TBA_T12}"/>
+                                    <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI2}"/>
+                                    <CheckBox text="DAG" selected="{NovedadesProtecciones>/TBA_DAG2}"/>
+                                    <CheckBox text="U>" selected="{NovedadesProtecciones>/TBA_UMayor2}"/>
+                                    <CheckBox text="U" selected="{NovedadesProtecciones>/TBA_U2}"/>
+                                </HBox>
+                                <HBox >
+                                    <Label text="PD|PZ" />
+                                    <CheckBox text="PZ" selected="{NovedadesProtecciones>/TBA_PZ2}"/>
+                                    <CheckBox text="PD" selected="{NovedadesProtecciones>/TBA_PD2}"/>
+                                    <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI2_2}"/>
+                                    <CheckBox text="RRPI" selected="{NovedadesProtecciones>/TBA_RRPI2}"/>
+                                </HBox>
+                                <HBox >
+                                    <CheckBox text="PFI" selected="{NovedadesProtecciones>/TBA_PFI2}"/>
+                                    <CheckBox text="DISC" selected="{NovedadesProtecciones>/TBA_DISC2}"/>
+                                    <CheckBox text="SIN" selected="{NovedadesProtecciones>/TBA_SIN2}"/>
+                                    <CheckBox text="BZ" selected="{NovedadesProtecciones>/TBA_BZ2}"/>
+
+                                    <HBox >
+                                        <Label text="OTRAS" showColon="true" class="sapUiSmallMarginBeginEnd"/>
+                                        <TextArea value="{NovedadesProtecciones>/TBA_OtrasActuaciones2}" />
+
+                                    </HBox>
+                                </HBox>
+
+                            </VBox>
+                        </VBox>
+                        <VBox width="30%">
+                            <Label text="Excitaciones" showColon="true" />
+                            <VBox class="border_ctn_3">
+                                <HBox>
+                                    <CheckBox text="FN" selected="{NovedadesProtecciones>/TBA_FN2}"/>
+                                    <CheckBox text="FR" selected="{NovedadesProtecciones>/TBA_FR2}"/>
+                                    <CheckBox text="FS" selected="{NovedadesProtecciones>/TBA_FS2}"/>
+                                    <CheckBox text="FT" selected="{NovedadesProtecciones>/TBA_FT2}"/>
+                                </HBox>
+                                <HBox>
+                                    <CheckBox text="TX" selected="{NovedadesProtecciones>/TBA_TX2}"/>
+                                    <CheckBox text="RX" selected="{NovedadesProtecciones>/TBA_RX2}"/>
+                                    <CheckBox text="T2" selected="{NovedadesProtecciones>/TBA_T22}"/>
+                                    <CheckBox text="TS2" selected="{NovedadesProtecciones>/TBA_TS22}"/>
+                                    <CheckBox text="SIN" selected="{NovedadesProtecciones>/TBA_SINEx2}"/>
+                                </HBox>
+                                <HBox>
+                                    <Label text="KM" showColon="true" class="sapUiSmallMarginBeginEnd"/>
+                                    <TextArea value="{NovedadesProtecciones>/Km2}" />
+
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </HBox>
                     <Table id="tableProtecciones" items="{path: 'NovedadesProtecciones>/Protecciones'}" growing="true" growingScrollToLoad="true">
 
                         <columns>

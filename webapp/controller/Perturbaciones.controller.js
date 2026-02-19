@@ -63,15 +63,24 @@ sap.ui.define([
 					SinExcitacion2: false,
 					LocFalla2: "",
 					Km2: "",
-					// Campos TBA (empresa 300) - Protecciones
+					// Campos TBA (empresa 300) - HBox 1
 					TBA_Flecha1: false, TBA_T01: false, TBA_T11: false, TBA_LI1: false,
 					TBA_DAG1: false, TBA_UMayor1: false, TBA_U1: false,
 					TBA_PDPZ1: false, TBA_PZ1: false, TBA_PD1: false, TBA_LI2_1: false,
+					TBA_RRPI1: false,
 					TBA_PFI1: false, TBA_DISC1: false, TBA_SIN1: false, TBA_BZ1: false,
 					TBA_OtrasActuaciones1: "",
-					// Campos TBA (empresa 300) - Excitaciones
 					TBA_FN1: false, TBA_FR1: false, TBA_FS1: false, TBA_FT1: false,
-					TBA_TX1: false, TBA_RX1: false, TBA_TS21: false, TBA_SINEx1: false
+					TBA_TX1: false, TBA_RX1: false, TBA_T21: false, TBA_TS21: false, TBA_SINEx1: false,
+					// Campos TBA (empresa 300) - HBox 2
+					TBA_Flecha2: false, TBA_T02: false, TBA_T12: false, TBA_LI2: false,
+					TBA_DAG2: false, TBA_UMayor2: false, TBA_U2: false,
+					TBA_PDPZ2: false, TBA_PZ2: false, TBA_PD2: false, TBA_LI2_2: false,
+					TBA_RRPI2: false,
+					TBA_PFI2: false, TBA_DISC2: false, TBA_SIN2: false, TBA_BZ2: false,
+					TBA_OtrasActuaciones2: "",
+					TBA_FN2: false, TBA_FR2: false, TBA_FS2: false, TBA_FT2: false,
+					TBA_TX2: false, TBA_RX2: false, TBA_T22: false, TBA_TS22: false, TBA_SINEx2: false
 				});
 			}
 		},
@@ -280,6 +289,7 @@ sap.ui.define([
 						{ modelKey: "TBA_PZ" + sPrefix, text: "PZ" },
 						{ modelKey: "TBA_PD" + sPrefix, text: "PD" },
 						{ modelKey: "TBA_LI2_" + sPrefix, text: "LI" },
+						{ modelKey: "TBA_RRPI" + sPrefix, text: "RRPI" },
 						{ modelKey: "TBA_PFI" + sPrefix, text: "PFI" },
 						{ modelKey: "TBA_DISC" + sPrefix, text: "DISC" },
 						{ modelKey: "TBA_SIN" + sPrefix, text: "SIN" },
@@ -298,6 +308,7 @@ sap.ui.define([
 						{ modelKey: "TBA_FT" + sPrefix, text: "FT" },
 						{ modelKey: "TBA_TX" + sPrefix, text: "TX" },
 						{ modelKey: "TBA_RX" + sPrefix, text: "RX" },
+						{ modelKey: "TBA_T2" + sPrefix, text: "T2" },
 						{ modelKey: "TBA_TS2" + sPrefix, text: "TS2" },
 						{ modelKey: "TBA_SINEx" + sPrefix, text: "SIN" }
 					];
@@ -379,18 +390,28 @@ sap.ui.define([
 			var iAdded = 0;
 			
 			if (bIsTBA) {
-				// Empresa 300: un solo HBox, usa Et2 y campos TBA_ con sufijo 1
-				const oProteccionTBA = collectProteccionData("1", "Et2");
-				if (oProteccionTBA.Et) {
-					const oItem = createProteccionItem(oProteccionTBA, "1", "Et2");
-					if (oItem) {
-						aProtecciones.push(oItem);
+				// Empresa 300: dos HBox - HBox1 usa Et2/sufijo 1, HBox2 usa Et1/sufijo 2
+				const oProteccionTBA1 = collectProteccionData("1", "Et2");
+				if (oProteccionTBA1.Et) {
+					const oItem1 = createProteccionItem(oProteccionTBA1, "1", "Et2");
+					if (oItem1) {
+						aProtecciones.push(oItem1);
 						iAdded++;
 						this._resetProteccionFields("1", true);
 					}
 				}
+				
+				const oProteccionTBA2 = collectProteccionData("2", "Et1");
+				if (oProteccionTBA2.Et) {
+					const oItem2 = createProteccionItem(oProteccionTBA2, "2", "Et1");
+					if (oItem2) {
+						aProtecciones.push(oItem2);
+						iAdded++;
+						this._resetProteccionFields("2", true);
+					}
+				}
 			} else {
-				// Empresa 100: dos HBox
+				// Empresa 100: dos HBox - HBox1 usa Et1/sufijo 1, HBox2 usa Et2/sufijo 2
 				const oProteccion1 = collectProteccionData("1");
 				const oProteccion2 = collectProteccionData("2");
 				
@@ -437,8 +458,9 @@ sap.ui.define([
 			if (bIsTBA) {
 				// Campos TBA (empresa 300)
 				var aTBAProtFields = ["TBA_Flecha", "TBA_T0", "TBA_T1", "TBA_LI", "TBA_DAG", "TBA_UMayor", "TBA_U",
-					"TBA_PDPZ", "TBA_PZ", "TBA_PD", "TBA_LI2_", "TBA_PFI", "TBA_DISC", "TBA_SIN", "TBA_BZ"];
-				var aTBAExcFields = ["TBA_FN", "TBA_FR", "TBA_FS", "TBA_FT", "TBA_TX", "TBA_RX", "TBA_TS2", "TBA_SINEx"];
+					"TBA_PDPZ", "TBA_PZ", "TBA_PD", "TBA_LI2_", "TBA_RRPI",
+					"TBA_PFI", "TBA_DISC", "TBA_SIN", "TBA_BZ"];
+				var aTBAExcFields = ["TBA_FN", "TBA_FR", "TBA_FS", "TBA_FT", "TBA_TX", "TBA_RX", "TBA_T2", "TBA_TS2", "TBA_SINEx"];
 				
 				aTBAProtFields.forEach(function(sField) {
 					oModel.setProperty("/" + sField + sPrefix, false);
