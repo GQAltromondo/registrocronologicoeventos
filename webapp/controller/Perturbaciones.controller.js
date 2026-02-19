@@ -315,8 +315,7 @@ sap.ui.define([
 				const sText1 = formatProteccionText(oProteccion1);
 				if (sText1) {
 					aProtecciones.push({
-						Proteccion: sText1,
-						Data: oProteccion1
+						Proteccion: sText1
 					});
 				}
 			}
@@ -325,8 +324,7 @@ sap.ui.define([
 				const sText2 = formatProteccionText(oProteccion2);
 				if (sText2) {
 					aProtecciones.push({
-						Proteccion: sText2,
-						Data: oProteccion2
+						Proteccion: sText2
 					});
 				}
 			}
