@@ -67,166 +67,164 @@ sap.ui.define([
 			}
 			this.loadSociety()
 
-			 var oData = {
-        Protecciones: [
-            {
-                ET: "ET 500",
-                Distancia: "120 km",
-                ProteccionActuante: "DPZ",
-                Exitacion: "Alta"
-            }
-        ]
-    };
+			var oData = {
+				Protecciones: [
+					{
+						ET: "ET 500",
+						Distancia: "120 km",
+						ProteccionActuante: "DPZ",
+						Exitacion: "Alta"
+					}
+				]
+			};
 
-    // Crear modelo JSON
-    var oModel = new sap.ui.model.json.JSONModel(oData);
+			// Crear modelo JSON
+			var oModel = new sap.ui.model.json.JSONModel(oData);
 
-    // Asignarlo a la vista con nombre
-    this.getView().setModel(oModel, "NovedadesProtecciones");
+			// Asignarlo a la vista con nombre
+			this.getView().setModel(oModel, "NovedadesProtecciones");
 
-	 var oData2 = {
-        PruebasProtecciones: [
-            {
-                SolicitadaPor: "Operaciones",
-                ET: "ET 500",
-                Proteccion: "DPZ",
-                Excitacion: "Alta",
-                Comentario: "Prueba inicial"
-            }
-        ]
-    };
+			var oData2 = {
+				PruebasProtecciones: [
+					{
+						SolicitadaPor: "Operaciones",
+						ET: "ET 500",
+						Proteccion: "DPZ",
+						Excitacion: "Alta",
+						Comentario: "Prueba inicial"
+					}
+				]
+			};
 
-    var oModel = new sap.ui.model.json.JSONModel(oData2);
-    this.getView().setModel(oModel, "TestProtecciones");
+			var oModel = new sap.ui.model.json.JSONModel(oData2);
+			this.getView().setModel(oModel, "TestProtecciones");
 		},
 
 		loadSociety: async function () {
-                const that = this;
-                let oBusyDialog = that.crearDialogoBusy();
-                that.abrirDialogoBusy(oBusyDialog);
+			const that = this;
+			let oBusyDialog = that.crearDialogoBusy();
+			that.abrirDialogoBusy(oBusyDialog);
 
-                const bIsLocal = window.location.hostname.includes("applicationstudio.cloud.sap");
+			const bIsLocal = window.location.hostname.includes("applicationstudio.cloud.sap");
 
-                if (bIsLocal) {
-                    that.InitSociety();
-                    that.cerrarDialogoBusy(oBusyDialog);
-                    return;
-                }
+			if (bIsLocal) {
+				that.InitSociety();
+				that.cerrarDialogoBusy(oBusyDialog);
+				return;
+			}
 
-                let oModelOperaciones = this.getOwnerComponent().getModel("operaciones");
+			let oModelOperaciones = this.getOwnerComponent().getModel("operaciones");
 
-                try {
-                    await new Promise((resolve, reject) => {
-                        oModelOperaciones.read("/EmpresaUsuarioSet", {
-                            success: function (data) {
-                                resolve(data);
-                                let empresa = data.results[0].Empresa;
-                                if (empresa == 999) {
-                                    that.InitSociety();
-                                } else {
-                                    ModelHelper.getModel(that.getView(), "Empresa").setProperty("/selectedSociety", empresa)
-                                    that.society = empresa;
-                                    that.loadNemos(empresa)
-                                    this.loadTipoEquipos(empresa)
-                                    that._loadFragmentForSociety()
-
+			try {
+				await new Promise((resolve, reject) => {
+					oModelOperaciones.read("/EmpresaUsuarioSet", {
+						success: function (data) {
+							resolve(data);
+							let empresa = data.results[0].Empresa;
+							if (empresa == 999) {
+								that.InitSociety();
+							} else {
+								ModelHelper.getModel(that.getView(), "Empresa").setProperty("/selectedSociety", empresa)
+								that.society = empresa;
+							
+							that.loadModels();
 
 
-                                }
-                                that.cerrarDialogoBusy(oBusyDialog);
-                            },
-                            error: function (oError) {
-                                reject(oError);
-                                that.cerrarDialogoBusy(oBusyDialog);
-                            }
-                        });
-                    });
-                } catch (err) {
-                    console.log(err);
-                    throw err;
-                }
+							}
+							that.cerrarDialogoBusy(oBusyDialog);
+						},
+						error: function (oError) {
+							reject(oError);
+							that.cerrarDialogoBusy(oBusyDialog);
+						}
+					});
+				});
+			} catch (err) {
+				console.log(err);
+				throw err;
+			}
 
 
-            },
-			          InitSociety: function () {
-                var oNavigation = performance.getEntriesByType("navigation")[0];
-                if (!sessionStorage.getItem("empresa") || (oNavigation && oNavigation.type !== "reload")) {
-                    this.dialogSociety = new sap.m.Dialog({
-                        type: sap.m.DialogType.Message,
-                        title: "Selección de Empresa",
-                        escapeHandler: function (oPromise) {
-                            oPromise.reject();
-                        },
-                        content: [
-                            new sap.m.VBox({
-                                items: [
-                                    new sap.m.Label({ text: "Debe seleccionar la empresa:" }),
-                                    new sap.m.Select({
-                                        selectedKey: "{Society>/Code}",
-                                        change: [this.ValidateCombo, this],
-                                        items: {
-                                            path: "Society>/Empresas",
-                                            template: new sap.ui.core.Item({
-                                                key: "{Society>Code}",
-                                                text: "{Society>Name}"
-                                            })
-                                        }
-                                    })
-                                ]
-                            })
-                        ],
-                        buttons: [
-                            new sap.m.Button({
-                                icon: "sap-icon://save",
-                                type: sap.m.ButtonType.Emphasized,
-                                text: "Guardar",
-                                press: [this.onSelectedSociety, this]
-                            })
-                        ]
-                    });
+		},
+		InitSociety: function () {
+			var oNavigation = performance.getEntriesByType("navigation")[0];
+			if (!sessionStorage.getItem("empresa") || (oNavigation && oNavigation.type !== "reload")) {
+				this.dialogSociety = new sap.m.Dialog({
+					type: sap.m.DialogType.Message,
+					title: "Selección de Empresa",
+					escapeHandler: function (oPromise) {
+						oPromise.reject();
+					},
+					content: [
+						new sap.m.VBox({
+							items: [
+								new sap.m.Label({ text: "Debe seleccionar la empresa:" }),
+								new sap.m.Select({
+									selectedKey: "{Society>/Code}",
+									change: [this.ValidateCombo, this],
+									items: {
+										path: "Society>/Empresas",
+										template: new sap.ui.core.Item({
+											key: "{Society>Code}",
+											text: "{Society>Name}"
+										})
+									}
+								})
+							]
+						})
+					],
+					buttons: [
+						new sap.m.Button({
+							icon: "sap-icon://save",
+							type: sap.m.ButtonType.Emphasized,
+							text: "Guardar",
+							press: [this.onSelectedSociety, this]
+						})
+					]
+				});
 
 
-                    var oModel = new sap.ui.model.json.JSONModel({
-                        Code: "",
-                        Empresas: [
-                            { Code: "", Name: "Elija Uno" },
-                            { Code: "100", Name: "TRANSENER S.A." },
-                            { Code: "300", Name: "TRANSBA S.A." }
-                        ]
-                    });
+				var oModel = new sap.ui.model.json.JSONModel({
+					Code: "",
+					Empresas: [
+						{ Code: "", Name: "Elija Uno" },
+						{ Code: "100", Name: "TRANSENER S.A." },
+						{ Code: "300", Name: "TRANSBA S.A." }
+					]
+				});
 
-                    this.dialogSociety.setModel(oModel, "Society");
-                    this.dialogSociety.open();
-                } else {
-                    this.society = sessionStorage.getItem("empresa");
+				this.dialogSociety.setModel(oModel, "Society");
+				this.dialogSociety.open();
+			} else {
+				this.society = sessionStorage.getItem("empresa");
 
-                }
-            }
-            ,
-            onSelectedSociety: function () {
-                var empresa = this.dialogSociety.getModel("Society").getData().Code;
+			}
+		}
+		,
+		onSelectedSociety: function () {
+			var empresa = this.dialogSociety.getModel("Society").getData().Code;
 
-                if (empresa !== "" && typeof empresa !== "undefined") {
+			if (empresa !== "" && typeof empresa !== "undefined") {
 
-                    ModelHelper.getModel(this.getView(), "Empresa").setProperty("/selectedSociety", empresa);
-                
-                    this.dialogSociety.close();
-                } else {
-                    //TODO
-                    /*MessageBox.alert("Debe seleccionar una de empresa!", {
-                        title: "Selección de Empresa"
-                    });*/
-                }
-            },
-            ValidateCombo: function (oEvent) {
-                var society = this.dialogSociety.getModel("Society").getData().Code;
-                //  sessionStorage.setItem("empresa", society);
-                if (society !== "") {
-                    oEvent.getSource().setValueState("None");
-                } else {
-                    oEvent.getSource().setValueState("Error");
-                }
-            },
+				ModelHelper.getModel(this.getView(), "Empresa").setProperty("/selectedSociety", empresa);
+				that.loadModels();
+				this.dialogSociety.close();
+			} else {
+				//TODO
+				/*MessageBox.alert("Debe seleccionar una de empresa!", {
+					title: "Selección de Empresa"
+				});*/
+			}
+		},
+		ValidateCombo: function (oEvent) {
+			var society = this.dialogSociety.getModel("Society").getData().Code;
+			//  sessionStorage.setItem("empresa", society);
+			if (society !== "") {
+				oEvent.getSource().setValueState("None");
+			} else {
+				oEvent.getSource().setValueState("Error");
+			}
+		},
 		_onRefreshData: function (sChannel, sEvent, oData) {
 			Logger.debug("Main.controller._onRefreshData: Evento recibido, refrescando datos");
 			var oView = this.getView();
