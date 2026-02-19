@@ -172,29 +172,29 @@
                             <Label text="Protección Actuante" showColon="true" />
                             <VBox class="border_ctn_4">
                                 <HBox >
-                                    <CheckBox text="|>"/>
-                                    <CheckBox text="T0"/>
-                                    <CheckBox text="T1"/>
-                                    <CheckBox text="LI"/>
-                                    <CheckBox text="DAG"/>
-                                    <CheckBox text="U>"/>
-                                    <CheckBox text="U"/>
+                                    <CheckBox text="|>" selected="{NovedadesProtecciones>/TBA_Flecha1}"/>
+                                    <CheckBox text="T0" selected="{NovedadesProtecciones>/TBA_T01}"/>
+                                    <CheckBox text="T1" selected="{NovedadesProtecciones>/TBA_T11}"/>
+                                    <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI1}"/>
+                                    <CheckBox text="DAG" selected="{NovedadesProtecciones>/TBA_DAG1}"/>
+                                    <CheckBox text="U>" selected="{NovedadesProtecciones>/TBA_UMayor1}"/>
+                                    <CheckBox text="U" selected="{NovedadesProtecciones>/TBA_U1}"/>
                                 </HBox>
                                 <HBox >
-                                    <CheckBox text="PD|PZ"/>
-                                    <CheckBox text="PZ"/>
-                                    <CheckBox text="PD"/>
-                                    <CheckBox text="LI"/>
+                                    <CheckBox text="PD|PZ" selected="{NovedadesProtecciones>/TBA_PDPZ1}"/>
+                                    <CheckBox text="PZ" selected="{NovedadesProtecciones>/TBA_PZ1}"/>
+                                    <CheckBox text="PD" selected="{NovedadesProtecciones>/TBA_PD1}"/>
+                                    <CheckBox text="LI" selected="{NovedadesProtecciones>/TBA_LI2_1}"/>
                                 </HBox>
                                 <HBox >
-                                    <CheckBox text="PFI"/>
-                                    <CheckBox text="DISC"/>
-                                    <CheckBox text="SIN"/>
-                                    <CheckBox text="BZ"/>
+                                    <CheckBox text="PFI" selected="{NovedadesProtecciones>/TBA_PFI1}"/>
+                                    <CheckBox text="DISC" selected="{NovedadesProtecciones>/TBA_DISC1}"/>
+                                    <CheckBox text="SIN" selected="{NovedadesProtecciones>/TBA_SIN1}"/>
+                                    <CheckBox text="BZ" selected="{NovedadesProtecciones>/TBA_BZ1}"/>
 
                                     <HBox >
                                         <Label text="OTRAS" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                        <TextArea />
+                                        <TextArea value="{NovedadesProtecciones>/TBA_OtrasActuaciones1}" />
 
                                     </HBox>
                                 </HBox>
@@ -205,20 +205,20 @@
                             <Label text="Excitaciones" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox>
-                                    <CheckBox text="FN"/>
-                                    <CheckBox text="FR"/>
-                                    <CheckBox text="FS"/>
-                                    <CheckBox text="FT"/>
+                                    <CheckBox text="FN" selected="{NovedadesProtecciones>/TBA_FN1}"/>
+                                    <CheckBox text="FR" selected="{NovedadesProtecciones>/TBA_FR1}"/>
+                                    <CheckBox text="FS" selected="{NovedadesProtecciones>/TBA_FS1}"/>
+                                    <CheckBox text="FT" selected="{NovedadesProtecciones>/TBA_FT1}"/>
                                 </HBox>
                                 <HBox>
-                                    <CheckBox text="TX"/>
-                                    <CheckBox text="RX"/>
-                                    <CheckBox text="TS2"/>
-                                    <CheckBox text="SIN"/>
+                                    <CheckBox text="TX" selected="{NovedadesProtecciones>/TBA_TX1}"/>
+                                    <CheckBox text="RX" selected="{NovedadesProtecciones>/TBA_RX1}"/>
+                                    <CheckBox text="TS2" selected="{NovedadesProtecciones>/TBA_TS21}"/>
+                                    <CheckBox text="SIN" selected="{NovedadesProtecciones>/TBA_SINEx1}"/>
                                 </HBox>
                                 <HBox>
                                     <Label text="KM" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                    <TextArea />
+                                    <TextArea value="{NovedadesProtecciones>/Km1}" />
 
                                 </HBox>
                             </VBox>
@@ -235,7 +235,7 @@
 
                             <Column>
                                 <header>
-                                    <Text text="Distancia" />
+                                    <Text text="{= ${Empresa>/selectedSociety} === '100' ? 'Loc. Falla' : 'Distancia'}" />
                                 </header>
                             </Column>
 
@@ -257,7 +257,7 @@
                             <ColumnListItem>
                                 <cells>
                                     <Text text="{NovedadesProtecciones>ET}" />
-                                    <Text text="{NovedadesProtecciones>Distancia}" />
+                                    <Text text="{= ${Empresa>/selectedSociety} === '100' ? ${NovedadesProtecciones>LocFalla} : ${NovedadesProtecciones>Km}}" />
                                     <Text text="{NovedadesProtecciones>ProteccionActuante}" />
                                     <Text text="{NovedadesProtecciones>Exitacion}" />
                                 </cells>

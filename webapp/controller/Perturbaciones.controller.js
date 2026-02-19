@@ -45,6 +45,7 @@ sap.ui.define([
 					Tierra1: false,
 					SinExcitacion1: false,
 					LocFalla1: "",
+					Km1: "",
 					// Protecciones actuantes HBox 2
 					Diferencial2: false,
 					DPO2: false,
@@ -60,7 +61,8 @@ sap.ui.define([
 					T2: false,
 					Tierra2: false,
 					SinExcitacion2: false,
-					LocFalla2: ""
+					LocFalla2: "",
+					Km2: ""
 				});
 			}
 		},
@@ -245,7 +247,8 @@ sap.ui.define([
 					Protecciones: [],
 					Excitaciones: [],
 					OtrasActuaciones: oProteccionesModel.getProperty("/OtrasActuaciones" + sPrefix) || "",
-					LocFalla: oProteccionesModel.getProperty("/LocFalla" + sPrefix) || ""
+					LocFalla: oProteccionesModel.getProperty("/LocFalla" + sPrefix) || "",
+					Km: oProteccionesModel.getProperty("/Km" + sPrefix) || ""
 				};
 				
 				// Recolectar protecciones actuantes seleccionadas desde el modelo
@@ -295,7 +298,8 @@ sap.ui.define([
 				
 				return {
 					ET: oProt.Et,
-					Distancia: oProt.LocFalla || "",
+					LocFalla: oProt.LocFalla || "",
+					Km: oProt.Km || "",
 					ProteccionActuante: oProt.Protecciones.join(", ") || "",
 					Exitacion: oProt.Excitaciones.join(", ") || ""
 				};
