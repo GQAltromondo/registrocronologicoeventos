@@ -210,7 +210,17 @@ sap.ui.define([
       var sFragmentPath = Constants.FRAGMENT_PATHS.NOVEDADES_BASE + sFragmentName;
       this._showNovedadFragment(sFragmentPath);
     },
+    onAlarmaChange: function (oEvent) {
+      const oItem = oEvent.getParameter("selectedItem");
+      let sDesc = "";
 
+      if (oItem) {
+        const oRow = oItem.getBindingContext("AlarmaModel")?.getObject();
+        sDesc = oRow?.descripcion || "";
+      }
+
+      this.getView().getModel("AlarmaJsonModel").setProperty("/DescripcionSeleccionada", sDesc);
+    },
     onSelectionChange: function (oEvent) {
       var oSource = oEvent.getSource();
       if (!oSource) {

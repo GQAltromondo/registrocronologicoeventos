@@ -1,162 +1,97 @@
 [
-  {
-    "codigo": "PCP",
-    "nombre": "Protección con Problemas",
-    "descripcion": "Condiciones que impiden que una protección o IED cumpla su función."
-  },
-  {
-    "codigo": "CIRC DISP",
-    "nombre": "Circuito de Disparo",
-    "descripcion": "Falla en el circuito de disparo; se agrupa por interruptor."
-  },
-  {
-    "codigo": "RMX",
-    "nombre": "Disparo Sobrecorriente",
-    "descripcion": "Disparo de máxima corriente de trafo, reactor o capacitor serie."
-  },
-  {
-    "codigo": "CSF",
-    "nombre": "Cierre Sobre Falla",
-    "descripcion": "Disparo de la función de cierre sobre falla en líneas o trafos."
-  },
-  {
-    "codigo": "DESBALANCE",
-    "nombre": "Desbalance de Corriente",
-    "descripcion": "Por conductor roto (líneas/trafos) o avería de latas (capacitores)."
-  },
-  {
-    "codigo": "OSP",
-    "nombre": "Bloqueo Oscilación de Potencia",
-    "descripcion": "Bloqueo de protecciones por oscilación de potencia (reemplaza a BOP)."
-  },
-  {
-    "codigo": "DPZ",
-    "nombre": "Disparo por Impedancia",
-    "descripcion": "Disparo por función de impedancia (Z), incluye todos los escalones."
-  },
-  {
-    "codigo": "FAS",
-    "nombre": "Fase",
-    "descripcion": "Agrupa arranques (no disparos) por fase excitada."
-  },
-  {
-    "codigo": "RDF",
-    "nombre": "Disparo Diferencial",
-    "descripcion": "Disparo por función diferencial (trafos, líneas, reactores, barras, etc.)."
-  },
-  {
-    "codigo": "AID",
-    "nombre": "Alarma Corriente Diferencial",
-    "descripcion": "Detección de corriente diferencial anormal bajo el umbral de arranque."
-  },
-  {
-    "codigo": "PEP",
-    "nombre": "Protección en Prueba",
-    "descripcion": "Inserción de llave de prueba o inhibición del sistema por mantenimiento."
-  },
-  {
-    "codigo": "TRANSF",
-    "nombre": "Campo Transferido",
-    "descripcion": "Indica la transferencia de un campo al acoplamiento (132/220 kV)."
-  },
-  {
-    "codigo": "MAX V",
-    "nombre": "Alarma Máxima Tensión",
-    "descripcion": "Alarma de arranque por sobretensión."
-  },
-  {
-    "codigo": "MAX V DI",
-    "nombre": "Disparo Máxima Tensión",
-    "descripcion": "Disparo por sobretensión en máquinas, líneas o capacitores."
-  },
-  {
-    "codigo": "MIN V",
-    "nombre": "Alarma Mínima Tensión",
-    "descripcion": "Alarma de arranque por subtensión."
-  },
-  {
-    "codigo": "MIN V DI",
-    "nombre": "Disparo Subtensión",
-    "descripcion": "Disparo por subtensión o pérdida de excitación."
-  },
-  {
-    "codigo": "SIN TSY",
-    "nombre": "Falta Tensión de Sincronismo",
-    "descripcion": "Falta de referencia de tensión necesaria para verificar sincronismo."
-  },
-  {
-    "codigo": "SIN",
-    "nombre": "Falla Verificador Sincronismo",
-    "descripcion": "Falla interna del equipo o falta de tensión de comando/alimentación."
-  },
-  {
-    "codigo": "SIN M/A",
-    "nombre": "Sincronismo Manual/Auto",
-    "descripcion": "Indica si la función se realiza en modo manual o automático."
-  },
-  {
-    "codigo": "SINC",
-    "nombre": "Comando Verificador",
-    "descripcion": "Comando para pasar de Paralelo a Anillo o viceversa."
-  },
-  {
-    "codigo": "SIN TVS",
-    "nombre": "Sincronismo No Exitoso",
-    "descripcion": "Indica que la verificación de sincronismo no fue exitosa."
-  },
-  {
-    "codigo": "SIN ACTIVO",
-    "nombre": "Sincronismo en Curso",
-    "descripcion": "Período de comparación de tensión, frecuencia y ángulo."
-  },
-  {
-    "codigo": "SIN CIERRE",
-    "nombre": "Autorización de Cierre",
-    "descripcion": "El verificador de sincronismo autorizó la maniobra de cierre."
-  },
-  {
-    "codigo": "BIN",
-    "nombre": "Bloqueo Interruptor",
-    "descripcion": "Bloqueo por fallas propias que impiden la maniobra."
-  },
-  {
-    "codigo": "SF6",
-    "nombre": "Baja Presión SF6",
-    "descripcion": "Alarma por nivel 1 de gas SF6 (no genera bloqueo)."
-  },
-  {
-    "codigo": "PFI",
-    "nombre": "Protección Falla de Interruptor",
-    "descripcion": "Disparo por falla del interruptor en tiempos T1 y T2."
-  },
-  {
-    "codigo": "RTR",
-    "nombre": "Diferencial Tierra Restringida",
-    "descripcion": "Disparos de la función diferencial de tierra restringida."
-  },
-  {
-    "codigo": "AAI / DAI",
-    "nombre": "Arco Interno",
-    "descripcion": "Alarma (AAI) o Disparo (DAI) por arco en celdas de MT."
-  },
-  {
-    "codigo": "ABZ / DBZ",
-    "nombre": "Relé Buchholz",
-    "descripcion": "Alarma (ABZ) o Disparo (DBZ) por detección de gases o flujo."
-  },
-  {
-    "codigo": "REC",
-    "nombre": "Modo de Recierre",
-    "descripcion": "Indica si el recierre está en modo monofásico o trifásico."
-  },
-  {
-    "codigo": "BRC",
-    "nombre": "Bloqueo de Recierre",
-    "descripcion": "Indisponibilidad de la función de recierre para un interruptor."
-  },
-  {
-    "codigo": "ARC",
-    "nombre": "Actuación Recierre",
-    "descripcion": "Indica que el recierre está en curso o la línea recerró."
-  }
+  { "codigo": "PCP", "nombre": "Protección con Problemas", "descripcion": "Condiciones que impiden que una protección o IED cumpla su función." },
+  { "codigo": "CIRC DISP", "nombre": "Circuito de Disparo", "descripcion": "Falla en el circuito de disparo; se agrupa por interruptor." },
+  { "codigo": "RMX", "nombre": "Disparo Sobrecorriente", "descripcion": "Disparo de máxima corriente de trafo, reactor o capacitor serie." },
+  { "codigo": "CSF", "nombre": "Cierre Sobre Falla", "descripcion": "Disparo de la función de cierre sobre falla en líneas o trafos." },
+  { "codigo": "DESBALANCE", "nombre": "Desbalance de Corriente", "descripcion": "Por conductor roto (líneas/trafos) o avería de latas (capacitores)." },
+  { "codigo": "OSP", "nombre": "Bloqueo Oscilación de Potencia", "descripcion": "Bloqueo de protecciones por oscilación de potencia (reemplaza a BOP)." },
+  { "codigo": "DPZ", "nombre": "Disparo por Impedancia", "descripcion": "Disparo por función de impedancia (Z), incluye todos los escalones." },
+  { "codigo": "FAS", "nombre": "Fase", "descripcion": "Agrupa arranques (no disparos) por fase excitada." },
+  { "codigo": "RDF", "nombre": "Disparo Diferencial", "descripcion": "Disparo por función diferencial (trafos, líneas, reactores, barras, etc.)." },
+  { "codigo": "AID", "nombre": "Alarma Corriente Diferencial", "descripcion": "Detección de corriente diferencial anormal bajo el umbral de arranque." },
+  { "codigo": "PEP", "nombre": "Protección en Prueba", "descripcion": "Inserción de llave de prueba o inhibición del sistema por mantenimiento." },
+  { "codigo": "TRANSF", "nombre": "Campo Transferido", "descripcion": "Indica la transferencia de un campo al acoplamiento (132/220 kV)." },
+  { "codigo": "MAX V", "nombre": "Alarma Máxima Tensión", "descripcion": "Alarma de arranque por sobretensión." },
+  { "codigo": "MAX V DI", "nombre": "Disparo Máxima Tensión", "descripcion": "Disparo por sobretensión en máquinas, líneas o capacitores." },
+  { "codigo": "MIN V", "nombre": "Alarma Mínima Tensión", "descripcion": "Alarma de arranque por subtensión." },
+  { "codigo": "MIN V DI", "nombre": "Disparo Subtensión", "descripcion": "Disparo por subtensión o pérdida de excitación." },
+  { "codigo": "SIN TSY", "nombre": "Falta Tensión de Sincronismo", "descripcion": "Falta de referencia de tensión necesaria para verificar sincronismo." },
+  { "codigo": "SIN", "nombre": "Falla Verificador Sincronismo", "descripcion": "Falla interna del equipo o falta de tensión de comando/alimentación." },
+  { "codigo": "SIN M/A", "nombre": "Sincronismo Manual/Auto", "descripcion": "Indica si la función se realiza en modo manual o automático." },
+  { "codigo": "SINC", "nombre": "Comando Verificador", "descripcion": "Comando para pasar de Paralelo a Anillo o viceversa." },
+  { "codigo": "SIN TVS", "nombre": "Sincronismo No Exitoso", "descripcion": "Indica que la verificación de sincronismo no fue exitosa." },
+  { "codigo": "SIN ACTIVO", "nombre": "Sincronismo en Curso", "descripcion": "Período de comparación de tensión, frecuencia y ángulo." },
+  { "codigo": "SIN CIERRE", "nombre": "Autorización de Cierre", "descripcion": "El verificador de sincronismo autorizó la maniobra de cierre." },
+  { "codigo": "APC", "nombre": "Alarma Planta Compresora", "descripcion": "Fallas o anomalías en la planta de aire comprimido." },
+  { "codigo": "BIN", "nombre": "Bloqueo Interruptor", "descripcion": "Bloqueo por fallas propias que impiden la maniobra." },
+  { "codigo": "BPP", "nombre": "Bloqueo por Protecciones", "descripcion": "Bloqueo externo por actuación de protecciones (relé 86)." },
+  { "codigo": "SF6", "nombre": "Baja Presión SF6", "descripcion": "Alarma por nivel 1 de gas SF6 (no genera bloqueo)." },
+  { "codigo": "FCR", "nombre": "Falla Carga de Resorte", "descripcion": "Alarma temporizada por falla en el mecanismo de carga." },
+  { "codigo": "ICP", "nombre": "Interruptor con Problemas", "descripcion": "Anomalías que no generan bloqueo inmediato (ej. SF6 nivel 1)." },
+  { "codigo": "PFI", "nombre": "Prot. Falla de Interruptor", "descripcion": "Disparo por falla del interruptor en tiempos T1 y T2." },
+  { "codigo": "DPO", "nombre": "Discrepancia de Polos", "descripcion": "Disparos agrupados por discrepancia mecánica o eléctrica." },
+  { "codigo": "DPE", "nombre": "Alarma Disc. Polos Eléctrica", "descripcion": "Alarma de discrepancia de polos eléctrica que no genera disparo." },
+  { "codigo": "SCP", "nombre": "Seccionador con Problemas", "descripcion": "Anomalías en seccionadores distintas a la discrepancia de polos." },
+  { "codigo": "FFM", "nombre": "Falla Fuerza Motriz", "descripcion": "Fallas de VCA o VCC que afectan la operación del interruptor." },
+  { "codigo": "RTR", "nombre": "Dif. Tierra Restringida", "descripcion": "Disparos de la función diferencial de tierra restringida." },
+  { "codigo": "AAI / DAI", "nombre": "Arco Interno", "descripcion": "Alarma (AAI) o Disparo (DAI) por arco en celdas de MT." },
+  { "codigo": "AAP / DAP", "nombre": "Alivio de Presión", "descripcion": "Alarma (AAP) o Disparo (DAP) por alta presión en cuba o RBC." },
+  { "codigo": "AAT / DAT", "nombre": "Alta Temperatura", "descripcion": "Alarma (AAT) o Disparo (DAT) por temperatura de aceite o devanados." },
+  { "codigo": "ABZ / DBZ", "nombre": "Relé Buchholz", "descripcion": "Alarma (ABZ) o Disparo (DBZ) por detección de gases o flujo." },
+  { "codigo": "AFA / DFA", "nombre": "Flujo de Aceite", "descripcion": "Alarma (AFA) o Disparo (DFA) por flujo anormal de aceite." },
+  { "codigo": "AFM / DFM", "nombre": "Flujo Magnético", "descripcion": "Alarma (AFM) o Disparo (DFM) por sobreexcitación (V/Hz)." },
+  { "codigo": "AFT", "nombre": "Fase a Tierra", "descripcion": "Detección de corriente a tierra en celdas de MT." },
+  { "codigo": "AIT", "nombre": "Imagen Térmica", "descripcion": "Alarma por detección de alta temperatura de imagen térmica." },
+  { "codigo": "AVR / DVR", "nombre": "Válvula de Retención", "descripcion": "Alarma (AVR) o Disparo (DVR) de la válvula de retención." },
+  { "codigo": "BBA", "nombre": "Bomba de Aceite", "descripcion": "Indica el estado de marcha de las bombas de aceite." },
+  { "codigo": "CUB", "nombre": "Disparo Cuba", "descripcion": "Disparo de la protección de cuba (agrupa todas las fases)." },
+  { "codigo": "DNA", "nombre": "Disparo Nivel de Aceite", "descripcion": "Disparo por bajo nivel de aceite en cuba principal o RBC." },
+  { "codigo": "DPP", "nombre": "Disparo por Protecciones", "descripcion": "Disparos por funciones no incluidas en otros acrónimos específicos." },
+  { "codigo": "GAS/HUM", "nombre": "Gas y Humedad", "descripcion": "Detección de presencia de gas o humedad en el aceite." },
+  { "codigo": "EQ GAS/HUM", "nombre": "Falla Detector Gas/Hum", "descripcion": "Falla interna del equipo de monitoreo (reemplaza a HYDRAN)." },
+  { "codigo": "I/P", "nombre": "Individual / Paralelo", "descripcion": "Indica el modo de operación de los transformadores." },
+  { "codigo": "M/S", "nombre": "Maestro / Seguidor", "descripcion": "Indica el rol del trafo en la regulación de tensión en paralelo." },
+  { "codigo": "RAT", "nombre": "Regulador de Tensión", "descripcion": "Falla o anomalía en el regulador automático de tensión." },
+  { "codigo": "RBC", "nombre": "Posición TAB", "descripcion": "Indica la posición actual del cambiador de tomas bajo carga." },
+  { "codigo": "RCP", "nombre": "Regulador con Problemas", "descripcion": "Anomalías en el RBC (conmutación incompleta, falta Vcc, etc.)." },
+  { "codigo": "REF", "nombre": "Falla Refrigeración", "descripcion": "Cualquier falla en el sistema de refrigeración de la máquina." },
+  { "codigo": "RCU", "nombre": "Regulador en Curso", "descripcion": "Indica que el regulador bajo carga está en movimiento." },
+  { "codigo": "REC", "nombre": "Modo de Recierre", "descripcion": "Indica si el recierre está en modo monofásico o trifásico." },
+  { "codigo": "CRC", "nombre": "Con Recierre", "descripcion": "Indica la voluntad del operador de habilitar el recierre." },
+  { "codigo": "BRC", "nombre": "Bloqueo de Recierre", "descripcion": "Indisponibilidad de la función de recierre para un interruptor." },
+  { "codigo": "ARC", "nombre": "Actuación Recierre", "descripcion": "Indica que el recierre está en curso o la línea recerró." },
+  { "codigo": "ALAR ESC", "nombre": "Alargamiento de Escalón", "descripcion": "Indica si la línea está en modo de alargamiento propio." },
+  { "codigo": "ESC 1 / ESC D", "nombre": "Disparo Escalón", "descripcion": "Disparo en zona 1 (ESC 1) o zona superior/temporizada (ESC D)." },
+  { "codigo": "EXT DEBIL", "nombre": "Extremo Débil", "descripcion": "Actuación de la función de extremo débil (Weak Infeed)." },
+  { "codigo": "FET", "nombre": "Falla Teleprotección", "descripcion": "Falla en el equipo de teleprotección que afecta fiabilidad." },
+  { "codigo": "FFO", "nombre": "Falla Fibra Óptica", "descripcion": "Falla en el equipamiento de enlace por fibra óptica." },
+  { "codigo": "FOP", "nombre": "Falla Onda Portadora", "descripcion": "Falla en el enlace o componentes de onda portadora." },
+  { "codigo": "RDF BLOQ", "nombre": "Bloqueo Dif. Línea", "descripcion": "Bloqueo de diferencial por problemas en el canal de comunicación." },
+  { "codigo": "E TDD / R TDD", "nombre": "Emisión/Recepción TDD", "descripcion": "Transferencia de Disparo Directo (incluye ambos sistemas)." },
+  { "codigo": "E TP / R TP", "nombre": "Emisión/Recepción TP", "descripcion": "Señalización de teleprotección (incluye ambos sistemas)." },
+  { "codigo": "CHISPERO", "nombre": "Falla Spark Gap", "descripcion": "Descripción técnica." },
+  { "codigo": "SUBARMONICA", "nombre": "Alarma Subarmónica", "descripcion": "Problemas de conducción en el explosor de capacitores serie." },
+  { "codigo": "VARISTOR", "nombre": "Alarma Varistor", "descripcion": "Corriente subarmónica detectada en el banco de capacitores." },
+  { "codigo": "DI LINEA", "nombre": "Disparo a Línea", "descripcion": "Alta temperatura en el varistor (MOV) (reemplaza a SOB TERM)." },
+  { "codigo": "T ROT", "nombre": "Tierra Rotórica", "descripcion": "Disparo enviado a los interruptores de línea por falla en bypass." },
+  { "codigo": "ABZAT", "nombre": "Buchholz/Temperatura", "descripcion": "Alarma de sobrecorriente a tierra del rotor (64RF)." },
+  { "codigo": "RTU CCU", "nombre": "Falla CCU", "descripcion": "Alarma conjunta para autotrafos de arranque o servicios auxiliares." },
+  { "codigo": "RTU SACC", "nombre": "Falla Alim. CCU", "descripcion": "Falla interna, apagada o pérdida de periféricos de la RTU." },
+  { "codigo": "RTU TCC", "nombre": "Falla Tensión Expl.", "descripcion": "Problema de alimentación de las unidades centrales (A o B)." },
+  { "codigo": "RTU MOD", "nombre": "Falla Módulo RTU", "descripcion": "Problema en tensión de exploración de entradas/salidas." },
+  { "codigo": "UR / NUR", "nombre": "Urgente / No Urgente", "descripcion": "Categorización de alarmas en equipos de comunicaciones." },
+  { "codigo": "PAB", "nombre": "Puerta Abierta", "descripcion": "Alarma de intrusión en shelters o armarios de playa." },
+  { "codigo": "FAR / FGD / GDM", "nombre": "Grupo Diesel", "descripcion": "Falla de Arranque (FAR), Falla General (FGD) o En Marcha (GDM)." },
+  { "codigo": "SMEC / TRANSDUC", "nombre": "Medición y Datos", "descripcion": "Falla en medición comercial (SMEC) o en transductores." },
+  { "codigo": "INC / EQ INC", "nombre": "Incendio", "descripcion": "Detección de incendio (INC) o falla en la central (EQ INC)." },
+  { "codigo": "FTM", "nombre": "Falta Tensión Medición", "descripcion": "Falta tensión en multimedidores (excluye SMEC y protección)." },
+  { "codigo": "FCC / FCA", "nombre": "Falla CC / CA", "descripcion": "Actuación de termomagnéticas generales de continua o alterna." },
+  { "codigo": "CCC / CCS / CCA", "nombre": "Falla Tensión Específica", "descripcion": "Falta de tensión de Comando (CCC), Señalización (CCS) o Alarma (CCA)." },
+  { "codigo": "FTC", "nombre": "Falta Tensión Calef.", "descripcion": "Falta de tensión de calefacción en armarios de playa." },
+  { "codigo": "DAG NEA", "nombre": "DAG NEA", "descripcion": "Evento DAG correspondiente a la región NEA." },
+  { "codigo": "DAG NOA", "nombre": "DAG NOA", "descripcion": "Evento DAG correspondiente a la región NOA." },
+  { "codigo": "DAG COMAHUE", "nombre": "DAG COMAHUE", "descripcion": "Evento DAG correspondiente a la región Comahue." },
+  { "codigo": "DAG GMZ", "nombre": "DAG GMZ", "descripcion": "Evento DAG correspondiente a la región GMZ." },
+  { "codigo": "DAG PAT", "nombre": "DAG PAT", "descripcion": "Evento DAG correspondiente a la región Patagonia." },
+  { "codigo": "DAG EZ-RD", "nombre": "DAG EZ-RD", "descripcion": "Evento DAG correspondiente a la región EZ-RD." }
 ]
