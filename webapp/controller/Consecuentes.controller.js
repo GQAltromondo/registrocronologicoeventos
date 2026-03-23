@@ -89,7 +89,14 @@ sap.ui.define([
                 VinculadoSinTension: oFormData.VinculadoSinTension || false
             };
 
-            aConsecuentes.push(oNewItem);
+            if (this._editingIndex != null && this._editingIndex >= 0 && this._editingIndex < aConsecuentes.length) {
+                // Actualizar consecuente existente
+                aConsecuentes[this._editingIndex] = oNewItem;
+                this._editingIndex = null;
+            } else {
+                // Agregar nuevo consecuente
+                aConsecuentes.push(oNewItem);
+            }
             oListModel.setProperty("/Consequents", aConsecuentes);
             oListModel.refresh(true);
 
@@ -109,6 +116,84 @@ sap.ui.define([
             });
 
             sap.m.MessageToast.show("Consecuente agregado a la lista");
+        },
+
+        /**
+         * Obtiene el objeto de la fila clickeada en la tabla de consecuentes
+         */
+        _getRowData: function (oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("ConsequentListJsonModel");
+            if (!oCtx) {
+                return null;
+            }
+            return {
+                data: oCtx.getObject(),
+                index: oCtx.getPath().split("/").pop()
+            };
+        },
+
+        /**
+         * Carga los datos de la fila seleccionada en el formulario superior (solo lectura)
+         */
+        onSee: function (oEvent) {
+            var oRow = this._getRowData(oEvent);
+            if (!oRow) { return; }
+            this._loadRowIntoForm(oRow.data);
+            this._editingIndex = null;
+        },
+
+        /**
+         * Carga los datos de la fila seleccionada en el formulario superior para edición
+         */
+        onEditNove: function (oEvent) {
+            var oRow = this._getRowData(oEvent);
+            if (!oRow) { return; }
+            this._loadRowIntoForm(oRow.data);
+            this._editingIndex = parseInt(oRow.index, 10);
+            sap.m.MessageToast.show("Editando consecuente. Presione 'Agregar' para guardar los cambios.");
+        },
+
+        /**
+         * Carga datos de un consecuente existente en el formulario superior
+         */
+        _loadRowIntoForm: function (oData) {
+            var oView = this.getView();
+            var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
+            oFormModel.setProperty("/Tplnr", oData.Tplnr || "");
+            oFormModel.setProperty("/Equnr", oData.Equnr || "");
+            oFormModel.setProperty("/EntIndis", oData.EntIndis || oData.InicioNove || null);
+            oFormModel.setProperty("/EntDispo", oData.EntDispo || oData.EntDisp || null);
+            oFormModel.setProperty("/CodMotivo", oData.CodMotivo || "");
+            oFormModel.setProperty("/CodCausa", oData.CodCausa || "");
+            oFormModel.setProperty("/Vinculadost", oData.Vinculadost || oData.VinculadoSinTension || false);
+            oFormModel.setProperty("/Observ", oData.Observ || oData.Comment || oData.Comentario || "");
+
+            // Scroll al inicio de la página
+            var oPage = this.byId("ConsecuentesPage");
+            if (oPage) { oPage.scrollTo(0); }
+        },
+
+        /**
+         * Elimina el consecuente de la lista
+         */
+        onDelete: function (oEvent) {
+            var oRow = this._getRowData(oEvent);
+            if (!oRow) { return; }
+            var oView = this.getView();
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+            var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+            var iIndex = parseInt(oRow.index, 10);
+
+            sap.m.MessageBox.confirm("¿Desea eliminar este consecuente?", {
+                onClose: function (sAction) {
+                    if (sAction === sap.m.MessageBox.Action.OK) {
+                        aConsecuentes.splice(iIndex, 1);
+                        oListModel.setProperty("/Consequents", aConsecuentes);
+                        oListModel.refresh(true);
+                        sap.m.MessageToast.show("Consecuente eliminado");
+                    }
+                }
+            });
         }
     });
 });

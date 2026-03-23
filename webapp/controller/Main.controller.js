@@ -5422,9 +5422,9 @@ sap.ui.define([
 				ModelHelper.getModel("CommentsFormJsonModel", this.getView()).setData(oSelectedNovedad.ComentariosSet.results[0]);
 			}
 
-			if (oSelectedNovedad.ConsecuentesSet.results.length > 0) {
-				ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView()).setProperty("/", oSelectedNovedad.ConsecuentesSet.results[0]);
-			}
+			// Los consecuentes existentes se cargan solo en ConsequentListJsonModel (línea 5447).
+			// ConsecuentesFormJsonModel se inicializa más abajo con datos de la novedad padre
+			// para crear nuevos consecuentes (líneas 5459-5466).
 			if (oSelectedNovedad.ENSRegXNS_NAV.results.length > 0) {
 				oSelectedNovedad.ENSRegXNS_NAV.results.map(function (element) {
 					element.ENSRow = (element.Corte / 60) * element.Potencia;
