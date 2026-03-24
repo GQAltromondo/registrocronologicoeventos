@@ -221,11 +221,15 @@ sap.ui.define([
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
             oFormModel.setProperty("/Tplnr", oData.Tplnr || "");
             oFormModel.setProperty("/Equnr", oData.Equnr || "");
-            oFormModel.setProperty("/EntIndis", oData.EntIndis || oData.InicioNove || null);
+            oFormModel.setProperty("/InicioNove", oData.InicioNove || null);
+            oFormModel.setProperty("/EntIndis", oData.EntIndis || null);
             oFormModel.setProperty("/EntDispo", oData.EntDispo || oData.EntDisp || null);
+            oFormModel.setProperty("/EntServicio", oData.EntServicio || null);
             oFormModel.setProperty("/CodMotivo", oData.CodMotivo || "");
             oFormModel.setProperty("/Vinculadost", oData.Vinculadost || oData.VinculadoSinTension || false);
             oFormModel.setProperty("/Observ", oData.Observ || oData.Comment || oData.Comentario || "");
+            oFormModel.setProperty("/GenIndisponibilidad", oData.GenIndisponibilidad || false);
+            oFormModel.setProperty("/Recierre", oData.Recierre || false);
             oFormModel.setProperty("/IdNovedad", oData.IdNovedad || "");
             oFormModel.setProperty("/Empresa", oData.Empresa || "");
             oFormModel.setProperty("/editingIndex", iEditingIndex);
