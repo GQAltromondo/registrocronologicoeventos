@@ -5,7 +5,10 @@ sap.ui.define([
     "transener/registrocronologicoeventos/utils/Constants",
     "transener/registrocronologicoeventos/services/EquiposService",
     "transener/registrocronologicoeventos/services/CausasService",
-], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices) {
+    "transener/registrocronologicoeventos/services/oDataServices",
+    "transener/registrocronologicoeventos/utils/Logger",
+    "transener/registrocronologicoeventos/utils/ErrorHandler",
+], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices, oDataServices, Logger, ErrorHandler) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Consecuentes", {
@@ -188,6 +191,97 @@ sap.ui.define([
         /**
          * Elimina el consecuente de la lista
          */
+        onSaveConsecuentes: function () {
+            var oView = this.getView();
+            var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+            var oNovedad = oNovedadModel.getData();
+            var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+
+            if (aConsecuentes.length === 0) {
+                sap.m.MessageBox.warning("No hay consecuentes para guardar.");
+                return;
+            }
+
+            // Validar que la novedad tenga metadata para hacer el PUT
+            var sUri = oNovedad.__metadata && (oNovedad.__metadata.uri || oNovedad.__metadata.id);
+            if (!sUri) {
+                sap.m.MessageBox.error("No se puede guardar: la novedad no tiene referencia al servidor. Guarde primero la novedad principal.");
+                return;
+            }
+
+            var oModel = oDataServices.getModel("");
+
+            // Construir path relativo
+            var sServiceUrl = (oModel.sServiceUrl || "").replace(/\/$/, "");
+            var oMetaUrl = new URL(sUri, window.location.origin);
+            var oServUrl = new URL(sServiceUrl, window.location.origin);
+            var sServPath = oServUrl.pathname.replace(/\/$/, "");
+            var sMetaPath = oMetaUrl.pathname;
+            var sPath;
+            if (sMetaPath.startsWith(sServPath + "/")) {
+                sPath = sMetaPath.substring(sServPath.length);
+            } else {
+                var m = sMetaPath.match(/\/NovedadesServicioSet\(.*\)$/);
+                sPath = m ? m[0] : sMetaPath;
+            }
+
+            // Armar payload: novedad con ConsecuentesSet
+            var oPayload = jQuery.extend(true, {}, oNovedad);
+            // Limpiar navigation properties que no son consecuentes
+            delete oPayload.InformeCammesaSet;
+            delete oPayload.ComentariosSet;
+            delete oPayload.ENSRegXNS_NAV;
+            delete oPayload.SenialXNS_nav;
+            delete oPayload.PruebasXNS_nav;
+
+            // Incluir los consecuentes actuales
+            oPayload.ConsecuentesSet = aConsecuentes.map(function (oItem) {
+                return {
+                    Empresa: oNovedad.Empresa || "",
+                    IdNovedad: oNovedad.IdNovedad || "",
+                    Equnr: oItem.Equnr || "",
+                    Tplnr: oItem.Tplnr || "",
+                    CodMotivo: oItem.CodMotivo || "",
+                    CodCausa: oItem.CodCausa || "",
+                    InicioNove: oItem.InicioNove || null,
+                    EntIndis: oItem.EntIndis || oItem.EntIndisp || null,
+                    EntDispo: oItem.EntDispo || oItem.EntDisp || null,
+                    EntServicio: oItem.EntServicio || null,
+                    Observ: oItem.Observ || oItem.Comment || oItem.Comentario || "",
+                    Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
+                    GenIndisponibilidad: oItem.GenIndisponibilidad || false,
+                    Recierre: oItem.Recierre || false,
+                    Consecuente: oItem.Consecuente || "",
+                    CodNovedad: oItem.CodNovedad || oNovedad.CodNovedad || "",
+                    CodTipo: oItem.CodTipo || oNovedad.CodTipo || "",
+                    Referencia: oItem.Referencia || "",
+                    CodWeather: oItem.CodWeather || "",
+                    CodDispAct: oItem.CodDispAct || "",
+                    CodAreaResp: oItem.CodAreaResp || "",
+                    Subindice: oItem.Subindice || "0",
+                    Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0
+                };
+            });
+
+            oPayload.Cantidadtorrescaidas = oPayload.Cantidadtorrescaidas || 0;
+            oPayload.Subindice = String(oPayload.Subindice);
+
+            sap.ui.core.BusyIndicator.show(0);
+            oModel.update(sPath, oPayload, {
+                success: function () {
+                    sap.ui.core.BusyIndicator.hide();
+                    Logger.info("Consecuentes guardados exitosamente");
+                    sap.m.MessageToast.show("Consecuentes guardados exitosamente");
+                },
+                error: function (oError) {
+                    sap.ui.core.BusyIndicator.hide();
+                    Logger.error("Error al guardar consecuentes", oError);
+                    ErrorHandler.handleODataError(oError, "guardar consecuentes");
+                }
+            });
+        },
+
         onDelete: function (oEvent) {
             var oRow = this._getRowData(oEvent);
             if (!oRow) { return; }

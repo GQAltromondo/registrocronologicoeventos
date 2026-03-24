@@ -84,6 +84,7 @@
 				</VBox>
 				<HBox justifyContent="End" >
 					<Button text="Agregar" class="sapUiSmallMargin" press=".onAddConsecuente" type="Emphasized"/>
+					<Button text="Guardar Consecuentes" class="sapUiSmallMargin" press=".onSaveConsecuentes" type="Accept"/>
 				</HBox>
 				<t:Table id="consecuentes" rows="{ path: 'ConsequentListJsonModel>/Consequents', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 					<t:Column width='200px'>

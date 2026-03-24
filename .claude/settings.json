@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd \"c:/Users/Guillote/Desktop/ALTROMONDO/registrocronologicoeventos/webapp/view/Consecuentes.view.xml\")"
+    ]
+  }
+}
