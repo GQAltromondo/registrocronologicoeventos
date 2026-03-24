@@ -8,10 +8,14 @@ sap.ui.define([
 
 		_entitySet: "/NovedadesServicioSet",
 
+		/**
+		 * Construye el payload para POST/PUT de un consecuente.
+		 * Solo envía los campos esenciales, siguiendo el patrón de la app original
+		 * que limpia cuidadosamente las propiedades antes de enviar.
+		 */
 		_buildPayload: function (oItem, oParentNovedad, sEmpresa) {
 			var oPayload = {
 				Empresa: sEmpresa || "",
-				IdNovedad: oItem.IdNovedad || "",
 				Consecuente: oParentNovedad.IdNovedad || "",
 				CodNovedad: oItem.CodNovedad || oParentNovedad.CodNovedad || "",
 				CodTipo: oItem.CodTipo || oParentNovedad.CodTipo || "",
@@ -22,57 +26,21 @@ sap.ui.define([
 				CodWeather: oItem.CodWeather || "",
 				CodDispAct: oItem.CodDispAct || "",
 				CodAreaResp: oItem.CodAreaResp || "",
-				CodTipFalla: oItem.CodTipFalla || "",
-				CodUbFalla: oItem.CodUbFalla || "",
 				InicioNove: oItem.InicioNove || null,
 				EntIndis: oItem.EntIndis || oItem.EntIndisp || null,
 				EntDispo: oItem.EntDispo || oItem.EntDisp || null,
 				EntServicio: oItem.EntServicio || null,
 				FechaFinNove: oItem.FechaFinNove || null,
-				Iniciomtto: oItem.Iniciomtto || null,
-				Finmtto: oItem.Finmtto || null,
 				Observ: oItem.Observ || oItem.Comment || oItem.Comentario || "",
-				Medidas: oItem.Medidas || "",
 				GenIndisponibilidad: oItem.GenIndisponibilidad || false,
 				Recierre: oItem.Recierre || false,
 				Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
 				Subindice: String(oItem.Subindice || "0"),
-				Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0,
-				Referencia: oItem.Referencia || "",
-				Anio: oItem.Anio || "",
-				Idlicencia: oItem.Idlicencia || "",
-				TipoPerturbacion: oItem.TipoPerturbacion || "",
-				Estado: oItem.Estado || "",
-				Region: oItem.Region || "",
-				Regulado: oItem.Regulado || "",
-				Exclcalcindice: oItem.Exclcalcindice || "",
-				Realizomantenimiento: oItem.Realizomantenimiento || "",
-				Fallalat: oItem.Fallalat || "",
-				Penalizacammesa: oItem.Penalizacammesa || "",
-				Faltarecierre: oItem.Faltarecierre || "",
-				Extremo1: oItem.Extremo1 || "",
-				Extremo2: oItem.Extremo2 || "",
-				Extremo1km: oItem.Extremo1km || "",
-				Extremo2km: oItem.Extremo2km || "",
-				Extremo1x: oItem.Extremo1x || false,
-				Extremo2x: oItem.Extremo2x || false,
-				Tension: oItem.Tension || "",
-				Desconexion: oItem.Desconexion || "",
-				Nroinforme: oItem.Nroinforme || "",
-				Idcausa: oItem.Idcausa || "",
-				Aufnr: oItem.Aufnr || "",
-				Motivofalla: oItem.Motivofalla || "",
-				Grmotivomtto: oItem.Grmotivomtto || "",
-				Motivomtto: oItem.Motivomtto || "",
-				Ens: oItem.Ens || "",
-				Ensval: oItem.Ensval || "",
-				Estacion: oItem.Estacion || "",
-				Factred: oItem.Factred || 0,
-				Potenafect: oItem.Potenafect || 0
+				Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0
 			};
 
 			// Normalizar fechas: quitar segundos y milisegundos
-			var aDateFields = ["InicioNove", "EntIndis", "EntDispo", "EntServicio", "FechaFinNove", "Iniciomtto", "Finmtto"];
+			var aDateFields = ["InicioNove", "EntIndis", "EntDispo", "EntServicio", "FechaFinNove"];
 			aDateFields.forEach(function (sField) {
 				var dVal = oPayload[sField];
 				if (dVal && dVal.setSeconds) {
