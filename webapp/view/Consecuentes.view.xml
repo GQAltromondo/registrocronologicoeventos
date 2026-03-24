@@ -36,15 +36,26 @@
 
 				</VBox>
 				<HBox class="container topBorder">
-					<HBox alignItems="Center" justifyContent="SpaceBetween" width="40%">
-						<Label class="sapUiMediumMarginBeginEnd" text="Indisponible desde"></Label>
-
-						<DateTimePicker  value="{ 'path': 'ConsecuentesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-					</HBox>
-					<HBox alignItems="Center" justifyContent="SpaceBetween" width="40%">
-						<Label class="sapUiMediumMarginBeginEnd" text="Disponible desde"></Label>
-						<DateTimePicker  value="{ 'path': 'ConsecuentesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-					</HBox>
+					<VBox width="40%">
+						<HBox alignItems="Center" justifyContent="SpaceBetween">
+							<Label class="sapUiMediumMarginBeginEnd" text="Inicio Novedad"></Label>
+							<DateTimePicker value="{ 'path': 'ConsecuentesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						</HBox>
+						<HBox alignItems="Center" justifyContent="SpaceBetween">
+							<Label class="sapUiMediumMarginBeginEnd" text="Indisponible desde"></Label>
+							<DateTimePicker value="{ 'path': 'ConsecuentesFormJsonModel>/EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						</HBox>
+					</VBox>
+					<VBox width="40%">
+						<HBox alignItems="Center" justifyContent="SpaceBetween">
+							<Label class="sapUiMediumMarginBeginEnd" text="Disponible desde"></Label>
+							<DateTimePicker value="{ 'path': 'ConsecuentesFormJsonModel>/EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						</HBox>
+						<HBox alignItems="Center" justifyContent="SpaceBetween">
+							<Label class="sapUiMediumMarginBeginEnd" text="Ent. en Servicio"></Label>
+							<DateTimePicker value="{ 'path': 'ConsecuentesFormJsonModel>/EntServicio', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+						</HBox>
+					</VBox>
 				</HBox>
 
 				<VBox class="container topBorder">
@@ -118,7 +129,6 @@
 						<Label text="{i18n>dispDesde}"/>
 						<t:template>
 							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-
 						</t:template>
 					</t:Column>
 					<t:Column width='250px'>
