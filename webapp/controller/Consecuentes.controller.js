@@ -166,9 +166,19 @@ sap.ui.define([
             oFormModel.setProperty("/EntIndis", oData.EntIndis || oData.InicioNove || null);
             oFormModel.setProperty("/EntDispo", oData.EntDispo || oData.EntDisp || null);
             oFormModel.setProperty("/CodMotivo", oData.CodMotivo || "");
-            oFormModel.setProperty("/CodCausa", oData.CodCausa || "");
             oFormModel.setProperty("/Vinculadost", oData.Vinculadost || oData.VinculadoSinTension || false);
             oFormModel.setProperty("/Observ", oData.Observ || oData.Comment || oData.Comentario || "");
+
+            // Recargar causas para el motivo del consecuente y luego setear CodCausa
+            var sCodMotivo = oData.CodMotivo || "";
+            var sCodCausa = oData.CodCausa || "";
+            if (sCodMotivo) {
+                var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+                var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel");
+                var sCodNovedad = oNovedadModel.getProperty("/CodNovedad");
+                CausasServices.loadModel(sCodNovedad, sCodMotivo, Empresa);
+            }
+            oFormModel.setProperty("/CodCausa", sCodCausa);
 
             // Scroll al inicio de la página
             var oPage = this.byId("ConsecuentesPage");
