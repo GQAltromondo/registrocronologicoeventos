@@ -55,10 +55,12 @@ sap.ui.define([
         },
         onMotivoChange: function () {
             var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
-            const NovedadModel = ModelHelper.getModel("NovedadesFormJsonModel")
-            const oNovedad = NovedadModel.getData()
-            NovedadModel.setProperty("/CodCausa","")
-            CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa)
+            const oConsecuentesModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
+            const oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel");
+            const oNovedad = oNovedadModel.getData();
+            const sCodMotivo = oConsecuentesModel.getProperty("/CodMotivo");
+            oConsecuentesModel.setProperty("/CodCausa", "");
+            CausasServices.loadModel(oNovedad.CodNovedad, sCodMotivo, Empresa)
         },
 
         onAddConsecuente: function () {
