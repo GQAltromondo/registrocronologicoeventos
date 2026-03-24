@@ -33,7 +33,6 @@ sap.ui.define([
 				Finmtto: oItem.Finmtto || null,
 				Observ: oItem.Observ || oItem.Comment || oItem.Comentario || "",
 				Medidas: oItem.Medidas || "",
-				Novedad: oItem.Novedad || "",
 				GenIndisponibilidad: oItem.GenIndisponibilidad || false,
 				Recierre: oItem.Recierre || false,
 				Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
