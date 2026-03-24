@@ -18,17 +18,11 @@ sap.ui.define([
                 .attachPatternMatched(this._onRouteMatched, this);
         },
 
-        /**
-         * Maneja el evento cuando se navega a la vista Consecuentes
-         * @param {sap.ui.base.Event} oEvent - Evento de navegación
-         * @private
-         */
         _onRouteMatched: function (oEvent) {
             const oArgs = oEvent.getParameter("arguments") || {};
             const sMode = (oArgs.mode || "edit").toLowerCase();
             const oView = this.getView();
 
-            // Modo (create/edit/view) para reutilizar la vista
             const oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
             const oUtilsModel = ModelHelper.getModel("utilsModel", oView);
 
@@ -46,6 +40,13 @@ sap.ui.define([
                     }
                 }
             }
+
+            // Resetear el editingIndex al entrar a la vista
+            var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
+            if (oFormModel) {
+                oFormModel.setProperty("/editingIndex", -1);
+            }
+
             this.getNSInfo();
         },
 
@@ -66,81 +67,118 @@ sap.ui.define([
             CausasServices.loadModel(oNovedad.CodNovedad, sCodMotivo, Empresa);
         },
 
-        onAddConsecuente: function () {
+        /**
+         * Guarda el consecuente del formulario: POST si es nuevo, PUT si es existente.
+         * Después de guardar, actualiza la lista local y limpia el formulario.
+         */
+        onSaveConsecuente: function () {
             var oView = this.getView();
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
             var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
             var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
             var oNovedad = oNovedadModel.getData();
             var oFormData = oFormModel.getData() || {};
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 
+            // Validar equipo
             if (!oFormData.Equnr) {
                 sap.m.MessageBox.warning("Debe seleccionar un Equipo.");
                 return;
             }
 
-            var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+            // Validar que la novedad padre ya esté persistida
+            if (!oNovedad.IdNovedad) {
+                sap.m.MessageBox.error("Guarde primero la novedad principal antes de guardar consecuentes.");
+                return;
+            }
 
-            var oNewItem = {
+            // Armar el item con los datos del formulario
+            var oItem = {
+                IdNovedad: oFormData.IdNovedad || "",
+                Empresa: oFormData.Empresa || "",
                 Equnr: oFormData.Equnr || "",
                 Tplnr: oFormData.Tplnr || "",
                 InicioNove: oFormData.EntIndis || null,
                 EntIndis: oFormData.EntIndis || null,
-                FechaFinNove: null,
-                EntDispo: oFormData.EntDispo || oFormData.EntDisp || null,
+                EntDispo: oFormData.EntDispo || null,
                 EntServicio: oFormData.EntServicio || null,
-                Observ: oFormData.Observ || oFormData.Texto || "",
-                Comentario: oFormData.Comentario || "",
-                InformaCammesa: oFormData.InformaCammesa ? "S" : "N",
+                Observ: oFormData.Observ || "",
                 CodMotivo: oFormData.CodMotivo || "",
                 CodCausa: oFormData.CodCausa || "",
-                VinculadoSinTension: oFormData.VinculadoSinTension || false,
-                Vinculadost: oFormData.Vinculadost || oFormData.VinculadoSinTension || false,
-                // Campos del padre necesarios para el POST
+                Vinculadost: oFormData.Vinculadost || false,
                 CodNovedad: oNovedad.CodNovedad || "",
                 CodTipo: oNovedad.CodTipo || "",
-                Subindice: oFormData.Subindice || "0",
                 GenIndisponibilidad: oFormData.GenIndisponibilidad || false,
-                Recierre: oFormData.Recierre || false
+                Recierre: oFormData.Recierre || false,
+                Subindice: oFormData.Subindice || "0",
+                Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0
             };
 
-            if (this._editingIndex != null && this._editingIndex >= 0 && this._editingIndex < aConsecuentes.length) {
-                // Preservar IdNovedad y Empresa del item existente para que el save haga PUT
-                oNewItem.IdNovedad = aConsecuentes[this._editingIndex].IdNovedad || "";
-                oNewItem.Empresa = aConsecuentes[this._editingIndex].Empresa || "";
-                aConsecuentes[this._editingIndex] = oNewItem;
-                this._editingIndex = null;
-            } else {
-                // Nuevo consecuente sin IdNovedad (se creará con POST)
-                oNewItem.IdNovedad = "";
-                oNewItem.Empresa = "";
-                aConsecuentes.push(oNewItem);
-            }
-            oListModel.setProperty("/Consequents", aConsecuentes);
-            oListModel.refresh(true);
+            var iEditingIndex = oFormData.editingIndex;
+            var bIsEdit = (iEditingIndex >= 0);
+            var that = this;
 
-            // Limpiar el formulario manteniendo ubicación y referencia
-            var sTplnr = oFormData.Tplnr;
-            oFormModel.setData({
-                Tplnr: sTplnr,
-                Equnr: "",
-                EntIndis: null,
-                EntDispo: null,
-                CodMotivo: "",
-                CodCausa: "",
-                Texto: "",
-                Comentario: "",
-                Observ: "",
-                InformaCammesa: false,
-                VinculadoSinTension: false,
-                Vinculadost: false
-            });
+            sap.ui.core.BusyIndicator.show(0);
 
-            sap.m.MessageToast.show("Consecuente agregado a la lista");
+            ConsecuenteServices.saveConsecuente(oItem, oNovedad, sEmpresa)
+                .then(function (oResult) {
+                    sap.ui.core.BusyIndicator.hide();
+
+                    // Actualizar la lista local
+                    var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+
+                    // Armar el item para la lista con los datos devueltos
+                    var oSavedItem = jQuery.extend({}, oItem);
+                    if (oResult && oResult.IdNovedad) {
+                        oSavedItem.IdNovedad = oResult.IdNovedad;
+                        oSavedItem.Empresa = oResult.Empresa || sEmpresa;
+                    }
+
+                    if (bIsEdit && iEditingIndex < aConsecuentes.length) {
+                        aConsecuentes[iEditingIndex] = oSavedItem;
+                    } else {
+                        aConsecuentes.push(oSavedItem);
+                    }
+
+                    oListModel.setProperty("/Consequents", aConsecuentes);
+                    oListModel.refresh(true);
+
+                    // Limpiar formulario
+                    that._clearForm(oFormModel, oFormData.Tplnr);
+
+                    sap.m.MessageToast.show(bIsEdit ? "Consecuente actualizado exitosamente" : "Consecuente creado exitosamente");
+                    Logger.info("Consecuente guardado", { isEdit: bIsEdit, idNovedad: oResult ? oResult.IdNovedad : "" });
+                })
+                .catch(function (oError) {
+                    sap.ui.core.BusyIndicator.hide();
+                    ErrorHandler.handleODataError(oError, bIsEdit ? "actualizar consecuente" : "crear consecuente");
+                });
         },
 
         /**
-         * Obtiene el objeto de la fila clickeada en la tabla de consecuentes
+         * Limpia el formulario manteniendo la ubicación
+         */
+        _clearForm: function (oFormModel, sTplnr) {
+            oFormModel.setData({
+                Tplnr: sTplnr || "",
+                Equnr: "",
+                EntIndis: null,
+                EntDispo: null,
+                EntServicio: null,
+                CodMotivo: "",
+                CodCausa: "",
+                Observ: "",
+                Vinculadost: false,
+                GenIndisponibilidad: false,
+                Recierre: false,
+                IdNovedad: "",
+                Empresa: "",
+                editingIndex: -1
+            });
+        },
+
+        /**
+         * Obtiene el objeto de la fila clickeada en la tabla
          */
         _getRowData: function (oEvent) {
             var oCtx = oEvent.getSource().getBindingContext("ConsequentListJsonModel");
@@ -154,30 +192,31 @@ sap.ui.define([
         },
 
         /**
-         * Carga los datos de la fila seleccionada en el formulario superior (solo lectura)
+         * Carga los datos de la fila en el formulario (solo lectura)
          */
         onSee: function (oEvent) {
             var oRow = this._getRowData(oEvent);
             if (!oRow) { return; }
-            this._loadRowIntoForm(oRow.data);
-            this._editingIndex = null;
+            this._loadRowIntoForm(oRow.data, -1);
         },
 
         /**
-         * Carga los datos de la fila seleccionada en el formulario superior para edición
+         * Carga los datos de la fila en el formulario para edición (botón cambia a "Guardar")
          */
         onEditNove: function (oEvent) {
             var oRow = this._getRowData(oEvent);
             if (!oRow) { return; }
-            this._loadRowIntoForm(oRow.data);
-            this._editingIndex = parseInt(oRow.index, 10);
-            sap.m.MessageToast.show("Editando consecuente. Presione 'Agregar' para guardar los cambios.");
+            var iIndex = parseInt(oRow.index, 10);
+            this._loadRowIntoForm(oRow.data, iIndex);
+            sap.m.MessageToast.show("Editando consecuente. Presione 'Guardar' para confirmar los cambios.");
         },
 
         /**
-         * Carga datos de un consecuente existente en el formulario superior
+         * Carga datos de un consecuente en el formulario
+         * @param {Object} oData - datos del consecuente
+         * @param {number} iEditingIndex - índice en la lista (-1 = solo lectura / nuevo)
          */
-        _loadRowIntoForm: function (oData) {
+        _loadRowIntoForm: function (oData, iEditingIndex) {
             var oView = this.getView();
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
             oFormModel.setProperty("/Tplnr", oData.Tplnr || "");
@@ -187,8 +226,11 @@ sap.ui.define([
             oFormModel.setProperty("/CodMotivo", oData.CodMotivo || "");
             oFormModel.setProperty("/Vinculadost", oData.Vinculadost || oData.VinculadoSinTension || false);
             oFormModel.setProperty("/Observ", oData.Observ || oData.Comment || oData.Comentario || "");
+            oFormModel.setProperty("/IdNovedad", oData.IdNovedad || "");
+            oFormModel.setProperty("/Empresa", oData.Empresa || "");
+            oFormModel.setProperty("/editingIndex", iEditingIndex);
 
-            // Recargar causas para el motivo del consecuente y luego setear CodCausa
+            // Recargar causas para el motivo del consecuente
             var sCodMotivo = oData.CodMotivo || "";
             var sCodCausa = oData.CodCausa || "";
             if (sCodMotivo) {
@@ -199,110 +241,13 @@ sap.ui.define([
             }
             oFormModel.setProperty("/CodCausa", sCodCausa);
 
-            // Scroll al inicio de la página
+            // Scroll al inicio
             var oPage = this.byId("ConsecuentesPage");
             if (oPage) { oPage.scrollTo(0); }
         },
 
         /**
-         * Guarda todos los consecuentes de la lista al backend (POST nuevos, PUT existentes)
-         */
-        onSaveConsecuentes: function () {
-            var oView = this.getView();
-            var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
-            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
-            var oNovedad = oNovedadModel.getData();
-            var aConsecuentes = oListModel.getProperty("/Consequents") || [];
-            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
-
-            if (aConsecuentes.length === 0) {
-                sap.m.MessageBox.warning("No hay consecuentes para guardar.");
-                return;
-            }
-
-            if (!oNovedad.IdNovedad) {
-                sap.m.MessageBox.error("Guarde primero la novedad principal antes de guardar consecuentes.");
-                return;
-            }
-
-            sap.ui.core.BusyIndicator.show(0);
-
-            var aPromises = aConsecuentes.map(function (oItem) {
-                return ConsecuenteServices.saveConsecuente(oItem, oNovedad, sEmpresa);
-            });
-
-            Promise.allSettled(aPromises)
-                .then(function (aResults) {
-                    sap.ui.core.BusyIndicator.hide();
-                    var iOk = 0;
-                    var iFailed = 0;
-                    aResults.forEach(function (oResult, i) {
-                        if (oResult.status === "fulfilled" && oResult.value) {
-                            iOk++;
-                            // Actualizar IdNovedad y Empresa del item local con lo devuelto por el backend
-                            if (oResult.value.IdNovedad) {
-                                aConsecuentes[i].IdNovedad = oResult.value.IdNovedad;
-                            }
-                            if (oResult.value.Empresa) {
-                                aConsecuentes[i].Empresa = oResult.value.Empresa;
-                            }
-                        } else {
-                            iFailed++;
-                        }
-                    });
-
-                    oListModel.setProperty("/Consequents", aConsecuentes);
-                    oListModel.refresh(true);
-
-                    if (iFailed === 0) {
-                        sap.m.MessageToast.show("Consecuentes guardados exitosamente (" + iOk + ")");
-                    } else if (iOk > 0) {
-                        sap.m.MessageBox.warning("Se guardaron " + iOk + " consecuentes, pero " + iFailed + " fallaron.");
-                    } else {
-                        sap.m.MessageBox.error("Error al guardar los consecuentes.");
-                    }
-
-                    Logger.info("onSaveConsecuentes resultado", { ok: iOk, failed: iFailed });
-                });
-        },
-
-        /**
-         * Guarda un consecuente individual desde el botón de la fila
-         */
-        saveChanges: function (oEvent) {
-            var oRow = this._getRowData(oEvent);
-            if (!oRow) { return; }
-
-            var oView = this.getView();
-            var oNovedad = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
-            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
-            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
-
-            if (!oNovedad.IdNovedad) {
-                sap.m.MessageBox.error("Guarde primero la novedad principal.");
-                return;
-            }
-
-            sap.ui.core.BusyIndicator.show(0);
-            var iIndex = parseInt(oRow.index, 10);
-
-            ConsecuenteServices.saveConsecuente(oRow.data, oNovedad, sEmpresa)
-                .then(function (oResult) {
-                    sap.ui.core.BusyIndicator.hide();
-                    if (oResult && oResult.IdNovedad) {
-                        oListModel.setProperty("/Consequents/" + iIndex + "/IdNovedad", oResult.IdNovedad);
-                        oListModel.setProperty("/Consequents/" + iIndex + "/Empresa", oResult.Empresa);
-                    }
-                    sap.m.MessageToast.show("Consecuente guardado exitosamente");
-                })
-                .catch(function (oError) {
-                    sap.ui.core.BusyIndicator.hide();
-                    ErrorHandler.handleODataError(oError, "guardar consecuente");
-                });
-        },
-
-        /**
-         * Elimina el consecuente de la lista (y del backend si ya estaba persistido)
+         * Elimina el consecuente (del backend si ya estaba persistido, y de la lista local)
          */
         onDelete: function (oEvent) {
             var oRow = this._getRowData(oEvent);

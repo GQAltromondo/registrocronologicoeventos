@@ -61,7 +61,7 @@
                                 <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
                             </ComboBox>
 						</HBox>
-					
+
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Vinculado y sin tensíon"></Label>
 							<CheckBox selected="{ConsecuentesFormJsonModel>/Vinculadost}"/>
@@ -82,9 +82,12 @@
 						</VBox>
 					</VBox>
 				</VBox>
-				<HBox justifyContent="End" >
-					<Button text="Agregar" class="sapUiSmallMargin" press=".onAddConsecuente" type="Emphasized"/>
-					<Button text="Guardar Consecuentes" class="sapUiSmallMargin" press=".onSaveConsecuentes" type="Accept"/>
+				<HBox justifyContent="End">
+					<Button
+						text="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Guardar' : 'Agregar' }"
+						class="sapUiSmallMargin"
+						press=".onSaveConsecuente"
+						type="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Accept' : 'Emphasized' }"/>
 				</HBox>
 				<t:Table id="consecuentes" rows="{ path: 'ConsequentListJsonModel>/Consequents', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 					<t:Column width='200px'>
@@ -95,13 +98,13 @@
 					</t:Column>
 					<t:Column width='200px'>
 						<Label text="{i18n>fs}"/>
-						<t:template>	
+						<t:template>
 							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='200px'>
 						<Label text="{i18n>indisDesde}"/>
-						<t:template>				
+						<t:template>
 							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>EntIndis', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
 						</t:template>
 					</t:Column>
@@ -115,7 +118,7 @@
 						<Label text="{i18n>dispDesde}"/>
 						<t:template>
 							<DateTimePicker change="handleTableChanges" value="{ 'path': 'ConsequentListJsonModel>EntDispo', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
-							
+
 						</t:template>
 					</t:Column>
 					<t:Column width='250px'>
@@ -135,7 +138,6 @@
 						<t:template>
 							<HBox wrap="Wrap">
 								<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
-								<Button type="Transparent" press="saveChanges" enabled="{= !${utilsModel>/readOnlyMode}}" icon="sap-icon://save"/>
 								<Button type="Transparent" press="onEditNove" icon="sap-icon://edit"/>
 								<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 							</HBox>
