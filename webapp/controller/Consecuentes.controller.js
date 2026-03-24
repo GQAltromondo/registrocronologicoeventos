@@ -1,14 +1,14 @@
 sap.ui.define([
-      "transener/registrocronologicoeventos/controller/BaseController",
+    "transener/registrocronologicoeventos/controller/BaseController",
     "sap/ui/core/routing/History",
     "transener/registrocronologicoeventos/utils/ModelHelper",
     "transener/registrocronologicoeventos/utils/Constants",
     "transener/registrocronologicoeventos/services/EquiposService",
     "transener/registrocronologicoeventos/services/CausasService",
-    "transener/registrocronologicoeventos/services/oDataServices",
+    "transener/registrocronologicoeventos/services/ConsecuenteServices",
     "transener/registrocronologicoeventos/utils/Logger",
-    "transener/registrocronologicoeventos/utils/ErrorHandler",
-], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices, oDataServices, Logger, ErrorHandler) {
+    "transener/registrocronologicoeventos/utils/ErrorHandler"
+], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices, ConsecuenteServices, Logger, ErrorHandler) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Consecuentes", {
@@ -19,7 +19,7 @@ sap.ui.define([
         },
 
         /**
-         * Maneja el evento cuando se navega a la vista Programadas
+         * Maneja el evento cuando se navega a la vista Consecuentes
          * @param {sap.ui.base.Event} oEvent - Evento de navegación
          * @private
          */
@@ -34,7 +34,6 @@ sap.ui.define([
 
             if (oEditModel) {
                 oEditModel.setProperty("/mode", sMode);
-                // Si es modo "view", configurar readOnlyMode en utilsModel
                 if (sMode === Constants.EDIT_MODES.VIEW) {
                     oEditModel.setProperty("/editableMode", false);
                     if (oUtilsModel) {
@@ -47,15 +46,16 @@ sap.ui.define([
                     }
                 }
             }
-            this.getNSInfo()
-
+            this.getNSInfo();
         },
+
         getNSInfo: function () {
             var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
-            const oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData()
-            EquiposService.LoadEquipos(oNovedad.Tplnr, Empresa)
-            CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa)
+            const oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData();
+            EquiposService.LoadEquipos(oNovedad.Tplnr, Empresa);
+            CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa);
         },
+
         onMotivoChange: function () {
             var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
             const oConsecuentesModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
@@ -63,13 +63,15 @@ sap.ui.define([
             const oNovedad = oNovedadModel.getData();
             const sCodMotivo = oConsecuentesModel.getProperty("/CodMotivo");
             oConsecuentesModel.setProperty("/CodCausa", "");
-            CausasServices.loadModel(oNovedad.CodNovedad, sCodMotivo, Empresa)
+            CausasServices.loadModel(oNovedad.CodNovedad, sCodMotivo, Empresa);
         },
 
         onAddConsecuente: function () {
             var oView = this.getView();
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
             var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+            var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+            var oNovedad = oNovedadModel.getData();
             var oFormData = oFormModel.getData() || {};
 
             if (!oFormData.Equnr) {
@@ -83,23 +85,35 @@ sap.ui.define([
                 Equnr: oFormData.Equnr || "",
                 Tplnr: oFormData.Tplnr || "",
                 InicioNove: oFormData.EntIndis || null,
-                EntIndisp: oFormData.EntIndis || null,
+                EntIndis: oFormData.EntIndis || null,
                 FechaFinNove: null,
-                EntDisp: oFormData.EntDisp || null,
-                Comment: oFormData.Texto || "",
+                EntDispo: oFormData.EntDispo || oFormData.EntDisp || null,
+                EntServicio: oFormData.EntServicio || null,
+                Observ: oFormData.Observ || oFormData.Texto || "",
                 Comentario: oFormData.Comentario || "",
                 InformaCammesa: oFormData.InformaCammesa ? "S" : "N",
                 CodMotivo: oFormData.CodMotivo || "",
                 CodCausa: oFormData.CodCausa || "",
-                VinculadoSinTension: oFormData.VinculadoSinTension || false
+                VinculadoSinTension: oFormData.VinculadoSinTension || false,
+                Vinculadost: oFormData.Vinculadost || oFormData.VinculadoSinTension || false,
+                // Campos del padre necesarios para el POST
+                CodNovedad: oNovedad.CodNovedad || "",
+                CodTipo: oNovedad.CodTipo || "",
+                Subindice: oFormData.Subindice || "0",
+                GenIndisponibilidad: oFormData.GenIndisponibilidad || false,
+                Recierre: oFormData.Recierre || false
             };
 
             if (this._editingIndex != null && this._editingIndex >= 0 && this._editingIndex < aConsecuentes.length) {
-                // Actualizar consecuente existente
+                // Preservar IdNovedad y Empresa del item existente para que el save haga PUT
+                oNewItem.IdNovedad = aConsecuentes[this._editingIndex].IdNovedad || "";
+                oNewItem.Empresa = aConsecuentes[this._editingIndex].Empresa || "";
                 aConsecuentes[this._editingIndex] = oNewItem;
                 this._editingIndex = null;
             } else {
-                // Agregar nuevo consecuente
+                // Nuevo consecuente sin IdNovedad (se creará con POST)
+                oNewItem.IdNovedad = "";
+                oNewItem.Empresa = "";
                 aConsecuentes.push(oNewItem);
             }
             oListModel.setProperty("/Consequents", aConsecuentes);
@@ -111,13 +125,15 @@ sap.ui.define([
                 Tplnr: sTplnr,
                 Equnr: "",
                 EntIndis: null,
-                EntDisp: null,
+                EntDispo: null,
                 CodMotivo: "",
                 CodCausa: "",
                 Texto: "",
                 Comentario: "",
+                Observ: "",
                 InformaCammesa: false,
-                VinculadoSinTension: false
+                VinculadoSinTension: false,
+                Vinculadost: false
             });
 
             sap.m.MessageToast.show("Consecuente agregado a la lista");
@@ -189,7 +205,7 @@ sap.ui.define([
         },
 
         /**
-         * Elimina el consecuente de la lista
+         * Guarda todos los consecuentes de la lista al backend (POST nuevos, PUT existentes)
          */
         onSaveConsecuentes: function () {
             var oView = this.getView();
@@ -197,91 +213,97 @@ sap.ui.define([
             var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
             var oNovedad = oNovedadModel.getData();
             var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 
             if (aConsecuentes.length === 0) {
                 sap.m.MessageBox.warning("No hay consecuentes para guardar.");
                 return;
             }
 
-            // Validar que la novedad tenga metadata para hacer el PUT
-            var sUri = oNovedad.__metadata && (oNovedad.__metadata.uri || oNovedad.__metadata.id);
-            if (!sUri) {
-                sap.m.MessageBox.error("No se puede guardar: la novedad no tiene referencia al servidor. Guarde primero la novedad principal.");
+            if (!oNovedad.IdNovedad) {
+                sap.m.MessageBox.error("Guarde primero la novedad principal antes de guardar consecuentes.");
                 return;
             }
 
-            var oModel = oDataServices.getModel("");
-
-            // Construir path relativo
-            var sServiceUrl = (oModel.sServiceUrl || "").replace(/\/$/, "");
-            var oMetaUrl = new URL(sUri, window.location.origin);
-            var oServUrl = new URL(sServiceUrl, window.location.origin);
-            var sServPath = oServUrl.pathname.replace(/\/$/, "");
-            var sMetaPath = oMetaUrl.pathname;
-            var sPath;
-            if (sMetaPath.startsWith(sServPath + "/")) {
-                sPath = sMetaPath.substring(sServPath.length);
-            } else {
-                var m = sMetaPath.match(/\/NovedadesServicioSet\(.*\)$/);
-                sPath = m ? m[0] : sMetaPath;
-            }
-
-            // Armar payload: novedad con ConsecuentesSet
-            var oPayload = jQuery.extend(true, {}, oNovedad);
-            // Limpiar navigation properties que no son consecuentes
-            delete oPayload.InformeCammesaSet;
-            delete oPayload.ComentariosSet;
-            delete oPayload.ENSRegXNS_NAV;
-            delete oPayload.SenialXNS_nav;
-            delete oPayload.PruebasXNS_nav;
-
-            // Incluir los consecuentes actuales
-            oPayload.ConsecuentesSet = aConsecuentes.map(function (oItem) {
-                return {
-                    Empresa: oNovedad.Empresa || "",
-                    IdNovedad: oNovedad.IdNovedad || "",
-                    Equnr: oItem.Equnr || "",
-                    Tplnr: oItem.Tplnr || "",
-                    CodMotivo: oItem.CodMotivo || "",
-                    CodCausa: oItem.CodCausa || "",
-                    InicioNove: oItem.InicioNove || null,
-                    EntIndis: oItem.EntIndis || oItem.EntIndisp || null,
-                    EntDispo: oItem.EntDispo || oItem.EntDisp || null,
-                    EntServicio: oItem.EntServicio || null,
-                    Observ: oItem.Observ || oItem.Comment || oItem.Comentario || "",
-                    Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
-                    GenIndisponibilidad: oItem.GenIndisponibilidad || false,
-                    Recierre: oItem.Recierre || false,
-                    Consecuente: oItem.Consecuente || "",
-                    CodNovedad: oItem.CodNovedad || oNovedad.CodNovedad || "",
-                    CodTipo: oItem.CodTipo || oNovedad.CodTipo || "",
-                    Referencia: oItem.Referencia || "",
-                    CodWeather: oItem.CodWeather || "",
-                    CodDispAct: oItem.CodDispAct || "",
-                    CodAreaResp: oItem.CodAreaResp || "",
-                    Subindice: oItem.Subindice || "0",
-                    Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0
-                };
-            });
-
-            oPayload.Cantidadtorrescaidas = oPayload.Cantidadtorrescaidas || 0;
-            oPayload.Subindice = String(oPayload.Subindice);
-
             sap.ui.core.BusyIndicator.show(0);
-            oModel.update(sPath, oPayload, {
-                success: function () {
-                    sap.ui.core.BusyIndicator.hide();
-                    Logger.info("Consecuentes guardados exitosamente");
-                    sap.m.MessageToast.show("Consecuentes guardados exitosamente");
-                },
-                error: function (oError) {
-                    sap.ui.core.BusyIndicator.hide();
-                    Logger.error("Error al guardar consecuentes", oError);
-                    ErrorHandler.handleODataError(oError, "guardar consecuentes");
-                }
+
+            var aPromises = aConsecuentes.map(function (oItem) {
+                return ConsecuenteServices.saveConsecuente(oItem, oNovedad, sEmpresa);
             });
+
+            Promise.allSettled(aPromises)
+                .then(function (aResults) {
+                    sap.ui.core.BusyIndicator.hide();
+                    var iOk = 0;
+                    var iFailed = 0;
+                    aResults.forEach(function (oResult, i) {
+                        if (oResult.status === "fulfilled" && oResult.value) {
+                            iOk++;
+                            // Actualizar IdNovedad y Empresa del item local con lo devuelto por el backend
+                            if (oResult.value.IdNovedad) {
+                                aConsecuentes[i].IdNovedad = oResult.value.IdNovedad;
+                            }
+                            if (oResult.value.Empresa) {
+                                aConsecuentes[i].Empresa = oResult.value.Empresa;
+                            }
+                        } else {
+                            iFailed++;
+                        }
+                    });
+
+                    oListModel.setProperty("/Consequents", aConsecuentes);
+                    oListModel.refresh(true);
+
+                    if (iFailed === 0) {
+                        sap.m.MessageToast.show("Consecuentes guardados exitosamente (" + iOk + ")");
+                    } else if (iOk > 0) {
+                        sap.m.MessageBox.warning("Se guardaron " + iOk + " consecuentes, pero " + iFailed + " fallaron.");
+                    } else {
+                        sap.m.MessageBox.error("Error al guardar los consecuentes.");
+                    }
+
+                    Logger.info("onSaveConsecuentes resultado", { ok: iOk, failed: iFailed });
+                });
         },
 
+        /**
+         * Guarda un consecuente individual desde el botón de la fila
+         */
+        saveChanges: function (oEvent) {
+            var oRow = this._getRowData(oEvent);
+            if (!oRow) { return; }
+
+            var oView = this.getView();
+            var oNovedad = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+
+            if (!oNovedad.IdNovedad) {
+                sap.m.MessageBox.error("Guarde primero la novedad principal.");
+                return;
+            }
+
+            sap.ui.core.BusyIndicator.show(0);
+            var iIndex = parseInt(oRow.index, 10);
+
+            ConsecuenteServices.saveConsecuente(oRow.data, oNovedad, sEmpresa)
+                .then(function (oResult) {
+                    sap.ui.core.BusyIndicator.hide();
+                    if (oResult && oResult.IdNovedad) {
+                        oListModel.setProperty("/Consequents/" + iIndex + "/IdNovedad", oResult.IdNovedad);
+                        oListModel.setProperty("/Consequents/" + iIndex + "/Empresa", oResult.Empresa);
+                    }
+                    sap.m.MessageToast.show("Consecuente guardado exitosamente");
+                })
+                .catch(function (oError) {
+                    sap.ui.core.BusyIndicator.hide();
+                    ErrorHandler.handleODataError(oError, "guardar consecuente");
+                });
+        },
+
+        /**
+         * Elimina el consecuente de la lista (y del backend si ya estaba persistido)
+         */
         onDelete: function (oEvent) {
             var oRow = this._getRowData(oEvent);
             if (!oRow) { return; }
@@ -289,14 +311,33 @@ sap.ui.define([
             var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
             var aConsecuentes = oListModel.getProperty("/Consequents") || [];
             var iIndex = parseInt(oRow.index, 10);
+            var oItem = aConsecuentes[iIndex];
 
             sap.m.MessageBox.confirm("¿Desea eliminar este consecuente?", {
                 onClose: function (sAction) {
                     if (sAction === sap.m.MessageBox.Action.OK) {
-                        aConsecuentes.splice(iIndex, 1);
-                        oListModel.setProperty("/Consequents", aConsecuentes);
-                        oListModel.refresh(true);
-                        sap.m.MessageToast.show("Consecuente eliminado");
+                        var fnRemoveLocal = function () {
+                            aConsecuentes.splice(iIndex, 1);
+                            oListModel.setProperty("/Consequents", aConsecuentes);
+                            oListModel.refresh(true);
+                            sap.m.MessageToast.show("Consecuente eliminado");
+                        };
+
+                        if (oItem.IdNovedad) {
+                            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+                            sap.ui.core.BusyIndicator.show(0);
+                            ConsecuenteServices.deleteConsecuente(oItem.IdNovedad, sEmpresa)
+                                .then(function () {
+                                    sap.ui.core.BusyIndicator.hide();
+                                    fnRemoveLocal();
+                                })
+                                .catch(function (oError) {
+                                    sap.ui.core.BusyIndicator.hide();
+                                    ErrorHandler.handleODataError(oError, "eliminar consecuente");
+                                });
+                        } else {
+                            fnRemoveLocal();
+                        }
                     }
                 }
             });

@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xxd \"c:/Users/Guillote/Desktop/ALTROMONDO/registrocronologicoeventos/webapp/view/Consecuentes.view.xml\")"
+      "Bash(xxd \"c:/Users/Guillote/Desktop/ALTROMONDO/registrocronologicoeventos/webapp/view/Consecuentes.view.xml\")",
+      "Bash(grep -rn \"ConsecuentesFormJsonModel\\\\|ConsequentListJsonModel\" c:UsersGuilloteDesktopALTROMONDOregistrocronologicoeventos/webapp --include=*.xml --include=*.json)"
     ]
   }
 }
