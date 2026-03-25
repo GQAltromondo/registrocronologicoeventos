@@ -57,6 +57,22 @@ sap.ui.define([
             CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa);
         },
 
+        onUbicacionChange: function (evt) {
+            var oView = this.getView();
+            var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
+            oFormModel.setProperty("/Equnr", "");
+            var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+            var oSelectedItem = evt.getParameter("selectedItem");
+
+            if (oSelectedItem) {
+                var sKey = oSelectedItem.getKey();
+                ModelHelper.getModel("EquiposModel", oView).setProperty("/busy", true);
+                EquiposService.LoadLTEquipos(sKey, Empresa);
+            } else {
+                sap.m.MessageToast.show("No se seleccionó ninguna ubicación.");
+            }
+        },
+
         onMotivoChange: function () {
             var Empresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
             const oConsecuentesModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
