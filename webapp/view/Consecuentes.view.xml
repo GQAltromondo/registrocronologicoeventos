@@ -140,7 +140,7 @@
 					<t:Column>
 						<Label text="{i18n>infCammesa}"/>
 						<t:template>
-							<Text text="{ConsequentListJsonModel>InformaCammesa}"/>
+							<Text text="{= ${ConsequentListJsonModel>InformaCammesa} ? 'Si' : 'No' }"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="180px">
