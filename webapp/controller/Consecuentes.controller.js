@@ -241,11 +241,18 @@ sap.ui.define([
                 editingIndex: iEditingIndex
             });
 
+            var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+
+            // Recargar equipos para la estación del consecuente
+            var sTplnr = oData.Tplnr || "";
+            if (sTplnr) {
+                EquiposService.LoadLTEquipos(sTplnr, Empresa);
+            }
+
             // Recargar causas para el motivo del consecuente
             var sCodMotivo = oData.CodMotivo || "";
             var sCodCausa = oData.CodCausa || "";
             if (sCodMotivo) {
-                var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
                 var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel");
                 var sCodNovedad = oNovedadModel.getProperty("/CodNovedad");
                 CausasServices.loadModel(sCodNovedad, sCodMotivo, Empresa);
