@@ -12,7 +12,7 @@
 					<HBox class="container">
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="Ubicacion"></Label>
-							<ComboBox selectionChange=".onUbicacionChange" selectedKey="{ConsecuentesFormJsonModel/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
+							<ComboBox selectionChange=".onUbicacionChange" selectedKey="{ConsecuentesFormJsonModel>/Tplnr}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" class="sapUiSmallMarginEnd">
 								<core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Descripcion}" additionalText="{Estaciones>Codigo}" />
 							</ComboBox>
 						</HBox>
