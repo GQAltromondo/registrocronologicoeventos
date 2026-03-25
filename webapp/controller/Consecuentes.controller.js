@@ -220,15 +220,21 @@ sap.ui.define([
             var oView = this.getView();
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
 
-            // Reemplazar todo el modelo de una vez para evitar datos residuales
+            var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
+            var sEqunr = oData.Equnr || "";
+            var sTplnr = oData.Tplnr || "";
+            var sCodMotivo = oData.CodMotivo || "";
+            var sCodCausa = oData.CodCausa || "";
+
+            // Reemplazar todo el modelo sin Equnr (se setea después de cargar equipos)
             oFormModel.setData({
-                Tplnr: oData.Tplnr || "",
-                Equnr: oData.Equnr || "",
+                Tplnr: sTplnr,
+                Equnr: "",
                 InicioNove: oData.InicioNove || null,
                 EntIndis: oData.EntIndis || null,
                 EntDispo: oData.EntDispo || oData.EntDisp || null,
                 EntServicio: oData.EntServicio || null,
-                CodMotivo: oData.CodMotivo || "",
+                CodMotivo: sCodMotivo,
                 CodCausa: "",
                 Vinculadost: oData.Vinculadost || oData.VinculadoSinTension || false,
                 Observ: oData.Observ || oData.Comment || oData.Comentario || "",
@@ -241,23 +247,21 @@ sap.ui.define([
                 editingIndex: iEditingIndex
             });
 
-            var Empresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
-
-            // Recargar equipos para la estación del consecuente
-            var sTplnr = oData.Tplnr || "";
+            // Cargar equipos para la estación y después setear el equipo seleccionado
             if (sTplnr) {
-                EquiposService.LoadLTEquipos(sTplnr, Empresa);
+                EquiposService.LoadLTEquipos(sTplnr, Empresa).then(function () {
+                    oFormModel.setProperty("/Equnr", sEqunr);
+                });
             }
 
-            // Recargar causas para el motivo del consecuente
-            var sCodMotivo = oData.CodMotivo || "";
-            var sCodCausa = oData.CodCausa || "";
+            // Recargar causas para el motivo y después setear la causa
             if (sCodMotivo) {
                 var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel");
                 var sCodNovedad = oNovedadModel.getProperty("/CodNovedad");
-                CausasServices.loadModel(sCodNovedad, sCodMotivo, Empresa);
+                CausasServices.loadModel(sCodNovedad, sCodMotivo, Empresa).then(function () {
+                    oFormModel.setProperty("/CodCausa", sCodCausa);
+                });
             }
-            oFormModel.setProperty("/CodCausa", sCodCausa);
 
             // Scroll al inicio
             var oPage = this.byId("ConsecuentesPage");

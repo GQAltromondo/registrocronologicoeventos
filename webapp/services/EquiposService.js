@@ -74,7 +74,7 @@ sap.ui.define([
 
 
 
-			this.getEquiposPromise(aFilter)
+			return this.getEquiposPromise(aFilter)
 				.then((data) => this.successGetEquipos(data))
 				.catch((error) => this.errorGetEquipos(error));
 		},

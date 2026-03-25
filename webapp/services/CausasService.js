@@ -100,7 +100,7 @@ sap.ui.define([
 		},
 
 		loadModel: function (codNovedad, codMotivo, empresa) {
-			//busy
+			var that = this;
 			var filters = [];
 			filters.push(new sap.ui.model.Filter({
 				path: "TipoNovedad",
@@ -120,13 +120,20 @@ sap.ui.define([
 			var model = this._getCausas();
 			model.setProperty("/Busy", true);
 			model.setProperty("/Causas", []);
-			//gets master Firmantes
 			var odataModel = oDataService.getModel("");
 			odataModel.setUseBatch(false);
-			odataModel.read(this._entitySet, {
-				filters: filters,
-				success: jQuery.proxy(this._readODataOnSuccess, this),
-				error: jQuery.proxy(this._readODataOnError, this)
+			return new Promise(function (resolve, reject) {
+				odataModel.read(that._entitySet, {
+					filters: filters,
+					success: function (data) {
+						that._readODataOnSuccess(data);
+						resolve(data);
+					},
+					error: function (error) {
+						that._readODataOnError(error);
+						reject(error);
+					}
+				});
 			});
 		}
 
