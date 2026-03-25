@@ -36,7 +36,10 @@ sap.ui.define([
 				Recierre: oItem.Recierre || false,
 				Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
 				Subindice: String(oItem.Subindice || "0"),
-				Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0
+				Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0,
+				InformaCammesa: oItem.InformaCammesa ? "S" : "N",
+				FechaHora: oItem.FechaHora || null,
+				Texto: oItem.Texto || ""
 			};
 
 			// Normalizar fechas: quitar segundos y milisegundos

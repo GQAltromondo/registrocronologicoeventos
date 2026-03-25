@@ -94,6 +94,8 @@ sap.ui.define([
             var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
             var oNovedad = oNovedadModel.getData();
             var oFormData = oFormModel.getData() || {};
+            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
+            var oCammesaData = oCammesaModel.getData() || {};
             var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 
             // Validar equipo
@@ -108,7 +110,7 @@ sap.ui.define([
                 return;
             }
 
-            // Armar el item con los datos del formulario
+            // Armar el item con los datos del formulario + datos de Cammesa
             var oItem = {
                 IdNovedad: oFormData.IdNovedad || "",
                 Empresa: oFormData.Empresa || "",
@@ -127,7 +129,10 @@ sap.ui.define([
                 GenIndisponibilidad: oFormData.GenIndisponibilidad || false,
                 Recierre: oFormData.Recierre || false,
                 Subindice: oFormData.Subindice || "0",
-                Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0
+                Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0,
+                InformaCammesa: oCammesaData.InformaCammesa || false,
+                FechaHora: oCammesaData.FechaHora || null,
+                Texto: oCammesaData.Texto || ""
             };
 
             var iEditingIndex = oFormData.editingIndex;
@@ -159,7 +164,7 @@ sap.ui.define([
                     oListModel.setProperty("/Consequents", aConsecuentes);
                     oListModel.refresh(true);
 
-                    // Limpiar formulario
+                    // Limpiar formulario y Cammesa
                     that._clearForm(oFormModel, oFormData.Tplnr);
 
                     sap.m.MessageToast.show(bIsEdit ? "Consecuente actualizado exitosamente" : "Consecuente creado exitosamente");
@@ -191,6 +196,15 @@ sap.ui.define([
                 Empresa: "",
                 editingIndex: -1
             });
+            // Limpiar datos de Cammesa
+            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", this.getView());
+            if (oCammesaModel) {
+                oCammesaModel.setData({
+                    InformaCammesa: false,
+                    FechaHora: null,
+                    Texto: ""
+                });
+            }
         },
 
         /**
@@ -278,6 +292,26 @@ sap.ui.define([
                     oFormModel.setProperty("/CodCausa", sCodCausa);
                 });
             }
+
+            // Cargar datos de Cammesa de la fila
+            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
+            var oCammesaData = {};
+            // Los datos pueden venir del InformeCammesaSet expandido o como propiedades planas
+            if (oData.InformeCammesaSet && oData.InformeCammesaSet.results && oData.InformeCammesaSet.results.length > 0) {
+                var oCammesaRow = oData.InformeCammesaSet.results[0];
+                oCammesaData = {
+                    InformaCammesa: oCammesaRow.InformaCammesa === "S" ? true : oCammesaRow.InformaCammesa === true ? true : false,
+                    FechaHora: oCammesaRow.FechaHora || null,
+                    Texto: oCammesaRow.Texto || ""
+                };
+            } else {
+                oCammesaData = {
+                    InformaCammesa: oData.InformaCammesa || false,
+                    FechaHora: oData.FechaHora || null,
+                    Texto: oData.Texto || ""
+                };
+            }
+            oCammesaModel.setData(oCammesaData);
 
             // Scroll al inicio
             var oPage = this.byId("ConsecuentesPage");

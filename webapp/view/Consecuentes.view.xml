@@ -18,7 +18,7 @@
 						</HBox>
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="Referencia" />
-							<Input value="{NovedadesFormJsonModel>/IdNovedad}" editable="false"/>
+							<Input value="{ConsecuentesFormJsonModel>/IdNovedad}" editable="false"/>
 						</HBox>
 					</HBox>
 					<HBox justifyContent="SpaceBetween">
