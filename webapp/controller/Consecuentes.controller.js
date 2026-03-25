@@ -6,9 +6,10 @@ sap.ui.define([
     "transener/registrocronologicoeventos/services/EquiposService",
     "transener/registrocronologicoeventos/services/CausasService",
     "transener/registrocronologicoeventos/services/ConsecuenteServices",
+    "transener/registrocronologicoeventos/services/CammesaService",
     "transener/registrocronologicoeventos/utils/Logger",
     "transener/registrocronologicoeventos/utils/ErrorHandler"
-], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices, ConsecuenteServices, Logger, ErrorHandler) {
+], function (BaseController, History, ModelHelper, Constants, EquiposService, CausasServices, ConsecuenteServices, CammesaService, Logger, ErrorHandler) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Consecuentes", {
@@ -110,7 +111,7 @@ sap.ui.define([
                 return;
             }
 
-            // Armar el item con los datos del formulario + datos de Cammesa
+            // Armar el item del consecuente (sin datos de Cammesa, van en llamada separada)
             var oItem = {
                 IdNovedad: oFormData.IdNovedad || "",
                 Empresa: oFormData.Empresa || "",
@@ -129,10 +130,15 @@ sap.ui.define([
                 GenIndisponibilidad: oFormData.GenIndisponibilidad || false,
                 Recierre: oFormData.Recierre || false,
                 Subindice: oFormData.Subindice || "0",
-                Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0,
+                Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0
+            };
+
+            // Datos de Cammesa para la llamada separada
+            var oInformeCammesa = {
                 InformaCammesa: oCammesaData.InformaCammesa || false,
                 FechaHora: oCammesaData.FechaHora || null,
-                Texto: oCammesaData.Texto || ""
+                Texto: oCammesaData.Texto || "",
+                Autoriza: oCammesaData.Autoriza || false
             };
 
             var iEditingIndex = oFormData.editingIndex;
@@ -143,13 +149,23 @@ sap.ui.define([
 
             ConsecuenteServices.saveConsecuente(oItem, oNovedad, sEmpresa)
                 .then(function (oResult) {
+                    // Obtener el IdNovedad del consecuente creado/actualizado
+                    var sConsecuenteId = (oResult && oResult.IdNovedad) ? oResult.IdNovedad : oItem.IdNovedad;
+
+                    // POST de InformeCammesa con el Id del consecuente
+                    return CammesaService.postCammesa(oInformeCammesa, sConsecuenteId, sEmpresa)
+                        .then(function () {
+                            return oResult;
+                        });
+                })
+                .then(function (oResult) {
                     sap.ui.core.BusyIndicator.hide();
 
                     // Actualizar la lista local
                     var aConsecuentes = oListModel.getProperty("/Consequents") || [];
 
-                    // Armar el item para la lista con los datos devueltos
-                    var oSavedItem = jQuery.extend({}, oItem);
+                    // Armar el item para la lista con datos del consecuente + cammesa
+                    var oSavedItem = jQuery.extend({}, oItem, oInformeCammesa);
                     if (oResult && oResult.IdNovedad) {
                         oSavedItem.IdNovedad = oResult.IdNovedad;
                         oSavedItem.Empresa = oResult.Empresa || sEmpresa;
