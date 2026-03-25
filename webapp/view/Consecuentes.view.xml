@@ -147,7 +147,7 @@
 						<Label />
 						<t:template>
 							<HBox wrap="Wrap">
-								<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
+								<!-- <Button type="Transparent" press="onSee" icon="sap-icon://show"/> -->
 								<Button type="Transparent" press="onEditNove" icon="sap-icon://edit"/>
 								<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
 							</HBox>

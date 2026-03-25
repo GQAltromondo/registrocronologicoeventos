@@ -5453,6 +5453,9 @@ sap.ui.define([
 			ModelHelper.getModel("SignalsListJsonModel", this.getView()).setData({
 				Signals: oSelectedNovedad.SenialXNS_nav.results
 			});
+
+			// Mapear SenialXNS_nav a NovedadesProtecciones
+			this._mapSignalsToProtecciones(oSelectedNovedad.SenialXNS_nav.results);
 			ModelHelper.getModel("ENSListJsonModel", this.getView()).setData({
 				ENSRegisters: oSelectedNovedad.ENSRegXNS_NAV.results
 			});
@@ -5467,6 +5470,73 @@ sap.ui.define([
 			this.addConsecuente = true;
 
 
+		},
+
+		/**
+		 * Mapea los registros de SenialXNS_nav (Senializaciones) al modelo NovedadesProtecciones.
+		 * Cada registro OData se convierte en un item de la tabla Protecciones.
+		 */
+		_mapSignalsToProtecciones: function (aSignals) {
+			var oView = this.getView();
+			var oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
+			var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "100";
+			var bIsTBA = sEmpresa === "300";
+
+			var aProtecciones = [];
+
+			aSignals.forEach(function (oSignal) {
+				var aProtNames = [];
+				var aExcNames = [];
+
+				if (bIsTBA) {
+					// Protecciones TBA (empresa 300)
+					if (oSignal.Pitr) aProtNames.push("T0");
+					if (oSignal.Pit1) aProtNames.push("T1");
+					if (oSignal.Li) aProtNames.push("LI");
+					if (oSignal.Plus) aProtNames.push("U>");
+					if (oSignal.Less) aProtNames.push("U");
+					if (oSignal.Pili) aProtNames.push("PZ");
+					if (oSignal.Pito) aProtNames.push("PD");
+					if (oSignal.Rrpi) aProtNames.push("RRPI");
+					if (oSignal.Bz) aProtNames.push("BZ");
+					// Excitaciones TBA
+					if (oSignal.Fn) aExcNames.push("FN");
+					if (oSignal.Fr) aExcNames.push("FR");
+					if (oSignal.Fs) aExcNames.push("FS");
+					if (oSignal.Ft) aExcNames.push("FT");
+					if (oSignal.Tx) aExcNames.push("TX");
+					if (oSignal.Rx) aExcNames.push("RX");
+					if (oSignal.T2) aExcNames.push("T2");
+					if (oSignal.Ts2) aExcNames.push("TS2");
+				} else {
+					// Protecciones Transener (empresa 100)
+					if (oSignal.Pitr) aProtNames.push("Diferencial");
+					if (oSignal.Pito) aProtNames.push("DPO");
+					if (oSignal.Pit1) aProtNames.push("Impedancia");
+					if (oSignal.Pili) aProtNames.push("Máxima Corriente");
+					if (oSignal.Plus) aProtNames.push("PFI");
+					if (oSignal.Less) aProtNames.push("U>");
+					// Excitaciones Transener
+					if (oSignal.Fr) aExcNames.push("R");
+					if (oSignal.Fs) aExcNames.push("S");
+					if (oSignal.Ft) aExcNames.push("T");
+					if (oSignal.Fn) aExcNames.push("Tierra");
+				}
+
+				aProtecciones.push({
+					ET: oSignal.Et || "",
+					LocFalla: oSignal.Texto || "",
+					Km: oSignal.Km || "",
+					ProteccionActuante: aProtNames.join(", "),
+					Exitacion: aExcNames.join(", "),
+					_signalData: oSignal
+				});
+			});
+
+			if (!oProteccionesModel.getData()) {
+				oProteccionesModel.setData({});
+			}
+			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
 		},
 
 		_getFragmentByNovedad: function (oNovedad) {
