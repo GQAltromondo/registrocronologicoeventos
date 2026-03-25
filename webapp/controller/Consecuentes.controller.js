@@ -300,7 +300,7 @@ sap.ui.define([
             if (oData.InformeCammesaSet && oData.InformeCammesaSet.results && oData.InformeCammesaSet.results.length > 0) {
                 var oCammesaRow = oData.InformeCammesaSet.results[0];
                 oCammesaData = {
-                    InformaCammesa: oCammesaRow.InformaCammesa === "S" ? true : oCammesaRow.InformaCammesa === true ? true : false,
+                    InformaCammesa: oCammesaRow.InformaCammesa === "X" || oCammesaRow.InformaCammesa === "S" || oCammesaRow.InformaCammesa === true,
                     FechaHora: oCammesaRow.FechaHora || null,
                     Texto: oCammesaRow.Texto || ""
                 };

@@ -37,7 +37,7 @@ sap.ui.define([
 				Vinculadost: oItem.Vinculadost || oItem.VinculadoSinTension || false,
 				Subindice: String(oItem.Subindice || "0"),
 				Cantidadtorrescaidas: oItem.Cantidadtorrescaidas || 0,
-				InformaCammesa: oItem.InformaCammesa ? "S" : "N",
+				InformaCammesa: oItem.InformaCammesa ? "X" : "",
 				FechaHora: oItem.FechaHora || null,
 				Texto: oItem.Texto || ""
 			};
