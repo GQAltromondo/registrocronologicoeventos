@@ -5485,52 +5485,84 @@ sap.ui.define([
 			var aProtecciones = [];
 
 			aSignals.forEach(function (oSignal) {
-				var aProtNames = [];
-				var aExcNames = [];
+				// --- Extremo 1 (Et, campos sin sufijo) ---
+				var aProtNames1 = [];
+				var aExcNames1 = [];
 
 				if (bIsTBA) {
-					// Protecciones TBA (empresa 300)
-					if (oSignal.Pitr) aProtNames.push("T0");
-					if (oSignal.Pit1) aProtNames.push("T1");
-					if (oSignal.Li) aProtNames.push("LI");
-					if (oSignal.Plus) aProtNames.push("U>");
-					if (oSignal.Less) aProtNames.push("U");
-					if (oSignal.Pili) aProtNames.push("PZ");
-					if (oSignal.Pito) aProtNames.push("PD");
-					if (oSignal.Rrpi) aProtNames.push("RRPI");
-					if (oSignal.Bz) aProtNames.push("BZ");
-					// Excitaciones TBA
-					if (oSignal.Fn) aExcNames.push("FN");
-					if (oSignal.Fr) aExcNames.push("FR");
-					if (oSignal.Fs) aExcNames.push("FS");
-					if (oSignal.Ft) aExcNames.push("FT");
-					if (oSignal.Tx) aExcNames.push("TX");
-					if (oSignal.Rx) aExcNames.push("RX");
-					if (oSignal.T2) aExcNames.push("T2");
-					if (oSignal.Ts2) aExcNames.push("TS2");
+					if (oSignal.Pitr) aProtNames1.push("T0");
+					if (oSignal.Pit1) aProtNames1.push("T1");
+					if (oSignal.Li) aProtNames1.push("LI");
+					if (oSignal.Plus) aProtNames1.push("U>");
+					if (oSignal.Less) aProtNames1.push("U");
+					if (oSignal.Pili) aProtNames1.push("PZ");
+					if (oSignal.Pito) aProtNames1.push("PD");
+					if (oSignal.Rrpi) aProtNames1.push("RRPI");
+					if (oSignal.Bz) aProtNames1.push("BZ");
+					if (oSignal.Fn) aExcNames1.push("FN");
+					if (oSignal.Fr) aExcNames1.push("FR");
+					if (oSignal.Fs) aExcNames1.push("FS");
+					if (oSignal.Ft) aExcNames1.push("FT");
+					if (oSignal.Tx) aExcNames1.push("TX");
+					if (oSignal.Rx) aExcNames1.push("RX");
+					if (oSignal.T2) aExcNames1.push("T2");
+					if (oSignal.Ts2) aExcNames1.push("TS2");
 				} else {
-					// Protecciones Transener (empresa 100)
-					if (oSignal.Pitr) aProtNames.push("Diferencial");
-					if (oSignal.Pito) aProtNames.push("DPO");
-					if (oSignal.Pit1) aProtNames.push("Impedancia");
-					if (oSignal.Pili) aProtNames.push("Máxima Corriente");
-					if (oSignal.Plus) aProtNames.push("PFI");
-					if (oSignal.Less) aProtNames.push("U>");
-					// Excitaciones Transener
-					if (oSignal.Fr) aExcNames.push("R");
-					if (oSignal.Fs) aExcNames.push("S");
-					if (oSignal.Ft) aExcNames.push("T");
-					if (oSignal.Fn) aExcNames.push("Tierra");
+					if (oSignal.Pitr) aProtNames1.push("Diferencial");
+					if (oSignal.Pito) aProtNames1.push("DPO");
+					if (oSignal.Pit1) aProtNames1.push("Impedancia");
+					if (oSignal.Pili) aProtNames1.push("Máxima Corriente");
+					if (oSignal.Plus) aProtNames1.push("PFI");
+					if (oSignal.Less) aProtNames1.push("U>");
+					if (oSignal.Fr) aExcNames1.push("R");
+					if (oSignal.Fs) aExcNames1.push("S");
+					if (oSignal.Ft) aExcNames1.push("T");
+					if (oSignal.Fn) aExcNames1.push("Tierra");
 				}
 
-				aProtecciones.push({
-					ET: oSignal.Et || "",
-					LocFalla: oSignal.Texto || "",
-					Km: oSignal.Km || "",
-					ProteccionActuante: aProtNames.join(", "),
-					Exitacion: aExcNames.join(", "),
-					_signalData: oSignal
-				});
+				if (oSignal.Et) {
+					aProtecciones.push({
+						ET: oSignal.Et,
+						LocFalla: oSignal.Texto || "",
+						Km: oSignal.Km || "",
+						ProteccionActuante: aProtNames1.join(", "),
+						Exitacion: aExcNames1.join(", "),
+						_signalData: oSignal
+					});
+				}
+
+				// --- Extremo 2 (Et2, campos con sufijo 2) ---
+				var aProtNames2 = [];
+				var aExcNames2 = [];
+
+				if (bIsTBA) {
+					if (oSignal.Li2) aProtNames2.push("LI");
+					if (oSignal.Rr2) aProtNames2.push("RRPI");
+					if (oSignal.Fn2) aExcNames2.push("FN");
+					if (oSignal.Fr2) aExcNames2.push("FR");
+					if (oSignal.Fs2) aExcNames2.push("FS");
+					if (oSignal.Ft2) aExcNames2.push("FT");
+					if (oSignal.Tx2) aExcNames2.push("TX");
+					if (oSignal.Rx2) aExcNames2.push("RX");
+					if (oSignal.T22) aExcNames2.push("T2");
+					if (oSignal.Ts22) aExcNames2.push("TS2");
+				} else {
+					if (oSignal.Fr2) aExcNames2.push("R");
+					if (oSignal.Fs2) aExcNames2.push("S");
+					if (oSignal.Ft2) aExcNames2.push("T");
+					if (oSignal.Fn2) aExcNames2.push("Tierra");
+				}
+
+				if (oSignal.Et2) {
+					aProtecciones.push({
+						ET: oSignal.Et2,
+						LocFalla: oSignal.Texto || "",
+						Km: oSignal.Km2 || "",
+						ProteccionActuante: aProtNames2.join(", "),
+						Exitacion: aExcNames2.join(", "),
+						_signalData: oSignal
+					});
+				}
 			});
 
 			if (!oProteccionesModel.getData()) {
