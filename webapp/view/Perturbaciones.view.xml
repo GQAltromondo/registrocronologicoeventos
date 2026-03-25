@@ -59,7 +59,7 @@
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" visible="{= ${Empresa>/selectedSociety} === '100' }">
                         <VBox class="paddingSM" width="20%">
                             <Label text="ET" showColon="true" />
-                            <ComboBox selectedKey="{NovedadesProtecciones>/Et1}" valueState="{NovedadesProtecciones>/Et1State}" valueStateText="{NovedadesProtecciones>/Et1StateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
+                            <ComboBox selectedKey="{NovedadesProtecciones>/Et}" valueState="{NovedadesProtecciones>/Et1State}" valueStateText="{NovedadesProtecciones>/Et1StateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
                                 <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
                             </ComboBox>
                         </VBox>
@@ -67,7 +67,7 @@
                             <Label text="Protección Actuante" showColon="true" />
                             <VBox class="border_ctn_3">
                                 <HBox>
-                                    <CheckBox text="Diferencial" selected="{NovedadesProtecciones>/Diferencial1}"/>
+                                    <CheckBox text="Diferencial" selected="{NovedadesProtecciones>/Fn}"/>
                                     <CheckBox text="DPO" selected="{NovedadesProtecciones>/DPO1}"/>
                                     <CheckBox text="Impedancia" selected="{NovedadesProtecciones>/Impedancia1}"/>
                                 </HBox>
