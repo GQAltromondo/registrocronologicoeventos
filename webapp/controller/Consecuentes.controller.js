@@ -219,20 +219,27 @@ sap.ui.define([
         _loadRowIntoForm: function (oData, iEditingIndex) {
             var oView = this.getView();
             var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", oView);
-            oFormModel.setProperty("/Tplnr", oData.Tplnr || "");
-            oFormModel.setProperty("/Equnr", oData.Equnr || "");
-            oFormModel.setProperty("/InicioNove", oData.InicioNove || null);
-            oFormModel.setProperty("/EntIndis", oData.EntIndis || null);
-            oFormModel.setProperty("/EntDispo", oData.EntDispo || oData.EntDisp || null);
-            oFormModel.setProperty("/EntServicio", oData.EntServicio || null);
-            oFormModel.setProperty("/CodMotivo", oData.CodMotivo || "");
-            oFormModel.setProperty("/Vinculadost", oData.Vinculadost || oData.VinculadoSinTension || false);
-            oFormModel.setProperty("/Observ", oData.Observ || oData.Comment || oData.Comentario || "");
-            oFormModel.setProperty("/GenIndisponibilidad", oData.GenIndisponibilidad || false);
-            oFormModel.setProperty("/Recierre", oData.Recierre || false);
-            oFormModel.setProperty("/IdNovedad", oData.IdNovedad || "");
-            oFormModel.setProperty("/Empresa", oData.Empresa || "");
-            oFormModel.setProperty("/editingIndex", iEditingIndex);
+
+            // Reemplazar todo el modelo de una vez para evitar datos residuales
+            oFormModel.setData({
+                Tplnr: oData.Tplnr || "",
+                Equnr: oData.Equnr || "",
+                InicioNove: oData.InicioNove || null,
+                EntIndis: oData.EntIndis || null,
+                EntDispo: oData.EntDispo || oData.EntDisp || null,
+                EntServicio: oData.EntServicio || null,
+                CodMotivo: oData.CodMotivo || "",
+                CodCausa: "",
+                Vinculadost: oData.Vinculadost || oData.VinculadoSinTension || false,
+                Observ: oData.Observ || oData.Comment || oData.Comentario || "",
+                GenIndisponibilidad: oData.GenIndisponibilidad || false,
+                Recierre: oData.Recierre || false,
+                IdNovedad: oData.IdNovedad || "",
+                Empresa: oData.Empresa || "",
+                Subindice: oData.Subindice || "0",
+                Cantidadtorrescaidas: oData.Cantidadtorrescaidas || 0,
+                editingIndex: iEditingIndex
+            });
 
             // Recargar causas para el motivo del consecuente
             var sCodMotivo = oData.CodMotivo || "";
