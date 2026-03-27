@@ -999,11 +999,17 @@ sap.ui.define([
 		},
 		navToConsecuentes: function () {
 			try {
+				var oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData();
+				var sEmpresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
 				this.getRouter().navTo(
 					"Consecuentes",
-					{ mode: Constants.EDIT_MODES.EDIT }
+					{
+						mode: Constants.EDIT_MODES.EDIT,
+						idNovedad: oNovedad.IdNovedad || "new",
+						empresa: sEmpresa
+					}
 				);
-				Logger.debug("Navegando a Consecuentes en modo edit");
+				Logger.debug("Navegando a Consecuentes", { idNovedad: oNovedad.IdNovedad, empresa: sEmpresa });
 			} catch (oError) {
 				Logger.error("Error al navegar a Consecuentes", oError);
 				ErrorHandler.handleError(oError, "navegar a Consecuentes", true);

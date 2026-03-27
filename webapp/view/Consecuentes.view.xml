@@ -24,13 +24,13 @@
 					<HBox justifyContent="SpaceBetween">
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="Equipo CAMMESA"></Label>
-						     <ComboBox selectedKey="{ConsecuentesFormJsonModel>/Equnr}" valueState="{ConsecuentesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{ConsecuentesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
-                            </ComboBox>
+							<ComboBox selectedKey="{ConsecuentesFormJsonModel>/Equnr}" valueState="{ConsecuentesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{ConsecuentesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+								<core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
+							</ComboBox>
 						</HBox>
 						<HBox alignItems="Center" class="container" width="40%">
 							<Label class="sapUiMediumMarginBeginEnd" text="LLTT asociadas"></Label>
-							<Input  value="{LicencesListJsonModel/Licences>/0}"/>
+							<Input value="{LicencesListJsonModel/Licences>/0}"/>
 						</HBox>
 					</HBox>
 
@@ -62,49 +62,48 @@
 					<HBox class="container">
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Motivo"></Label>
-						   <ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{ConsecuentesFormJsonModel>/CodMotivo}" valueState="{ConsecuentesFormJsonModel>/CodMotivoState}" valueStateText="{ConsecuentesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
-                            </ComboBox>
+							<ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{ConsecuentesFormJsonModel>/CodMotivo}" valueState="{ConsecuentesFormJsonModel>/CodMotivoState}" valueStateText="{ConsecuentesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+								<core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
+							</ComboBox>
 						</HBox>
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Causa"></Label>
-						  <ComboBox selectionChange=".onSelectionChange" selectedKey="{ConsecuentesFormJsonModel>/CodCausa}" valueState="{ConsecuentesFormJsonModel>/CodCausaState}" valueStateText="{ConsecuentesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
-                            </ComboBox>
+							<ComboBox selectionChange=".onSelectionChange" selectedKey="{ConsecuentesFormJsonModel>/CodCausa}" valueState="{ConsecuentesFormJsonModel>/CodCausaState}" valueStateText="{ConsecuentesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+								<core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
+							</ComboBox>
 						</HBox>
 
 						<HBox alignItems="Center">
 							<Label class="sapUiMediumMarginBeginEnd" text="Vinculado y sin tensíon"></Label>
-							<CheckBox selected="{ConsecuentesFormJsonModel>/Vinculadost}"/>
+							<CheckBox selected="{ConsecuentesFormJsonModel>/Vinculadost}" select=".onVinculadostChange"/>
 						</HBox>
 					</HBox>
 					<VBox class="container">
 						<VBox >
 							<Label text="Comentarios"></Label>
-							<TextArea  value="{ConsecuentesFormJsonModel>/Observ}" width="100%"/>
+							<TextArea value="{CammesaFormJsonModel>/Texto}" width="100%"/>
+						</VBox>
+						<VBox >
 							<HBox alignItems="Center">
 								<Label text="La indisponibilidad se informa a CAMMESA" class="sapUiSmallMarginEnd"/>
-								<CheckBox selected="{CammesaFormJsonModel>/InformaCammesa}" text="SI"></CheckBox>
+								<CheckBox selected="{ConsecuentesFormJsonModel>/InformaCammesa}" text="SI"></CheckBox>
 							</HBox>
 						</VBox>
 						<VBox >
 							<Label text="Comentarios Generales"></Label>
-							<TextArea  value="{CammesaFormJsonModel>/Texto}" width="100%"/>
+							<TextArea value="{ConsecuentesFormJsonModel>/Comentario}" width="100%"/>
 						</VBox>
+
 					</VBox>
 				</VBox>
 				<HBox justifyContent="End">
-					<Button
-						text="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Guardar' : 'Agregar' }"
-						class="sapUiSmallMargin"
-						press=".onSaveConsecuente"
-						type="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Accept' : 'Emphasized' }"/>
+					<Button text="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Guardar' : 'Agregar' }" class="sapUiSmallMargin" press=".onSaveConsecuente" type="{= ${ConsecuentesFormJsonModel>/editingIndex} >= 0 ? 'Accept' : 'Emphasized' }"/>
 				</HBox>
 				<t:Table id="consecuentes" rows="{ path: 'ConsequentListJsonModel>/Consequents', sorter: { path: 'FhFormat', descending: true }}" selectionMode="None" alternateRowColors="true">
 					<t:Column width='200px'>
 						<Label text="{i18n>CammesaEq}"/>
 						<t:template>
-						<Text text="{ConsequentListJsonModel>Equnr}"/>
+							<Text text="{ConsequentListJsonModel>Equnr}"/>
 						</t:template>
 					</t:Column>
 					<t:Column width='200px'>

@@ -1,12 +1,40 @@
 sap.ui.define([
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/utils/Logger"
-], function (oDataServices, Logger) {
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/utils/Constants"
+], function (oDataServices, Logger, Constants) {
 	"use strict";
 
 	return {
 
 		_entitySet: "/NovedadesServicioSet",
+
+		/**
+		 * Lee un consecuente desde NovedadesServicioSet por IdNovedad y Empresa.
+		 * @param {string} sIdNovedad - Id de la novedad/consecuente
+		 * @param {string} sEmpresa - código de empresa
+		 * @returns {Promise} resuelve con los datos del consecuente o null
+		 */
+		getConsecuente: function (sIdNovedad, sEmpresa) {
+			var sPath = "/NovedadesServicioSet(IdNovedad='" + sIdNovedad + "',Empresa='" + sEmpresa + "')";
+			Logger.info("ConsecuenteServices.getConsecuente", { idNovedad: sIdNovedad, path: sPath });
+
+			return new Promise(function (resolve, reject) {
+				oDataServices.getModel().read(sPath, {
+					urlParameters: {
+						"$expand": Constants.ODATA_EXPAND_PROPERTIES
+					},
+					success: function (data) {
+						Logger.info("Consecuente leído exitosamente", { idNovedad: sIdNovedad });
+						resolve(data);
+					},
+					error: function (error) {
+						Logger.error("Error al leer consecuente", error);
+						reject(error);
+					}
+				});
+			});
+		},
 
 		/**
 		 * Construye el payload para POST/PUT de un consecuente.
@@ -83,6 +111,23 @@ sap.ui.define([
 			delete oPayload.SenialXNS_nav;
 			delete oPayload.PruebasXNS_nav;
 			delete oPayload.NovedadesServicio;
+
+			// Limpiar campos temporales de UI y entidades expand
+			delete oPayload.editMode;
+			delete oPayload.NovedadPos;
+			delete oPayload.HoraFin;
+			delete oPayload.HoraIni;
+			delete oPayload.Id;
+			delete oPayload.Comentario;
+			delete oPayload.FechaHora;
+			delete oPayload.Autoriza;
+			delete oPayload.InformaCammesa;
+			delete oPayload.Texto;
+
+			// Defaults para update
+			oPayload.Ens = oPayload.Ens || false;
+			oPayload.Borrado = oPayload.Borrado || false;
+			oPayload.Cantidadtorrescaidas = oPayload.Cantidadtorrescaidas || 0;
 
 			return new Promise(function (resolve, reject) {
 				oDataServices.getModel().update(sPath, oPayload, {

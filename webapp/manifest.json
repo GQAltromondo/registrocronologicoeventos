@@ -154,7 +154,7 @@
         },
          {
           "name": "Consecuentes",
-          "pattern": "consecuentes/{mode}",
+          "pattern": "consecuentes/{mode}/{idNovedad}/{empresa}",
           "target": "Consecuentes"
         }
       ],

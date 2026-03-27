@@ -10,12 +10,32 @@ sap.ui.define([
 		_entitySet: "/InformeCammesaSet",
 
 		/**
-		 * Crea un registro de InformeCammesa para un consecuente/novedad.
-		 * @param {Object} oInformeCammesa - datos del informe (FechaHora, InformaCammesa, Texto, Autoriza)
-		 * @param {string} sIdNovedad - Id de la novedad asociada
+		 * Lee el InformeCammesa desde NSInformeCammesaSet para un consecuente dado.
+		 * @param {string} sIdNovedad - Id de la novedad/consecuente
 		 * @param {string} sEmpresa - código de empresa
-		 * @returns {Promise}
+		 * @returns {Promise} resuelve con el primer resultado o null
 		 */
+		getInformeCammesa: function (sIdNovedad, sEmpresa) {
+			var aFilters = [
+				new sap.ui.model.Filter("Idnov", sap.ui.model.FilterOperator.EQ, sIdNovedad),
+				new sap.ui.model.Filter("Sociedad", sap.ui.model.FilterOperator.EQ, sEmpresa)
+			];
+
+			return new Promise(function (resolve, reject) {
+				oDataServices.getModel("").read("/NSInformeCammesaSet", {
+					filters: aFilters,
+					success: function (data) {
+						var aResults = (data && data.results) ? data.results : [];
+						resolve(aResults.length > 0 ? aResults[0] : null);
+					},
+					error: function (error) {
+						Logger.error("Error al leer NSInformeCammesaSet", error);
+						reject(error);
+					}
+				});
+			});
+		},
+
 		postCammesa: function (oInformeCammesa, sIdNovedad, sEmpresa) {
 			var oCammesa = {
 				Id: sIdNovedad,
