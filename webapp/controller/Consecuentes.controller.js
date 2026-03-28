@@ -105,10 +105,42 @@ sap.ui.define([
                         ModelHelper.getModel("CommentsFormJsonModel", oView).setData(oData.ComentariosSet.results[0]);
                     }
 
-                    // ConsecuentesSet
-                    ModelHelper.getModel("ConsequentListJsonModel", oView).setData({
-                        Consequents: (oData.ConsecuentesSet && oData.ConsecuentesSet.results) || []
-                    });
+                    // ConsecuentesSet: leer cada consecuente con $expand para traer su InformeCammesaSet y ComentariosSet
+                    var aConsecuentes = (oData.ConsecuentesSet && oData.ConsecuentesSet.results) || [];
+                    var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+
+                    if (aConsecuentes.length > 0) {
+                        var aPromises = aConsecuentes.map(function (oConsec) {
+                            return ConsecuenteServices.getConsecuente(oConsec.IdNovedad, sEmpresa)
+                                .then(function (oFullConsec) {
+                                    // Enriquecer con InformeCammesaSet
+                                    if (oFullConsec.InformeCammesaSet && oFullConsec.InformeCammesaSet.results && oFullConsec.InformeCammesaSet.results.length > 0) {
+                                        var oCam = oFullConsec.InformeCammesaSet.results[0];
+                                        oFullConsec.InformaCammesa = oCam.InformaCammesa === "S" || oCam.InformaCammesa === "X";
+                                        oFullConsec.Texto = oCam.Texto || "";
+                                        oFullConsec.Autoriza = oCam.Autoriza === "S" || oCam.Autoriza === "X";
+                                        oFullConsec.FechaHoraCammesa = oCam.FechaHora || null;
+                                    } else {
+                                        oFullConsec.InformaCammesa = false;
+                                    }
+                                    // Enriquecer con ComentariosSet
+                                    if (oFullConsec.ComentariosSet && oFullConsec.ComentariosSet.results && oFullConsec.ComentariosSet.results.length > 0) {
+                                        oFullConsec.Comentario = oFullConsec.ComentariosSet.results[0].Comentario || "";
+                                    }
+                                    return oFullConsec;
+                                })
+                                .catch(function () {
+                                    oConsec.InformaCammesa = false;
+                                    return oConsec;
+                                });
+                        });
+
+                        Promise.all(aPromises).then(function (aEnriched) {
+                            oListModel.setData({ Consequents: aEnriched });
+                        });
+                    } else {
+                        oListModel.setData({ Consequents: [] });
+                    }
 
                     // ENS
                     if (oData.ENSRegXNS_NAV && oData.ENSRegXNS_NAV.results) {
@@ -125,10 +157,6 @@ sap.ui.define([
                     oFormModel.setProperty("/Tplnr", oData.Tplnr || "");
                     oFormModel.setProperty("/InicioNove", oData.InicioNove || null);
                     oFormModel.setProperty("/EntIndis", oData.EntIndis || null);
-
-                    var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
-                    oFormModel.setProperty("/InformaCammesa", oCammesaModel.getProperty("/InformaCammesa"));
-                    oFormModel.setProperty("/FechaHora", oCammesaModel.getProperty("/FechaHora"));
 
                     // Cargar equipos y causas
                     that.getNSInfo();
@@ -164,18 +192,18 @@ sap.ui.define([
 
         onVinculadostChange: function (oEvent) {
             var bSelected = oEvent.getParameter("selected");
-            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", this.getView());
+            var oFormModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
             var sAppend = "Vinculado y sin tension.";
             if (bSelected) {
-                oCammesaModel.setProperty("/InformaCammesa", true);
-                var sTexto = oCammesaModel.getProperty("/Texto") || "";
+                oFormModel.setProperty("/InformaCammesa", true);
+                var sTexto = oFormModel.getProperty("/Texto") || "";
                 if (sTexto.indexOf(sAppend) === -1) {
-                    oCammesaModel.setProperty("/Texto", sTexto ? sTexto + "\n" + sAppend : sAppend);
+                    oFormModel.setProperty("/Texto", sTexto ? sTexto + "\n" + sAppend : sAppend);
                 }
             } else {
-                var sTexto = oCammesaModel.getProperty("/Texto") || "";
+                var sTexto = oFormModel.getProperty("/Texto") || "";
                 sTexto = sTexto.replace("\n" + sAppend, "").replace(sAppend, "").trim();
-                oCammesaModel.setProperty("/Texto", sTexto);
+                oFormModel.setProperty("/Texto", sTexto);
             }
         },
 
@@ -206,8 +234,6 @@ sap.ui.define([
             var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
             var oNovedad = oNovedadModel.getData();
             var oFormData = oFormModel.getData() || {};
-            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
-            var oCammesaData = oCammesaModel.getData() || {};
             var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety");
 
             var oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
@@ -235,13 +261,12 @@ sap.ui.define([
                 Cantidadtorrescaidas: oFormData.Cantidadtorrescaidas || 0
             };
 
-            // Datos de Cammesa para la llamada separada
-            // InformaCammesa viene del formulario de consecuentes, el resto de CammesaFormJsonModel
+            // Datos de Cammesa para la llamada separada (todo del formulario del consecuente)
             var oInformeCammesa = {
                 InformaCammesa: oFormData.InformaCammesa || false,
-                FechaHora: oCammesaData.FechaHora || null,
-                Texto: oCammesaData.Texto || "",
-                Autoriza: oCammesaData.Autoriza || false
+                FechaHora: oFormData.FechaHora || null,
+                Texto: oFormData.Texto || "",
+                Autoriza: oFormData.Autoriza || false
             };
 
             // Datos de Comentario para la llamada separada
@@ -270,10 +295,11 @@ sap.ui.define([
             };
 
             var fnSuccess = function (sMsg, sId) {
-                sap.ui.core.BusyIndicator.hide();
                 that._clearForm(oFormModel, oFormData.Tplnr);
                 sap.m.MessageToast.show(sMsg);
                 Logger.info("Consecuente guardado", { isEdit: bIsEdit, idNovedad: sId });
+                // Refrescar solo el consecuente guardado en la tabla
+                that._refreshConsecuenteItem(sId, sEmpresa, iEditingIndex);
             };
 
             // CASO A y C: novedad padre NO persistida → solo array local
@@ -302,12 +328,6 @@ sap.ui.define([
                         });
                     })
                     .then(function (oResult) {
-                        var oSavedItem = fnBuildLocalItem(oItem);
-                        if (oResult && oResult.IdNovedad) {
-                            oSavedItem.IdNovedad = oResult.IdNovedad;
-                            oSavedItem.Empresa = oResult.Empresa || sEmpresa;
-                        }
-                        fnUpdateLocalList(oSavedItem);
                         fnSuccess("Consecuente creado exitosamente", oResult ? oResult.IdNovedad : "");
                     })
                     .catch(function (oError) {
@@ -323,15 +343,8 @@ sap.ui.define([
                     CammesaService.postCammesa(oInformeCammesa, sConsecuenteId, sEmpresa),
                     ComentariosService.postComentario(oComentario, sConsecuenteId, sEmpresa)
                 ])
-                    .then(function (aResults) {
-                        var oResult = aResults[0];
-                        var oSavedItem = fnBuildLocalItem(oItem);
-                        if (oResult && oResult.IdNovedad) {
-                            oSavedItem.IdNovedad = oResult.IdNovedad;
-                            oSavedItem.Empresa = oResult.Empresa || sEmpresa;
-                        }
-                        fnUpdateLocalList(oSavedItem);
-                        fnSuccess("Consecuente actualizado exitosamente", oResult ? oResult.IdNovedad : "");
+                    .then(function () {
+                        fnSuccess("Consecuente actualizado exitosamente", sConsecuenteId);
                     })
                     .catch(function (oError) {
                         sap.ui.core.BusyIndicator.hide();
@@ -345,8 +358,6 @@ sap.ui.define([
          */
         _clearForm: function (oFormModel, sTplnr) {
             var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel");
-            var oCammesaParent = ModelHelper.getModel("CammesaFormJsonModel", this.getView());
-
             oFormModel.setData({
                 Tplnr: (oNovedadModel ? oNovedadModel.getProperty("/Tplnr") : "") || sTplnr || "",
                 Equnr: "",
@@ -358,7 +369,11 @@ sap.ui.define([
                 CodCausa: "",
                 Observ: "",
                 Comentario: "",
+                Texto: "",
                 Vinculadost: false,
+                InformaCammesa: false,
+                Autoriza: false,
+                FechaHora: null,
                 GenIndisponibilidad: false,
                 Recierre: false,
                 IdNovedad: "",
@@ -366,18 +381,85 @@ sap.ui.define([
                 editingIndex: -1
             });
 
-            // Limpiar datos de Cammesa pero mantener InformaCammesa y FechaHora del padre
-            if (oCammesaParent) {
-                var bInformaCammesa = oCammesaParent.getProperty("/InformaCammesa") || false;
-                var dFechaHora = oCammesaParent.getProperty("/FechaHora") || null;
-                oCammesaParent.setData({
-                    InformaCammesa: bInformaCammesa,
-                    FechaHora: dFechaHora,
-                    Texto: ""
-                });
-            }
-
             this.addConsecuente = true;
+        },
+
+        _refreshConsecuenteItem: function (sIdConsecuente, sEmpresa, iEditingIndex) {
+            var oView = this.getView();
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+
+            ConsecuenteServices.getConsecuente(sIdConsecuente, sEmpresa)
+                .then(function (oFullConsec) {
+                    if (oFullConsec.InformeCammesaSet && oFullConsec.InformeCammesaSet.results && oFullConsec.InformeCammesaSet.results.length > 0) {
+                        var oCam = oFullConsec.InformeCammesaSet.results[0];
+                        oFullConsec.InformaCammesa = oCam.InformaCammesa === "S" || oCam.InformaCammesa === "X";
+                        oFullConsec.Texto = oCam.Texto || "";
+                        oFullConsec.Autoriza = oCam.Autoriza === "S" || oCam.Autoriza === "X";
+                        oFullConsec.FechaHoraCammesa = oCam.FechaHora || null;
+                    } else {
+                        oFullConsec.InformaCammesa = false;
+                    }
+                    if (oFullConsec.ComentariosSet && oFullConsec.ComentariosSet.results && oFullConsec.ComentariosSet.results.length > 0) {
+                        oFullConsec.Comentario = oFullConsec.ComentariosSet.results[0].Comentario || "";
+                    }
+
+                    var aConsecuentes = oListModel.getProperty("/Consequents") || [];
+                    if (iEditingIndex >= 0 && iEditingIndex < aConsecuentes.length) {
+                        aConsecuentes[iEditingIndex] = oFullConsec;
+                    } else {
+                        aConsecuentes.push(oFullConsec);
+                    }
+                    oListModel.setProperty("/Consequents", aConsecuentes);
+                    oListModel.refresh(true);
+                    sap.ui.core.BusyIndicator.hide();
+                })
+                .catch(function () {
+                    sap.ui.core.BusyIndicator.hide();
+                });
+        },
+
+        _refreshConsecuentesList: function (sIdNovedadPadre, sEmpresa) {
+            var oView = this.getView();
+            var oListModel = ModelHelper.getModel("ConsequentListJsonModel", oView);
+
+            NovedadesService.findNovedad([], sIdNovedadPadre)
+                .then(function (oData) {
+                    var aConsecuentes = (oData && oData.ConsecuentesSet && oData.ConsecuentesSet.results) || [];
+                    if (aConsecuentes.length === 0) {
+                        oListModel.setData({ Consequents: [] });
+                        sap.ui.core.BusyIndicator.hide();
+                        return;
+                    }
+                    var aPromises = aConsecuentes.map(function (oConsec) {
+                        return ConsecuenteServices.getConsecuente(oConsec.IdNovedad, sEmpresa)
+                            .then(function (oFullConsec) {
+                                if (oFullConsec.InformeCammesaSet && oFullConsec.InformeCammesaSet.results && oFullConsec.InformeCammesaSet.results.length > 0) {
+                                    var oCam = oFullConsec.InformeCammesaSet.results[0];
+                                    oFullConsec.InformaCammesa = oCam.InformaCammesa === "S" || oCam.InformaCammesa === "X";
+                                    oFullConsec.Texto = oCam.Texto || "";
+                                    oFullConsec.Autoriza = oCam.Autoriza === "S" || oCam.Autoriza === "X";
+                                    oFullConsec.FechaHoraCammesa = oCam.FechaHora || null;
+                                } else {
+                                    oFullConsec.InformaCammesa = false;
+                                }
+                                if (oFullConsec.ComentariosSet && oFullConsec.ComentariosSet.results && oFullConsec.ComentariosSet.results.length > 0) {
+                                    oFullConsec.Comentario = oFullConsec.ComentariosSet.results[0].Comentario || "";
+                                }
+                                return oFullConsec;
+                            })
+                            .catch(function () {
+                                oConsec.InformaCammesa = false;
+                                return oConsec;
+                            });
+                    });
+                    Promise.all(aPromises).then(function (aEnriched) {
+                        oListModel.setData({ Consequents: aEnriched });
+                        sap.ui.core.BusyIndicator.hide();
+                    });
+                })
+                .catch(function () {
+                    sap.ui.core.BusyIndicator.hide();
+                });
         },
 
         /**
@@ -459,6 +541,10 @@ sap.ui.define([
                     Empresa: oSrc.Empresa || "",
                     Subindice: oSrc.Subindice || "0",
                     Cantidadtorrescaidas: oSrc.Cantidadtorrescaidas || 0,
+                    InformaCammesa: false,
+                    Texto: "",
+                    Autoriza: false,
+                    FechaHora: null,
                     editingIndex: iEditingIndex
                 });
             };
@@ -485,8 +571,6 @@ sap.ui.define([
                 }
             };
 
-            var oCammesaModel = ModelHelper.getModel("CammesaFormJsonModel", oView);
-
             // Si el consecuente tiene Id, leer datos completos con $expand en una sola llamada
             if (sIdNovedad && iEditingIndex >= 0) {
                 ConsecuenteServices.getConsecuente(sIdNovedad, Empresa)
@@ -500,39 +584,14 @@ sap.ui.define([
                         fnSetFormData(oFullData);
                         fnLoadDependencies(oFullData);
 
-                        // Mapear InformeCammesaSet del expand
+                        // Mapear InformeCammesaSet del expand al formulario del consecuente
                         if (oFullData.InformeCammesaSet && oFullData.InformeCammesaSet.results && oFullData.InformeCammesaSet.results.length > 0) {
                             var oNSData = oFullData.InformeCammesaSet.results[0];
-                            oCammesaModel.setData({
-                                InformaCammesa: oNSData.InformaCammesa === "S" || oNSData.InformaCammesa === "X" || oNSData.InformaCammesa === true,
-                                FechaHora: oNSData.FechaHora || null,
-                                Texto: oNSData.Texto || oNSData.Observacio || "",
-                                Autoriza: oNSData.Autoriza === "S" || oNSData.Autoriza === "X",
-                                Nomb: oNSData.Nomb || "",
-                                Ideq: oNSData.Ideq || "",
-                                Itn: oNSData.Itn || "",
-                                Fsal: oNSData.Fsal || "",
-                                Hsal: oNSData.Hsal || "",
-                                Msal: oNSData.Msal || "",
-                                Fent: oNSData.Fent || "",
-                                Hent: oNSData.Hent || "",
-                                Ment: oNSData.Ment || "",
-                                Finf: oNSData.Finf || "",
-                                Hinf: oNSData.Hinf || "",
-                                Minf: oNSData.Minf || "",
-                                Predu: oNSData.Predu || ""
-                            });
-                        } else {
-                            oCammesaModel.setData({
-                                InformaCammesa: oData.InformaCammesa || false,
-                                FechaHora: oData.FechaHora || null,
-                                Texto: oData.Texto || ""
-                            });
-                            oFormModel.setProperty("/InformaCammesa", oData.InformaCammesa || false);
+                            oFormModel.setProperty("/InformaCammesa", oNSData.InformaCammesa === "S" || oNSData.InformaCammesa === "X" || oNSData.InformaCammesa === true);
+                            oFormModel.setProperty("/FechaHora", oNSData.FechaHora || null);
+                            oFormModel.setProperty("/Texto", oNSData.Texto || oNSData.Observacio || "");
+                            oFormModel.setProperty("/Autoriza", oNSData.Autoriza === "S" || oNSData.Autoriza === "X");
                         }
-
-                        // Sincronizar InformaCammesa al formulario de consecuentes (donde esta el checkbox)
-                        oFormModel.setProperty("/InformaCammesa", oCammesaModel.getProperty("/InformaCammesa"));
 
                         // Mapear ComentariosSet del expand
                         if (oFullData.ComentariosSet && oFullData.ComentariosSet.results && oFullData.ComentariosSet.results.length > 0) {
@@ -542,22 +601,10 @@ sap.ui.define([
                     .catch(function () {
                         fnSetFormData(oData);
                         fnLoadDependencies(oData);
-                        oCammesaModel.setData({
-                            InformaCammesa: oData.InformaCammesa || false,
-                            FechaHora: oData.FechaHora || null,
-                            Texto: oData.Texto || ""
-                        });
-                        oFormModel.setProperty("/InformaCammesa", oData.InformaCammesa || false);
                     });
             } else {
                 fnSetFormData(oData);
                 fnLoadDependencies(oData);
-                oCammesaModel.setData({
-                    InformaCammesa: oData.InformaCammesa || false,
-                    FechaHora: oData.FechaHora || null,
-                    Texto: oData.Texto || ""
-                });
-                oFormModel.setProperty("/InformaCammesa", oData.InformaCammesa || false);
             }
 
             // Scroll al inicio

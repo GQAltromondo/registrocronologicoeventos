@@ -81,7 +81,7 @@
 					<VBox class="container">
 						<VBox >
 							<Label text="Comentarios"></Label>
-							<TextArea value="{CammesaFormJsonModel>/Texto}" width="100%"/>
+							<TextArea value="{ConsecuentesFormJsonModel>/Texto}" width="100%"/>
 						</VBox>
 						<VBox >
 							<HBox alignItems="Center">
