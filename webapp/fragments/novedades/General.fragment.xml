@@ -1,23 +1,17 @@
 <core:FragmentDefinition xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
-        <HBox width="100%" class="sapUiSmallMarginBottom FlexForm">
-            <HBox width="100%" class="sapUiSmallMarginBotton ">
-                <VBox width="100%">
-                    <HBox width="100%">
-                        <VBox alignItems="Start">
-                            <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
-                            <HBox>
-                                <TextArea width="600px" value="{NovedadLGFormJsonModel>/Novedad}" />
-                            </HBox>
-                        </VBox>
-                    </HBox>
-                </VBox>
+    <FlexBox direction="Column" class="sapUiSmallMargin">
+        <VBox class="border_ctn sapUiSmallMarginBottom">
+            <HBox class="sectionHeader" alignItems="Center">
+                <core:Icon src="sap-icon://comment" class="sapUiSmallMarginEnd" color="#004da4"/>
+                <Title text="General" level="H5"/>
             </HBox>
-        </HBox>
-
-
+            <VBox class="container">
+                <Label text="Comentarios" showColon="true" class="sectionLabel"/>
+                <TextArea width="100%" value="{NovedadLGFormJsonModel>/Novedad}"/>
+            </VBox>
+        </VBox>
     </FlexBox>
 
 </core:FragmentDefinition>

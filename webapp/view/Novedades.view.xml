@@ -6,47 +6,44 @@
     <Page id="NovedadesPage" title="Novedades del sistema LG" titleAlignment="Center" enableScrolling="true" showNavButton="true" navButtonPress="onNavBack">
         <content>
             <FlexBox class="wrapper" direction="Column">
-                <HBox width="100%">
-                    <HBox width="100%" class="sapUiSmallMarginBotton mainFrame FlexForm">
-                        <VBox width="50%">
-                            <HBox justifyContent="Start" alignItems="Center">
-                                <Label text="Tipo de Novedad" class="sapUiSmallMarginEnd labels" />
-                                <HBox>
-                                    <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }">
-                                        <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}" />
-                                    </ComboBox>
-                                </HBox>
-                            </HBox>
-                            <HBox justifyContent="Start" alignItems="Center">
-                                <Label text="Ubicacion" showColon="true" class="sapUiSmallMarginEnd labels" />
-                                <HBox>
-                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
-                                        <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
-                                    </ComboBox>
-                                </HBox>
-                            </HBox>
-                            <HBox justifyContent="Start" alignItems="Center">
-                                <Label text="Equipo" class="sapUiSmallMarginEnd labels" showColon="true" />
-                                <HBox>    
-                                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
-                                            <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
-                                    </ComboBox>
-                                </HBox>
-                            </HBox>
+
+                <!-- Seccion: Configuracion de Novedad -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://document-text" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Configuracion de Novedad" level="H5"/>
+                    </HBox>
+                    <HBox class="container" justifyContent="SpaceBetween">
+                        <VBox>
+                            <Label text="Tipo de Novedad" showColon="true" class="sectionLabel"/>
+                            <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }">
+                                <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
+                            </ComboBox>
                         </VBox>
-                        <VBox width="50%">
-                            <HBox width="100%" alignItems="Center" justifyContent="Start">
-                                <Label text="Referencia" class="sapUiSmallMarginEnd labels" />
-                                <Input value="{NovedadLGFormJsonModel>/Id}" enabled="false" width="250px" />
-                            </HBox>
-                            <HBox justifyContent="Start" alignItems="Center">
-                                <Label text="Fecha/Hora" class="sapUiSmallMarginEnd labels" showColon="true" />
-                                <DateTimePicker value="{ 'path': 'NovedadLGFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" valueState="{NovedadLGFormJsonModel>/InicioNoveState}" valueStateText="{NovedadLGFormJsonModel>/InicioNoveStateMessage}" />
-                            </HBox>
+                        <VBox>
+                            <Label text="Ubicacion" showColon="true" class="sectionLabel"/>
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+                                <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}"/>
+                            </ComboBox>
+                        </VBox>
+                        <VBox>
+                            <Label text="Equipo" showColon="true" class="sectionLabel"/>
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                            </ComboBox>
+                        </VBox>
+                        <VBox>
+                            <Label text="Referencia" showColon="true" class="sectionLabel"/>
+                            <Input value="{NovedadLGFormJsonModel>/Id}" enabled="false" width="250px"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
+                            <DateTimePicker value="{ 'path': 'NovedadLGFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" valueState="{NovedadLGFormJsonModel>/InicioNoveState}" valueStateText="{NovedadLGFormJsonModel>/InicioNoveStateMessage}"/>
                         </VBox>
                     </HBox>
-                </HBox>
-    <VBox id="fragContainer" width="100%" class="sapUiSmallMarginTop"/>
+                </VBox>
+
+                <VBox id="fragContainer" width="100%" class="sapUiSmallMarginTop"/>
             </FlexBox>
         
         </content>

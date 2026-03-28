@@ -7,54 +7,66 @@
 
         <content>
             <FlexBox direction="Column" class="wrapper">
-                <VBox class="container sapUiSmallMarginBottom">
-                    <HBox justifyContent="SpaceBetween">
-                        <Label text="Novedad" class="title"/>
-                        <HBox alignItems="Center">
-                            <Label text="Referencia" showColon="true" class="sapUiSmallMarginEnd" />
-                            <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>
+
+                <!-- Seccion: Configuracion de Novedad -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://settings" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Configuracion de Novedad" level="H5"/>
+                    </HBox>
+                    <VBox class="container">
+                        <HBox justifyContent="SpaceBetween" alignItems="End">
+                            <HBox alignItems="Center">
+                                <Label text="Referencia" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
+                                <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>
+                            </HBox>
+                            <HBox>
+                                <CheckBox id="chkRecierre" text="Recierre" selected="{formPerturbacionesModel>/chkRecierre}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                <CheckBox id="chkRecDeseng" text="Rec. y Deseng" selected="{formPerturbacionesModel>/chkRecDeseng}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                <CheckBox id="chkDeseng" text="Deseng" selected="{formPerturbacionesModel>/chkDeseng}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                <CheckBox id="chkEmergencia" text="F/ SEmergencia" selected="{formPerturbacionesModel>/chkEmergencia}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
                         </HBox>
-                    </HBox>
-                    <HBox justifyContent="SpaceBetween">
-                        <CheckBox id="chkRecierre" text="Recierre" selected="{formPerturbacionesModel>/chkRecierre}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                        <CheckBox id="chkRecDeseng" text="Rec. y Deseng" selected="{formPerturbacionesModel>/chkRecDeseng}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                        <CheckBox id="chkDeseng" text="Deseng" selected="{formPerturbacionesModel>/chkDeseng}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                        <CheckBox id="chkEmergencia" text="F/ SEmergencia" selected="{formPerturbacionesModel>/chkEmergencia}" select=".onCheckBoxSelect" enabled="{= !${utilsModel>/readOnlyMode}}" />
-                    </HBox>
-
+                    </VBox>
                 </VBox>
-                <VBox class="container border_ctn sapUiSmallMarginBottom">
-                    <HBox justifyContent="SpaceBetween">
-                        <VBox >
-                            <Label text="{i18n>Ubicacion}" showColon="true" class="title"/>
-                            <ComboBox selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
-                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}" />
-                            </ComboBox>
 
+                <!-- Seccion: Estacion y Equipo -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://factory" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Estacion y Equipo" level="H5"/>
+                    </HBox>
+                    <HBox class="container" justifyContent="SpaceBetween">
+                        <VBox>
+                            <Label text="{i18n>Ubicacion}" showColon="true" class="sectionLabel"/>
+                            <ComboBox selectionChange=".onUbicacionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" valueState="{NovedadesFormJsonModel>/TplnrState}" valueStateText="{NovedadesFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbMD">
+                                <core:ListItem key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}"/>
+                            </ComboBox>
                         </VBox>
                         <VBox>
-                            <Label text="{i18n>CammesaEq}" showColon="true" class="title"/>
+                            <Label text="{i18n>CammesaEq}" showColon="true" class="sectionLabel"/>
                             <ComboBox selectionChange=".onEquipoChange" selectedKey="{NovedadesFormJsonModel>/Equnr}" valueState="{NovedadesFormJsonModel>/EqunrState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
+                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
                             </ComboBox>
                         </VBox>
-
-                        <HBox alignItems="End">
+                        <VBox>
+                            <Label text="Fecha/Hora Inicio" showColon="true" class="sectionLabel"/>
                             <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-
-                        </HBox>
+                        </VBox>
                         <HBox alignItems="End">
-                            <Button text="Consecuentes" class="sapUiLargeMarginEnd btn" press="navToConsecuentes" type="Emphasized"/>
+                            <Button text="Consecuentes" class="btn" press="navToConsecuentes" type="Emphasized"/>
                         </HBox>
                     </HBox>
-
                 </VBox>
-                <VBox class="container border_ctn sapUiSmallMarginBottom">
-                    <HBox class="container">
-                        <HBox justifyContent="SpaceBetween" alignItems="Center" class="container">
-                            <Title text="Protecciones Actuantes"/>
-                            <Button icon="sap-icon://add" press="onAddProteccion"/>
+
+                <!-- Seccion: Protecciones Actuantes -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://shield" class="sapUiSmallMarginEnd" color="#004da4"/>
+                            <Title text="Protecciones Actuantes" level="H5"/>
                         </HBox>
+                        <Button icon="sap-icon://add" press="onAddProteccion" type="Emphasized" tooltip="Agregar proteccion"/>
                     </HBox>
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" visible="{= ${Empresa>/selectedSociety} === '100' }">
                         <VBox class="paddingSM" width="20%">
@@ -344,21 +356,27 @@
                     </Table>
 
                     <HBox class="container" justifyContent="SpaceBetween">
-                        <HBox alignItems="Center">
-                            <Label text="Motivo" showColon="true" class="sapUiSmallMarginEnd"/>
+                        <VBox>
+                            <Label text="Motivo" showColon="true" class="sectionLabel"/>
                             <ComboBox selectionChange=".onMotivoChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                 <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}"/>
                             </ComboBox>
-                        </HBox>
-                        <HBox alignItems="Center">
-                            <Label text="Causa" showColon="true" class="sapUiSmallMarginEnd"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="Causa" showColon="true" class="sectionLabel"/>
                             <ComboBox selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" valueState="{NovedadesFormJsonModel>/CodCausaState}" valueStateText="{NovedadesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" />
+                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}"/>
                             </ComboBox>
-                        </HBox>
-
+                        </VBox>
                     </HBox>
-                    <Label text="Afectaciones" showColon="true" class="sapUiSmallMargin title" />
+                </VBox>
+
+                <!-- Seccion: Afectaciones -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://alert" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Afectaciones" level="H5"/>
+                    </HBox>
 
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
                         <VBox width="20%">
@@ -400,61 +418,64 @@
 
 
                     </HBox>
-                    <Label text="Avisos" showColon="true" class="sapUiSmallMargin title"/>
-                    <VBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
-                        <HBox class="container">
-                            <VBox>
-                                <Label text="Se informó a Empresa" showColon="true" />
-                                <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
-                                    <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
-                                </ComboBox>
-                            </VBox>
-                            <VBox>
-                                <Label text="Se informó a personal de Transener" showColon="true" />
-                                <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/Todos}">
-                                    <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
-                                </ComboBox>
-                            </VBox>
-
-                        </HBox>
-
-                    </VBox>
                 </VBox>
 
-                <VBox class="container">
-                    <HBox >
-                        <Title text="Normalizacion" titleStyle="Auto" class="normalizacion-title"/>
+                <!-- Seccion: Avisos -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://bell" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Avisos" level="H5"/>
                     </HBox>
-                    <VBox class="container border_ctn">
-
-                        <HBox class="container">
-                            <Label text="Se energizó desde" showColon="true" />
-                            <HBox justifyContent="SpaceBetween">
-                                <ComboBox selectedKey="{NormalizacionNS>/EnergizoDesde}" valueState="{NormalizacionNS>/EnergizoState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnergizoStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
-                                </ComboBox>
-                            </HBox>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-
-                        </HBox>
-                        <HBox class="container">
-                            <Label text="Se cargó desde" showColon="true" />
-                            <HBox justifyContent="SpaceBetween">
-                                <ComboBox selectedKey="{NormalizacionNS>/CargoDesde}" valueState="{NormalizacionNS>/EnServicioState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnServicioStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
-                                    <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
-                                </ComboBox>
-                            </HBox>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-
-                        </HBox>
-                        <VBox class="halfConte">
-                            <Label text="Comentarios"/>
-                            <TextArea value="{NormalizacionNS>/Comentarios}" width="100%"/>
+                    <HBox class="container" justifyContent="SpaceBetween">
+                        <VBox>
+                            <Label text="Se informo a Empresa" showColon="true" class="sectionLabel"/>
+                            <ComboBox selectedKey="{NovedadesFormJsonModel>/Informoemp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}"/>
+                            </ComboBox>
                         </VBox>
+                        <VBox>
+                            <Label text="Se informo a personal de Transener" showColon="true" class="sectionLabel"/>
+                            <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/Todos}" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                            </ComboBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Seccion: Normalizacion -->
+                <VBox class="border_ctn sapUiSmallMarginBottom">
+                    <HBox class="sectionHeader" alignItems="Center">
+                        <core:Icon src="sap-icon://restart" class="sapUiSmallMarginEnd" color="#004da4"/>
+                        <Title text="Normalizacion" level="H5"/>
+                    </HBox>
+                    <HBox class="container">
+                        <VBox>
+                            <Label text="Se energizo desde" showColon="true" class="sectionLabel"/>
+                            <ComboBox selectedKey="{NormalizacionNS>/EnergizoDesde}" class="cmbMD" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                            </ComboBox>
+                        </VBox>
+                        <VBox>
+                            <Label text="Fecha energizacion" showColon="true" class="sectionLabel"/>
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                        </VBox>
+                    </HBox>
+                    <HBox class="container">
+                        <VBox>
+                            <Label text="Se cargo desde" showColon="true" class="sectionLabel"/>
+                            <ComboBox selectedKey="{NormalizacionNS>/CargoDesde}" class="cmbMD" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                            </ComboBox>
+                        </VBox>
+                        <VBox>
+                            <Label text="Fecha carga" showColon="true" class="sectionLabel"/>
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                        </VBox>
+                    </HBox>
+                    <VBox class="container">
+                        <Label text="Comentarios" showColon="true" class="sectionLabel"/>
+                        <TextArea value="{NormalizacionNS>/Comentarios}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                     </VBox>
-
-
-
                 </VBox>
 
 

@@ -1,169 +1,119 @@
 <core:FragmentDefinition xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
-        <HBox width="100%" class="sapUiSmallMarginBottom FlexForm">
-            <HBox width="100%" class="sapUiSmallMarginBotton ">
-                <VBox width="100%">
-                    <HBox width="100%" justifyContent="Start">
-                        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                            <Label text="Equipo CAMMESA" showColon="true" class="sapUiSmallMarginEnd labels" />
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
-                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
-                            </ComboBox>
+    <FlexBox direction="Column" class="sapUiSmallMargin">
 
-                        </HBox>
-                        <HBox alignItems="Center">
-                            <Label text="LLTT asociadas" class="sapUiSmallMarginEnd labels" showColon="true" />
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
-                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
-                            </ComboBox>
-                        </HBox>
-                    </HBox>
-                    <HBox width="100%" justifyContent="Start">
-                        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                            <Label text="Fuera de Servicio desde" showColon="true" class="sapUiSmallMarginEnd labels" />
-
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                        </HBox>
-                        <HBox alignItems="Center">
-                            <Label text="En Servicio (E/S)" class="sapUiSmallMarginEnd labels" showColon="true" />
-
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                        </HBox>
-                    </HBox>
-                    <HBox width="100%" justifyContent="Start">
-                        <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                            <Label text="Indisponible desde" showColon="true" class="sapUiSmallMarginEnd labels" />
-
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                        </HBox>
-                        <HBox alignItems="Center">
-                            <Label text="Disponible desde" class="sapUiSmallMarginEnd labels" showColon="true" />
-
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                        </HBox>
-                    </HBox>
-                </VBox>
+        <!-- Seccion: Vinculado Sin Tension -->
+        <VBox class="border_ctn sapUiSmallMarginBottom">
+            <HBox class="sectionHeader" alignItems="Center">
+                <core:Icon src="sap-icon://disconnected" class="sapUiSmallMarginEnd" color="#004da4"/>
+                <Title text="Vinculado Sin Tension" level="H5"/>
             </HBox>
-        </HBox>
-        <VBox>
-            <VBox width="100%" alignItems="Center" class="separadorSimple" />
-            <VBox width="100%" class="FlexForm">
-                <HBox width="100%" justifyContent="Start">
-                    <HBox alignItems="Center" class="sapUiLargeMarginEnd">
-                        <Label text="Causa" showColon="true" class="sapUiSmallMarginEnd labels" />
-                        <HBox>
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
-                                <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
-                            </ComboBox>
-                        </HBox>
-                    </HBox>
-                    <HBox alignItems="Center" class="sapUiSmallMarginEnd">
-                        <Label text="Motivo" class="sapUiSmallMarginEnd labels" showColon="true" />
-                        <HBox>
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
-                                <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}" additionalText="{MotivosJsonModel>CodigoMotivo}"/>
-                            </ComboBox>
-                        </HBox>
-                    </HBox>
-                    <HBox alignItems="Center">
-                        <Label text="Vinculado y sin Tension" class="sapUiSmallMarginEnd labels" showColon="true" />
-                        <CheckBox />
-                    </HBox>
-                </HBox>
-                <HBox width="100%">
-                    <VBox alignItems="Start">
-                        <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
-                        <HBox>
-                            <TextArea width="600px" />
-                        </HBox>
+            <VBox class="container">
+                <HBox justifyContent="Start">
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Equipo CAMMESA" showColon="true" class="sectionLabel"/>
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+                            <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
+                        </ComboBox>
+                    </VBox>
+                    <VBox>
+                        <Label text="LLTT asociadas" showColon="true" class="sectionLabel"/>
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+                            <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
+                        </ComboBox>
                     </VBox>
                 </HBox>
-                <HBox alignItems="Center" justifyContent="End">
-                    <Label text="La indisponibilidad se informa a CAMMESA" class="sapUiSmallMarginEnd labels" showColon="true" />
-                    <CheckBox text="SI" />
-                </HBox>
-                <HBox width="100%">
-                    <VBox alignItems="Start">
-                        <Label text="Comentarios Generales" showColon="true" class="sapUiSmallMarginEnd labels" />
-                        <HBox>
-                            <TextArea width="600px" />
-                        </HBox>
+                <HBox justifyContent="Start">
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Fuera de Servicio desde" showColon="true" class="sectionLabel"/>
+                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="En Servicio (E/S)" showColon="true" class="sectionLabel"/>
+                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                 </HBox>
-                <HBox width="100%">
-                    <VBox alignItems="Start">
-                        <Label text="indisponibilidades consecuentes cargadas" showColon="true" class="sapUiSmallMarginEnd labels" />
-                        <Table id="myTable" inset="false">
-                            <columns>
-                                <!-- Columna "Equipo" -->
-                                <Column>
-                                    <Text text="Equipo CAMMESA" />
-                                </Column>
-
-                                <!-- Columna "F/S desde" -->
-                                <Column>
-                                    <Text text="F/S desde" />
-                                </Column>
-
-                                <!-- Columna "Indisponible desde" -->
-                                <Column>
-                                    <Text text="Indisponible desde" />
-                                </Column>
-
-                                <!-- Columna "E/S desde" -->
-                                <Column>
-                                    <Text text="E/S desde" />
-                                </Column>
-
-                                <!-- Columna "Disponible desde" -->
-                                <Column>
-                                    <Text text="Disponible desde" />
-                                </Column>
-
-                                <!-- Columna "Comentarios" -->
-                                <Column>
-                                    <Text text="Comentarios" />
-                                </Column>
-
-                                <!-- Columna "Se informó" -->
-                                <Column>
-                                    <Text text="Se informa a CAMMESA" />
-                                </Column>
-                            </columns>
-
-                            <items>
-                                <ColumnListItem>
-                                    <!-- Celda para "Equipo" -->
-                                    <cells>
-                                        <Text text="{equipo}" />
-
-                                        <!-- Celda para "F/S desde" -->
-                                        <Text text="{fsDesde}" />
-
-                                        <!-- Celda para "Indisponible desde" -->
-                                        <Text text="{indisponibleDesde}" />
-
-                                        <!-- Celda para "E/S desde" -->
-                                        <Text text="{esDesde}" />
-
-                                        <!-- Celda para "Disponible desde" -->
-                                        <Text text="{disponibleDesde}" />
-
-                                        <!-- Celda para "Comentarios" -->
-                                        <Text text="{comentarios}" />
-
-                                        <!-- Celda para "Se informó" -->
-                                        <Text text="{seInformo}" />
-                                    </cells>
-                                </ColumnListItem>
-                            </items>
-                        </Table>
+                <HBox justifyContent="Start">
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Indisponible desde" showColon="true" class="sectionLabel"/>
+                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="Disponible desde" showColon="true" class="sectionLabel"/>
+                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                 </HBox>
             </VBox>
         </VBox>
+
+        <!-- Seccion: Detalles -->
+        <VBox class="border_ctn sapUiSmallMarginBottom">
+            <HBox class="sectionHeader" alignItems="Center">
+                <core:Icon src="sap-icon://detail-view" class="sapUiSmallMarginEnd" color="#004da4"/>
+                <Title text="Detalles" level="H5"/>
+            </HBox>
+            <VBox class="container">
+                <HBox justifyContent="Start">
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Causa" showColon="true" class="sectionLabel"/>
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/CodCausa}" valueState="{NovedadesFormJsonModel>/CodCausaState}" valueStateText="{NovedadesFormJsonModel>/CodCausaStateMessage}" items="{ path: 'CausasJsonModel>/Causas', templateShareable: true }">
+                            <core:ListItem key="{CausasJsonModel>CodigoCausa}" text="{CausasJsonModel>DescCausa}" additionalText="{CausasJsonModel>CodigoCausa}"/>
+                        </ComboBox>
+                    </VBox>
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Motivo" showColon="true" class="sectionLabel"/>
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" busy="{MotivosJsonModel>Busy}" selectedKey="{NovedadesFormJsonModel>/CodMotivo}" valueState="{NovedadesFormJsonModel>/CodMotivoState}" valueStateText="{NovedadesFormJsonModel>/CodMotivoStateMessage}" items="{ path: 'MotivosJsonModel>/', templateShareable: true }">
+                            <core:ListItem key="{MotivosJsonModel>CodigoMotivo}" text="{MotivosJsonModel>DescMotivo}" additionalText="{MotivosJsonModel>CodigoMotivo}"/>
+                        </ComboBox>
+                    </VBox>
+                    <HBox alignItems="Center">
+                        <Label text="Vinculado y sin Tension" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
+                        <CheckBox/>
+                    </HBox>
+                </HBox>
+                <VBox>
+                    <Label text="Comentarios" showColon="true" class="sectionLabel"/>
+                    <TextArea width="100%"/>
+                </VBox>
+                <HBox alignItems="Center" justifyContent="End">
+                    <Label text="La indisponibilidad se informa a CAMMESA" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
+                    <CheckBox text="SI"/>
+                </HBox>
+                <VBox>
+                    <Label text="Comentarios Generales" showColon="true" class="sectionLabel"/>
+                    <TextArea width="100%"/>
+                </VBox>
+                <VBox>
+                    <Label text="Indisponibilidades consecuentes cargadas" showColon="true" class="sectionLabel"/>
+                    <Table id="myTable" inset="false">
+                        <columns>
+                            <Column><Text text="Equipo CAMMESA"/></Column>
+                            <Column><Text text="F/S desde"/></Column>
+                            <Column><Text text="Indisponible desde"/></Column>
+                            <Column><Text text="E/S desde"/></Column>
+                            <Column><Text text="Disponible desde"/></Column>
+                            <Column><Text text="Comentarios"/></Column>
+                            <Column><Text text="Se informa a CAMMESA"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{equipo}"/>
+                                    <Text text="{fsDesde}"/>
+                                    <Text text="{indisponibleDesde}"/>
+                                    <Text text="{esDesde}"/>
+                                    <Text text="{disponibleDesde}"/>
+                                    <Text text="{comentarios}"/>
+                                    <Text text="{seInformo}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </VBox>
+            </VBox>
+        </VBox>
+
     </FlexBox>
 
 </core:FragmentDefinition>

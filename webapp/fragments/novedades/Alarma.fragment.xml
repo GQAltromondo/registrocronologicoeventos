@@ -1,92 +1,76 @@
 <core:FragmentDefinition xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <FlexBox class="sapUiSmallMargin containerDialog" direction="Column">
-        <HBox width="100%" class="sapUiSmallMarginBottom FlexForm">
-            <HBox width="100%" class="sapUiSmallMarginBotton ">
-                <VBox width="100%">
-                    <HBox justifyContent="SpaceBetween" alignItems="Center">
-                        <HBox>
-                            <Label text="Codigo de Alarma" class="sapUiSmallMarginEnd labels" />
+    <FlexBox direction="Column" class="sapUiSmallMargin">
 
-                            <ComboBox width="300px" selectionChange=".onAlarmaChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
-                                <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo} - {AlarmaModel>nombre}" />
-                            </ComboBox>
-
-                            <MessageStrip text="{AlarmaJsonModel>/DescripcionSeleccionada}" visible="{= !!${AlarmaJsonModel>/DescripcionSeleccionada} }" class="sapUiSmallMarginBegin" />
-                        </HBox>
-
-                        <VBox width="30%" alignItems="End">
-                            <TextArea width="400px"/>
-                        </VBox>
-                    </HBox>
-                    <HBox width="100%" justifyContent="Start">
-                        <VBox alignItems="Start" class="sapUiLargeMarginEnd">
-                            <Label text="Se Informo a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
-                            <HBox>
-                                <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                                    <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
-                                </ComboBox>
-                            </HBox>
-                        </VBox>
-                        <VBox alignItems="Start">
-                            <Label text="Se Informo a Empresa" class="sapUiSmallMarginEnd labels" showColon="true" />
-                            <HBox>
-                                <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
-                                    <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
-                                </ComboBox>
-                            </HBox>
-                        </VBox>
-                    </HBox>
-                    <HBox width="100%">
-                        <VBox alignItems="Start">
-                            <Label text="Comentarios" showColon="true" class="sapUiSmallMarginEnd labels" />
-                            <HBox>
-                                <TextArea width="600px" value="{AlarmaJsonModel>/Comentarios}" />
-                            </HBox>
-                        </VBox>
-                    </HBox>
+        <!-- Seccion: Codigo de Alarma -->
+        <VBox class="border_ctn sapUiSmallMarginBottom">
+            <HBox class="sectionHeader" alignItems="Center">
+                <core:Icon src="sap-icon://warning2" class="sapUiSmallMarginEnd" color="#004da4"/>
+                <Title text="Codigo de Alarma" level="H5"/>
+            </HBox>
+            <HBox class="container" justifyContent="SpaceBetween" alignItems="End">
+                <VBox>
+                    <Label text="Codigo de Alarma" showColon="true" class="sectionLabel"/>
+                    <ComboBox width="300px" selectionChange=".onAlarmaChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
+                        <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo} - {AlarmaModel>nombre}"/>
+                    </ComboBox>
+                </VBox>
+                <MessageStrip text="{AlarmaJsonModel>/DescripcionSeleccionada}" visible="{= !!${AlarmaJsonModel>/DescripcionSeleccionada} }" class="sapUiSmallMarginBegin"/>
+                <VBox width="30%" alignItems="End">
+                    <TextArea width="100%"/>
                 </VBox>
             </HBox>
-        </HBox>
-        <VBox width="100%" alignItems="Center" class="separador">
-            <Title text="Normalizacion de alarma" />
+            <HBox class="container" justifyContent="Start">
+                <VBox class="sapUiMediumMarginEnd">
+                    <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
+                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                    </ComboBox>
+                </VBox>
+                <VBox>
+                    <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
+                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                        <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+                    </ComboBox>
+                </VBox>
+            </HBox>
+            <VBox class="container">
+                <Label text="Comentarios" showColon="true" class="sectionLabel"/>
+                <TextArea width="600px" value="{AlarmaJsonModel>/Comentarios}"/>
+            </VBox>
         </VBox>
 
-
-        <VBox width="100%" class="FlexForm">
-            <HBox justifyContent="Start" alignItems="Center">
-                <Label text="Fecha/Hora" class="sapUiSmallMarginEnd labels" />
-                <HBox>
-                    <DateTimePicker value="{ 'path': 'AlarmaJsonModel>/FechaHoraNormalizacion', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" />
-                </HBox>
+        <!-- Seccion: Normalizacion de alarma -->
+        <VBox class="border_ctn sapUiSmallMarginBottom">
+            <HBox class="sectionHeader" alignItems="Center">
+                <core:Icon src="sap-icon://restart" class="sapUiSmallMarginEnd" color="#004da4"/>
+                <Title text="Normalizacion de alarma" level="H5"/>
             </HBox>
-            <HBox width="100%" justifyContent="Start">
-                <VBox alignItems="Start" class="sapUiLargeMarginEnd">
-                    <Label text="Se Informo a Personal" showColon="true" class="sapUiSmallMarginEnd labels" />
-                    <HBox>
-                        <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/NormalizacionInformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                            <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
-                        </ComboBox>
-                    </HBox>
-                </VBox>
-                <VBox alignItems="Start">
-                    <Label text="Se Informo a Empresa" class="sapUiSmallMarginEnd labels" showColon="true" />
-                    <HBox>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
-                            <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
-                        </ComboBox>
-                    </HBox>
+            <HBox class="container" justifyContent="Start" alignItems="End">
+                <VBox class="sapUiMediumMarginEnd">
+                    <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
+                    <DateTimePicker value="{ 'path': 'AlarmaJsonModel>/FechaHoraNormalizacion', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                 </VBox>
             </HBox>
-            <HBox width="100%">
-                <VBox alignItems="Start">
-                    <Label text="Comentarios referente a la normalización" showColon="true" class="sapUiSmallMarginEnd labels" />
-                    <HBox>
-                        <TextArea width="600px" value="{AlarmaJsonModel>/ComentariosNormalizacion}" />
-                    </HBox>
+            <HBox class="container" justifyContent="Start">
+                <VBox class="sapUiMediumMarginEnd">
+                    <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
+                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/NormalizacionInformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                    </ComboBox>
+                </VBox>
+                <VBox>
+                    <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
+                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                        <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
+                    </ComboBox>
                 </VBox>
             </HBox>
+            <VBox class="container">
+                <Label text="Comentarios referente a la normalizacion" showColon="true" class="sectionLabel"/>
+                <TextArea width="600px" value="{AlarmaJsonModel>/ComentariosNormalizacion}"/>
+            </VBox>
         </VBox>
 
     </FlexBox>
