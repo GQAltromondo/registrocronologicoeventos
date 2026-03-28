@@ -23,5 +23,7 @@
 	"EntDispo": null,
 	"EntServicio": null,
 	"TipoPerturbacion": "",
-	"Subindice":"0"
+	"Subindice":"0",
+	"Informoemp": "",
+	"Informopers": ""
 }

@@ -386,6 +386,8 @@
 					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Observ" Type="Edm.String" Nullable="false" sap:unicode="false" sap:label="Observaciones" sap:creatable="false"
 					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Medidas" Type="Edm.String" Nullable="false" sap:unicode="false" sap:label="Medidas adoptadas" sap:creatable="false"
 					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Idcausa" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="Id causa" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Informoemp" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="Informó Empresa" sap:creatable="false"
+					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><Property Name="Informopers" Type="Edm.String" Nullable="false" MaxLength="8" sap:unicode="false" sap:label="Informó Personal" sap:creatable="false"
 					sap:updatable="false" sap:sortable="false" sap:filterable="false"/><NavigationProperty Name="ConsecuentesSet" Relationship="Z_SCP_OPERACIONES_SRV.ToConsecuentes" FromRole="FromRole_ToConsecuentes"
 					ToRole="ToRole_ToConsecuentes"/><NavigationProperty Name="InformeCammesaSet" Relationship="Z_SCP_OPERACIONES_SRV.ToInformeCammesa" FromRole="FromRole_ToInformeCammesa"
 					ToRole="ToRole_ToInformeCammesa"/><NavigationProperty Name="ComentariosSet" Relationship="Z_SCP_OPERACIONES_SRV.ToComentarios" FromRole="FromRole_ToComentarios"

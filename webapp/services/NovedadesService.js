@@ -179,6 +179,8 @@ sap.ui.define([
 			return new Promise((resolve, reject) => {
 				let oNovedad = ModelHelper.getModel("NovedadesFormJsonModel").getData();
 				let empresa = ModelHelper.getModel("Empresa").getProperty("/selectedSociety")
+				// Limpiar navigation properties y campos calculados antes del POST
+				ModelHelper.deleteNavigationProperties(oNovedad);
 				//le saco los segundos y los milisegundos a las fechas para poder compararlas correctamente en caso que sea necesario
 				for (var prop in oNovedad) {
 					var data = oNovedad[prop];

@@ -5314,8 +5314,11 @@ sap.ui.define([
 					if (sFrag.includes("formPerturbaciones")) {
 						this.getOwnerComponent().getRouter().navTo(
 							"Perturbaciones",
-							{ mode: Constants.EDIT_MODES.VIEW },
-							{ query: { id: oSelectedNovedad.IdNovedad } }
+							{
+								mode: Constants.EDIT_MODES.VIEW,
+								idNovedad: oSelectedNovedad.IdNovedad,
+								empresa: oSelectedNovedad.Empresa
+							}
 						);
 						return;
 					}
@@ -5387,8 +5390,11 @@ sap.ui.define([
 					if (sFrag.includes("formPerturbaciones")) {
 						this.getOwnerComponent().getRouter().navTo(
 							"Perturbaciones",
-							{ mode: "edit" },
-							{ query: { id: oSelectedNovedad.IdNovedad } } // opcional, por si querés mostrarlo o recargar
+							{
+								mode: "edit",
+								idNovedad: oSelectedNovedad.IdNovedad,
+								empresa: oSelectedNovedad.Empresa
+							}
 						);
 						return;
 					}

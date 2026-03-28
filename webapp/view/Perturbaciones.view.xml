@@ -365,11 +365,11 @@
                             <VBox >
 
                                 <Label text="Pot Cortada [MW]" showColon="true" />
-                                <Input value="{ENSListJsonModel>/ENSRegisters/0/Potencia}"/>
+                                <Input value="{NovedadesFormJsonModel>/Potenafect}"/>
                             </VBox>
                             <VBox>
                                 <Label text="Factor de Reduc" showColon="true" />
-                                <Input value="{ENSListJsonModel>/ENSRegisters/0/Potencia}"/>
+                                <Input value="{NovedadesFormJsonModel>/Factred}"/>
                             </VBox>
 
                         </VBox>
@@ -377,11 +377,11 @@
 
                             <VBox>
                                 <Label text="Perd. de aporte [MW]" showColon="true" />
-                                <Input value="{ENSListJsonModel>/ENSRegisters/0/Potencia}"/>
+                                <Input value="{NovedadesFormJsonModel>/Perdidatotalmw}"/>
                             </VBox>
                             <VBox>
                                 <Label text="ENS [MWh]" showColon="true" />
-                                <Input value="{ENSListJsonModel>/ENSRegisters/0/ENSRow}"/>
+                                <Input value="{NovedadesFormJsonModel>/Ensval}"/>
                             </VBox>
                         </VBox>
                         <VBox width="30%">
@@ -411,8 +411,8 @@
                             </VBox>
                             <VBox>
                                 <Label text="Se informó a personal de Transener" showColon="true" />
-                                <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/InformoPersona}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                                    <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                                <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/Informopers}" items="{PersonalHabilitadoModel>/Todos}">
+                                    <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                                 </ComboBox>
                             </VBox>
 
@@ -430,7 +430,7 @@
                         <HBox class="container">
                             <Label text="Se energizó desde" showColon="true" />
                             <HBox justifyContent="SpaceBetween">
-                                <ComboBox selectedKey="{NormalizacionNS>/Energizo}" valueState="{NormalizacionNS>/EnergizoState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnergizoStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <ComboBox selectedKey="{NormalizacionNS>/EnergizoDesde}" valueState="{NormalizacionNS>/EnergizoState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnergizoStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                     <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                 </ComboBox>
                             </HBox>
@@ -440,11 +440,11 @@
                         <HBox class="container">
                             <Label text="Se cargó desde" showColon="true" />
                             <HBox justifyContent="SpaceBetween">
-                                <ComboBox selectedKey="{NormalizacionNS>/EnServicio}" valueState="{NormalizacionNS>/EnServicioState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnServicioStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <ComboBox selectedKey="{NormalizacionNS>/CargoDesde}" valueState="{NormalizacionNS>/EnServicioState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnServicioStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                     <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                 </ComboBox>
                             </HBox>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnServicioFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
 
                         </HBox>
                         <VBox class="halfConte">
@@ -513,55 +513,50 @@
 
                                 <HBox justifyContent="SpaceBetween" alignItems="Center" class="container">
                                     <Title text="Pruebas Realizadas"/>
-                                    <Button icon="sap-icon://add"/>
+                                    <Button icon="sap-icon://add" press=".onAddPrueba"/>
                                 </HBox>
 
                                 <HBox class="container">
                                     <VBox width="100%">
                                         <HBox class="container">
                                             <Label text="Prueba solicitada por " showColon="true" />
-                                            <CheckBox text="Terceros"/>
-                                            <CheckBox text="Personal de Transener"/>
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/FechaPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-
+                                            <CheckBox text="Terceros" selected="{PruebasFormJsonModel>/Terceros}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                            <CheckBox text="Personal de Transener" selected="{PruebasFormJsonModel>/PersonalTransener}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                            <DateTimePicker value="{ 'path': 'PruebasFormJsonModel>/HoraPrueba', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                         </HBox>
-
                                     </VBox>
-
                                 </HBox>
                                 <VBox class="container">
                                     <Label text="Comentarios" showColon="true"/>
-                                    <TextArea value="{InformaCammesa>/Texto}" width="100%"/>
+                                    <TextArea value="{PruebasFormJsonModel>/Comentarios}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                 </VBox>
                                 <Label text="Protecciones Actuantes correspondiente a la prueba"/>
                                 <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
                                     <VBox class="paddingSM" width="20%">
                                         <Label text="ET" showColon="true" />
-                                        <ComboBox selectedKey="{NovedadesFormJsonModel>/PruebasET}" valueState="{NovedadesFormJsonModel>/PruebasETState}" class="cmbMD" valueStateText="{NovedadesFormJsonModel>/PruebasETStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                        <ComboBox selectedKey="{PruebasFormJsonModel>/Et}" class="cmbMD" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                             <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                         </ComboBox>
                                     </VBox>
                                     <VBox width="30%">
-                                        <Title text="Protección Actuante" titleStyle="Auto" />
+                                        <Title text="Proteccion Actuante" titleStyle="Auto" />
                                         <VBox class="border_ctn_3">
                                             <HBox>
-                                                <CheckBox text="Diferencial"/>
-                                                <CheckBox text="DPO"/>
-                                                <CheckBox text="Impedancia"/>
+                                                <CheckBox text="Diferencial" selected="{PruebasFormJsonModel>/Diferencial}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="DPO" selected="{PruebasFormJsonModel>/DPO}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="Impedancia" selected="{PruebasFormJsonModel>/Impedancia}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
-                                                <CheckBox text="Máxima Corriente"/>
-                                                <CheckBox text="PFI"/>
-                                                <CheckBox text="U>"/>
+                                                <CheckBox text="Maxima Corriente" selected="{PruebasFormJsonModel>/MaximaCorriente}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="PFI" selected="{PruebasFormJsonModel>/PFI}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="U>" selected="{PruebasFormJsonModel>/U}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
-                                                <CheckBox text="Sin señalizacion de protecciones"/>
-
+                                                <CheckBox text="Sin senalizacion de protecciones" selected="{PruebasFormJsonModel>/SinSenal}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
                                                 <Label text="Otras Actuaciones" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                                <TextArea />
-
+                                                <TextArea value="{PruebasFormJsonModel>/OtrasActuaciones}" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                         </VBox>
                                     </VBox>
@@ -569,19 +564,17 @@
                                         <Label text="Excitaciones" showColon="true" />
                                         <VBox class="border_ctn_3">
                                             <HBox>
-                                                <CheckBox text="R"/>
-                                                <CheckBox text="S"/>
-                                                <CheckBox text="T"/>
-                                                <CheckBox text="Tierra"/>
+                                                <CheckBox text="R" selected="{PruebasFormJsonModel>/R}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="S" selected="{PruebasFormJsonModel>/S}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="T" selected="{PruebasFormJsonModel>/T}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="Tierra" selected="{PruebasFormJsonModel>/Tierra}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
-                                                <CheckBox text="Sin Excitación de fase"/>
-
+                                                <CheckBox text="Sin Excitacion de fase" selected="{PruebasFormJsonModel>/SinExcitacion}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
                                                 <Label text="Loc de Falla" showColon="true" class="sapUiSmallMarginBeginEnd"/>
-                                                <TextArea />
-
+                                                <TextArea value="{PruebasFormJsonModel>/LocFalla}" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                         </VBox>
                                     </VBox>
@@ -589,25 +582,20 @@
 
                                 <VBox class="container border_ctn">
                                     <Label text="Avisos"/>
-                                    <HBox >
+                                    <HBox>
                                         <VBox class="halfConte">
-                                            <Label text="Se informó a Empresa"/>
-                                            <ComboBox selectedKey="{NormalizacionNS>/InformoEmp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" width="30%">
+                                            <Label text="Se informo a Empresa"/>
+                                            <ComboBox selectedKey="{PruebasFormJsonModel>/InformoEmp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" width="30%">
                                                 <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
                                             </ComboBox>
                                         </VBox>
                                         <VBox class="halfConte">
                                             <Label text="Comentarios" showColon="true"/>
-                                            <TextArea value="{NormalizacionNS>/ComentariosAviso}" width="100%"/>
+                                            <TextArea value="{PruebasFormJsonModel>/ComentariosAviso}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                         </VBox>
-
                                     </HBox>
                                 </VBox>
 
-                                <VBox class="container">
-                                    <Label text="Comentarios"/>
-                                    <TextArea width="100%"></TextArea>
-                                </VBox>
                                 <Table id="tablaTestProtecciones" items="{TestProtecciones>/PruebasProtecciones}" growing="true">
 
                                     <columns>
@@ -616,28 +604,34 @@
                                                 <Text text="Solicitada por" />
                                             </header>
                                         </Column>
-
+                                        <Column>
+                                            <header>
+                                                <Text text="Fecha" />
+                                            </header>
+                                        </Column>
                                         <Column>
                                             <header>
                                                 <Text text="ET" />
                                             </header>
                                         </Column>
-
                                         <Column>
                                             <header>
-                                                <Text text="Protección" />
+                                                <Text text="Proteccion" />
                                             </header>
                                         </Column>
-
                                         <Column>
                                             <header>
-                                                <Text text="Excitación" />
+                                                <Text text="Excitacion" />
                                             </header>
                                         </Column>
-
                                         <Column>
                                             <header>
                                                 <Text text="Comentario" />
+                                            </header>
+                                        </Column>
+                                        <Column width="6rem" hAlign="Center">
+                                            <header>
+                                                <Text text="Acciones" />
                                             </header>
                                         </Column>
                                     </columns>
@@ -645,11 +639,16 @@
                                     <items>
                                         <ColumnListItem>
                                             <cells>
-                                                <Input value="{TestProtecciones>SolicitadaPor}" />
-                                                <Input value="{TestProtecciones>ET}" />
-                                                <Input value="{TestProtecciones>Proteccion}" />
-                                                <Input value="{TestProtecciones>Excitacion}" />
-                                                <Input value="{TestProtecciones>Comentario}" />
+                                                <Text text="{TestProtecciones>SolicitadaPor}" />
+                                                <Text text="{path: 'TestProtecciones>HoraPrueba', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd/MM/yyyy HH:mm' }}" />
+                                                <Text text="{TestProtecciones>ET}" />
+                                                <Text text="{TestProtecciones>Proteccion}" />
+                                                <Text text="{TestProtecciones>Excitacion}" />
+                                                <Text text="{TestProtecciones>Comentarios}" />
+                                                <HBox>
+                                                    <Button icon="sap-icon://edit" type="Transparent" press=".onEditPrueba" tooltip="Editar"/>
+                                                    <Button icon="sap-icon://delete" type="Transparent" press=".onDeletePrueba" tooltip="Eliminar"/>
+                                                </HBox>
                                             </cells>
                                         </ColumnListItem>
                                     </items>

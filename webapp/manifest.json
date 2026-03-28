@@ -138,7 +138,7 @@
           ]
         },
         {
-          "pattern": "perturbaciones/{mode}",
+          "pattern": "perturbaciones/{mode}/{idNovedad}/{empresa}",
           "name": "Perturbaciones",
           "target": "Perturbaciones"
         },
