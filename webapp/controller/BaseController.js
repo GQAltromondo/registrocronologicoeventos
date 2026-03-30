@@ -183,7 +183,7 @@ sap.ui.define([
 				oUtilsModel.setProperty("/readOnlyMode", false);
 			}
 			this.resetNovedadesModel().then(() => {
-				this.getOwnerComponent().getRouter().navTo("Programadas", { mode: Constants.EDIT_MODES.CREATE });
+				this.getOwnerComponent().getRouter().navTo("Programadas", { mode: Constants.EDIT_MODES.CREATE, idNovedad: "new", empresa: ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "" });
 			}).catch((oError) => {
 				ErrorHandler.handleError(oError, "Cargar modelo de novedades", true);
 			});

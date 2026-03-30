@@ -7,11 +7,11 @@
         <content>
             <FlexBox class="wrapper" direction="Column">
 
-                <!-- Seccion: Configuracion de Novedad -->
+                <!-- Seccion: Datos de Novedad -->
                 <VBox class="border_ctn sapUiSmallMarginBottom">
                     <HBox class="sectionHeader" alignItems="Center">
                         <core:Icon src="sap-icon://document-text" class="sapUiSmallMarginEnd" color="#004da4"/>
-                        <Title text="Configuracion de Novedad" level="H5"/>
+                        <Title text="Datos de Novedad" level="H5"/>
                     </HBox>
                     <HBox class="container" justifyContent="SpaceBetween">
                         <VBox>

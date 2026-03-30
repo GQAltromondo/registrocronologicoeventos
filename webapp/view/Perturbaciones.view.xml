@@ -8,11 +8,11 @@
         <content>
             <FlexBox direction="Column" class="wrapper">
 
-                <!-- Seccion: Configuracion de Novedad -->
+                <!-- Seccion: Datos de Novedad -->
                 <VBox class="border_ctn sapUiSmallMarginBottom">
                     <HBox class="sectionHeader" alignItems="Center">
                         <core:Icon src="sap-icon://settings" class="sapUiSmallMarginEnd" color="#004da4"/>
-                        <Title text="Configuracion de Novedad" level="H5"/>
+                        <Title text="Datos de Novedad" level="H5"/>
                     </HBox>
                     <VBox class="container">
                         <HBox justifyContent="SpaceBetween" alignItems="End">
@@ -87,6 +87,7 @@
                                     <CheckBox text="Máxima Corriente" selected="{NovedadesProtecciones>/MaximaCorriente1}"/>
                                     <CheckBox text="PFI" selected="{NovedadesProtecciones>/PFI1}"/>
                                     <CheckBox text="U>" selected="{NovedadesProtecciones>/U1}"/>
+                                    <CheckBox text="&lt;U" selected="{NovedadesProtecciones>/MenorU1}"/>
                                 </HBox>
                                 <HBox>
                                     <CheckBox text="Sin señalizacion de protecciones" selected="{NovedadesProtecciones>/SinSenal1}"/>
@@ -140,6 +141,7 @@
                                     <CheckBox text="Máxima Corriente" selected="{NovedadesProtecciones>/MaximaCorriente2}"/>
                                     <CheckBox text="PFI" selected="{NovedadesProtecciones>/PFI2}"/>
                                     <CheckBox text="U>" selected="{NovedadesProtecciones>/U2}"/>
+                                    <CheckBox text="&lt;U" selected="{NovedadesProtecciones>/MenorU2}"/>
                                 </HBox>
                                 <HBox >
                                     <CheckBox text="Sin señalizacion de protecciones" selected="{NovedadesProtecciones>/SinSenal2}"/>
@@ -571,6 +573,7 @@
                                                 <CheckBox text="Maxima Corriente" selected="{PruebasFormJsonModel>/MaximaCorriente}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                                 <CheckBox text="PFI" selected="{PruebasFormJsonModel>/PFI}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                                 <CheckBox text="U>" selected="{PruebasFormJsonModel>/U}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <CheckBox text="&lt;U" selected="{PruebasFormJsonModel>/MenorU}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                                             </HBox>
                                             <HBox>
                                                 <CheckBox text="Sin senalizacion de protecciones" selected="{PruebasFormJsonModel>/SinSenal}" enabled="{= !${utilsModel>/readOnlyMode}}"/>

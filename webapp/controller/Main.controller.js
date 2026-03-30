@@ -5400,7 +5400,7 @@ sap.ui.define([
 					}
 
 					if (sFrag.includes("formProgramadas")) {
-						this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "edit" }, { query: { id: oSelectedNovedad.IdNovedad } });
+						this.getOwnerComponent().getRouter().navTo("Programadas", { mode: "edit", idNovedad: oSelectedNovedad.IdNovedad, empresa: oSelectedNovedad.Empresa });
 
 						return;
 					}

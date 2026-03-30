@@ -40,6 +40,7 @@ sap.ui.define([
 					MaximaCorriente1: false,
 					PFI1: false,
 					U1: false,
+					MenorU1: false,
 					SinSenal1: false,
 					OtrasActuaciones1: "",
 					// Excitaciones HBox 1
@@ -57,6 +58,7 @@ sap.ui.define([
 					MaximaCorriente2: false,
 					PFI2: false,
 					U2: false,
+					MenorU2: false,
 					SinSenal2: false,
 					OtrasActuaciones2: "",
 					// Excitaciones HBox 2
@@ -309,6 +311,7 @@ sap.ui.define([
 					MaximaCorriente1: false,
 					PFI1: false,
 					U1: false,
+					MenorU1: false,
 					SinSenal1: false,
 					OtrasActuaciones1: "",
 					// Excitaciones HBox 1
@@ -325,6 +328,7 @@ sap.ui.define([
 					MaximaCorriente2: false,
 					PFI2: false,
 					U2: false,
+					MenorU2: false,
 					SinSenal2: false,
 					OtrasActuaciones2: "",
 					// Excitaciones HBox 2
@@ -410,6 +414,7 @@ sap.ui.define([
 						{ modelKey: "MaximaCorriente" + sPrefix, text: "Máxima Corriente" },
 						{ modelKey: "PFI" + sPrefix, text: "PFI" },
 						{ modelKey: "U" + sPrefix, text: "U>" },
+						{ modelKey: "MenorU" + sPrefix, text: "<U" },
 						{ modelKey: "SinSenal" + sPrefix, text: "Sin señalizacion de protecciones" }
 					];
 					aProtFields.forEach(function(oProt) {
@@ -601,7 +606,7 @@ sap.ui.define([
 				oModel.setProperty(sEtKey, "");
 			} else {
 				// Campos TRA (empresa 100)
-				var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "SinSenal"];
+				var aProtFields = ["Diferencial", "DPO", "Impedancia", "MaximaCorriente", "PFI", "U", "MenorU", "SinSenal"];
 				var aExcFields = ["R", "S", "T", "Tierra", "SinExcitacion"];
 
 				aProtFields.forEach(function(sField) {
@@ -684,6 +689,7 @@ sap.ui.define([
 				oPayload.Pili = !!oFormData["MaximaCorriente" + sPrefix];
 				oPayload.Plus = !!oFormData["PFI" + sPrefix];
 				oPayload.Less = !!oFormData["U" + sPrefix];
+				oPayload.Rr = !!oFormData["MenorU" + sPrefix];
 				oPayload.Fr = !!oFormData["R" + sPrefix];
 				oPayload.Fs = !!oFormData["S" + sPrefix];
 				oPayload.Ft = !!oFormData["T" + sPrefix];
@@ -742,6 +748,7 @@ sap.ui.define([
 				oModel.setProperty("/MaximaCorriente" + sPrefix, !!oSignalData.Pili);
 				oModel.setProperty("/PFI" + sPrefix, !!oSignalData.Plus);
 				oModel.setProperty("/U" + sPrefix, !!oSignalData.Less);
+				oModel.setProperty("/MenorU" + sPrefix, !!oSignalData.Rr);
 				oModel.setProperty("/R" + sPrefix, !!oSignalData.Fr);
 				oModel.setProperty("/S" + sPrefix, !!oSignalData.Fs);
 				oModel.setProperty("/T" + sPrefix, !!oSignalData.Ft);
@@ -907,6 +914,7 @@ sap.ui.define([
 					if (oSignal.Pili) aProtNames.push("Máxima Corriente");
 					if (oSignal.Plus) aProtNames.push("PFI");
 					if (oSignal.Less) aProtNames.push("U>");
+					if (oSignal.Rr) aProtNames.push("<U");
 					if (oSignal.Fr) aExcNames.push("R");
 					if (oSignal.Fs) aExcNames.push("S");
 					if (oSignal.Ft) aExcNames.push("T");
@@ -946,6 +954,7 @@ sap.ui.define([
 				MaximaCorriente: false,
 				PFI: false,
 				U: false,
+				MenorU: false,
 				SinSenal: false,
 				OtrasActuaciones: "",
 				R: false,
@@ -993,6 +1002,7 @@ sap.ui.define([
 			if (oFormData.MaximaCorriente) aProtNames.push("Maxima Corriente");
 			if (oFormData.PFI) aProtNames.push("PFI");
 			if (oFormData.U) aProtNames.push("U>");
+			if (oFormData.MenorU) aProtNames.push("<U");
 			if (oFormData.SinSenal) aProtNames.push("Sin senalizacion");
 			if (oFormData.OtrasActuaciones) aProtNames.push(oFormData.OtrasActuaciones);
 

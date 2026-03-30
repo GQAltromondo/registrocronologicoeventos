@@ -144,7 +144,7 @@
         },
         {
           "name": "Programadas",
-          "pattern": "programadas/{mode}",
+          "pattern": "programadas/{mode}/{idNovedad}/{empresa}",
           "target": "Programadas"
         },
         {
