@@ -8,8 +8,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/ProteccionesService",
 	"transener/registrocronologicoeventos/services/NovedadesService",
 	"transener/registrocronologicoeventos/services/PruebasService",
-	"transener/registrocronologicoeventos/utils/Logger"
-], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger) {
+	"transener/registrocronologicoeventos/utils/Logger",
+	"transener/registrocronologicoeventos/services/oDataServices"
+], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger, oDataServices) {
 	"use strict";
 	var oDialog = null;
 
@@ -183,7 +184,11 @@ sap.ui.define([
 						ModelHelper.getModel("ENSListJsonModel", oView).setData({
 							ENSRegisters: oData.ENSRegXNS_NAV.results
 						});
+						that.calculateAutomaticENS();
 					}
+
+					// Flags de checkboxes (Recierre, Deseng, etc.)
+					that._applyPerturbacionesFlags(oData);
 
 					// ConsecuentesSet
 					if (oData.ConsecuentesSet && oData.ConsecuentesSet.results) {
@@ -1154,6 +1159,274 @@ sap.ui.define([
 			} else {
 				fnRemoveLocal();
 			}
+		},
+
+		// ==================== ENS ====================
+
+		millisToMinutes: function (millis) {
+			return millis / 60000;
+		},
+
+		onAddENS: function () {
+			var novedad = ModelHelper.getModel("NovedadesFormJsonModel", this.getView()).getData();
+			var dInicioNovedad = novedad.InicioNove;
+			var IdNovedad = novedad.IdNovedad;
+			var oENSListModel = ModelHelper.getModel("ENSListJsonModel", this.getView());
+			var oENS = {
+				Modif: "",
+				Potencia: "0",
+				Reptime: null,
+				Begtime: null,
+				Corte: "0",
+				ENSRow: "0",
+				Comments: ""
+			};
+			if (IdNovedad) {
+				oENS.IdNovedad = IdNovedad;
+			}
+			oENS.Begtime = dInicioNovedad;
+			var aENSListData = oENSListModel.getData().ENSRegisters;
+			aENSListData.push(oENS);
+			oENSListModel.refresh(true);
+		},
+
+		onDeleteENS: function (evt) {
+			var that = this;
+			var oView = this.getView();
+			var ens = evt.getSource().getBindingContext("ENSListJsonModel").getObject();
+			var fnRemoveLocal = function () {
+				var ensList = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
+				for (var row in ensList) {
+					if (ensList[row] === ens) {
+						ensList.splice(row, 1);
+						break;
+					}
+				}
+				ModelHelper.getModel("ENSListJsonModel", oView).updateBindings(true);
+				that.calculateAutomaticENS();
+			};
+
+			if (ens.Modif) {
+				var empresa = ens.Empresa || this._sEmpresa || "";
+				var entity = "/ENSRegisterSet(IdNovedad='" + ens.IdNovedad + "',Modif='" + ens.Modif + "',Empresa='" + empresa + "')";
+				sap.ui.core.BusyIndicator.show(0);
+				oDataServices.getModel("").remove(entity, {
+					success: function () {
+						sap.ui.core.BusyIndicator.hide();
+						fnRemoveLocal();
+						sap.m.MessageBox.alert("Se ha borrado correctamente", {
+							title: "Borrado Exitoso"
+						});
+					},
+					error: function () {
+						sap.ui.core.BusyIndicator.hide();
+						sap.m.MessageBox.alert("Ha fallado el borrado del ENS", {
+							title: "Borrado fallido"
+						});
+					}
+				});
+			} else {
+				fnRemoveLocal();
+			}
+		},
+
+		calcRowCorte: function (oEvent) {
+			var oView = this.getView();
+			var ENSListModel = ModelHelper.getModel("ENSListJsonModel", oView);
+			var sPath = oEvent.getSource().getBindingContext("ENSListJsonModel").getPath();
+			var data = ENSListModel.getProperty(sPath);
+			var dReposicion = data.Reptime;
+			var dInicioNovedadDate = data.Begtime;
+			if (dReposicion && dInicioNovedadDate && dReposicion > dInicioNovedadDate) {
+				var iMilliSeconds = dReposicion.getTime() - dInicioNovedadDate.getTime();
+				var iTotal = this.millisToMinutes(iMilliSeconds);
+				ENSListModel.setProperty(sPath + "/Corte", iTotal.toString());
+				this.calculateAutomaticENS();
+			}
+		},
+
+		calculateAutomaticENS: function () {
+			var oView = this.getView();
+			var ENSListModel = ModelHelper.getModel("ENSListJsonModel", oView);
+			var iENS = 0;
+			var iTotalMinutes = 0;
+			var aENS = ENSListModel.getData().ENSRegisters;
+			for (var i = 0; i < aENS.length; i++) {
+				var iRowPotencia = this._parseLocalNumber(aENS[i].Potencia);
+				var iCorte = parseFloat(aENS[i].Corte);
+				if (iRowPotencia && !isNaN(iCorte)) {
+					var rowEns = (iRowPotencia * iCorte) / 60;
+					aENS[i].ENSRow = rowEns;
+					iENS = iENS + rowEns;
+				}
+				if (!isNaN(iCorte)) {
+					iTotalMinutes = iTotalMinutes + iCorte;
+				}
+			}
+			ENSListModel.updateBindings(true);
+			var oFormModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+			oFormModel.setProperty("/Ensval", iENS.toString().substring(0, 10));
+			oFormModel.setProperty("/TiempoTotalMin", iTotalMinutes.toString());
+			this.calcPotencia();
+		},
+
+		_parseLocalNumber: function (sValue) {
+			if (!sValue && sValue !== 0) { return 0; }
+			var s = sValue.toString();
+			// Si tiene punto pero no coma -> formato backend (punto = decimal)
+			// Ej: "4444.00000" -> parseFloat directo
+			if (s.indexOf(".") !== -1 && s.indexOf(",") === -1) {
+				var fVal = parseFloat(s);
+				return isNaN(fVal) ? 0 : fVal;
+			}
+			// Formato local: puntos = miles, coma = decimal
+			// Ej: "4.444,5" -> "4444.5"
+			var sClean = s.replace(/\./g, "").replace(",", ".");
+			var fResult = parseFloat(sClean);
+			return isNaN(fResult) ? 0 : fResult;
+		},
+
+		onPotenciaLiveChange: function (oEvent) {
+			if (this._bPotenciaFormatting) { return; }
+
+			var oInput = oEvent.getSource();
+			var sValue = oEvent.getParameter("value");
+			// Quitar todo menos digitos y coma
+			var sClean = sValue.replace(/[^0-9,]/g, "");
+			// Una sola coma
+			var aParts = sClean.split(",");
+			if (aParts.length > 2) {
+				sClean = aParts[0] + "," + aParts[1];
+				aParts = sClean.split(",");
+			}
+			// Agregar puntos de miles a la parte entera
+			var sEntero = aParts[0];
+			var sFormatted = sEntero.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+			if (aParts.length > 1) {
+				sFormatted = sFormatted + "," + aParts[1];
+			}
+			// Valor para modelo: sin puntos, con coma decimal
+			var sModelValue = sClean;
+
+			// Guardar en modelo
+			var sPath = oInput.getBindingContext("ENSListJsonModel").getPath();
+			ModelHelper.getModel("ENSListJsonModel", this.getView()).setProperty(sPath + "/Potencia", sModelValue);
+
+			// Setear valor visual con delay para que UI5 no lo pise
+			var that = this;
+			that._bPotenciaFormatting = true;
+			setTimeout(function () {
+				oInput.setValue(sFormatted);
+				// Posicionar cursor al final
+				var oDomRef = oInput.getFocusDomRef();
+				if (oDomRef) {
+					oDomRef.setSelectionRange(sFormatted.length, sFormatted.length);
+				}
+				that._bPotenciaFormatting = false;
+			}, 0);
+		},
+
+		calcPotencia: function () {
+			var oView = this.getView();
+			var iPotenciaCortada = 0;
+			var aENS = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
+			for (var i = 0; i < aENS.length; i++) {
+				var iRowPotencia = this._parseLocalNumber(aENS[i].Potencia);
+				iPotenciaCortada = iPotenciaCortada + iRowPotencia;
+			}
+			ModelHelper.getModel("NovedadesFormJsonModel", oView).setProperty("/Potenafect", iPotenciaCortada.toString());
+		},
+
+		_onAfterSaveSuccess: function (oNovedadData) {
+			var oView = this.getView();
+			var aENS = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
+			if (!aENS || aENS.length === 0) {
+				return Promise.resolve();
+			}
+
+			var sIdNovedad = oNovedadData.IdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getData().IdNovedad;
+			var sEmpresa = this._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+			var oModel = oDataServices.getModel("");
+			var aPromises = [];
+
+			for (var i = 0; i < aENS.length; i++) {
+				var oENS = aENS[i];
+				var oPayload = {
+					IdNovedad: sIdNovedad,
+					Modif: oENS.Modif || "",
+					Potencia: oENS.Potencia ? oENS.Potencia.toString().replace(/\./g, "") : "0",
+					Begtime: oENS.Begtime || null,
+					Reptime: oENS.Reptime || null,
+					Corte: oENS.Corte ? oENS.Corte.toString() : "0",
+					Comments: oENS.Comments || "",
+					Empresa: sEmpresa
+				};
+
+				if (oENS.Modif) {
+					// Existente -> UPDATE
+					var sPath = "/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')";
+					aPromises.push(this._updateENS(oModel, sPath, oPayload));
+				} else {
+					// Nuevo -> CREATE
+					aPromises.push(this._createENS(oModel, oPayload));
+				}
+			}
+
+			return Promise.all(aPromises).then(function () {
+				Logger.info("ENS registros guardados correctamente");
+			}).catch(function (err) {
+				Logger.error("Error guardando ENS", err);
+				sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar algunos registros ENS.");
+			});
+		},
+
+		_createENS: function (oModel, oPayload) {
+			return new Promise(function (resolve, reject) {
+				oModel.create("/ENSRegisterSet", oPayload, {
+					success: function (oData) {
+						resolve(oData);
+					},
+					error: function (oError) {
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		_updateENS: function (oModel, sPath, oPayload) {
+			return new Promise(function (resolve, reject) {
+				oModel.update(sPath, oPayload, {
+					success: function () {
+						resolve();
+					},
+					error: function (oError) {
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		_applyPerturbacionesFlags: function (oData) {
+			var oView = this.getView();
+			var oFormModel = ModelHelper.getModel("formPerturbacionesModel", oView);
+			var formPerturbaciones = oFormModel.getData() || {};
+
+			formPerturbaciones.chkRecDeseng = false;
+			formPerturbaciones.chkRecierre = false;
+			formPerturbaciones.chkDeseng = false;
+			formPerturbaciones.chkEmergencia = false;
+
+			if (oData.CodNovedad === "P" && oData.Recierre && oData.GenIndisponibilidad) {
+				formPerturbaciones.chkRecDeseng = true;
+			} else if (oData.CodNovedad === "P" && oData.Recierre) {
+				formPerturbaciones.chkRecierre = true;
+			} else if (oData.CodNovedad === "P" && oData.GenIndisponibilidad) {
+				formPerturbaciones.chkDeseng = true;
+			} else if (oData.CodNovedad === "D" && oData.GenIndisponibilidad && oData.Forzada) {
+				formPerturbaciones.chkEmergencia = true;
+			}
+
+			oFormModel.setData(formPerturbaciones);
 		}
 	});
 });

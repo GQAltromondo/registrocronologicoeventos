@@ -316,6 +316,53 @@
     text-transform: uppercase;
 }
 
+/* --- KPI Cards --- */
+.kpiCard {
+    border-radius: 10px;
+    padding: 14px 20px;
+    min-width: 160px;
+    flex: 1 1 0;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #b0b5c4;
+    margin: 0 6px;
+}
+
+.kpiTitle .sapMText {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #424753 !important;
+}
+
+.kpiValue .sapMText,
+.kpiValue.sapMText {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.kpiValueCritical.sapMText {
+    color: #b35900 !important;
+}
+
+.kpiValueError.sapMText {
+    color: #a4001a !important;
+}
+
+.kpiValueInfo.sapMText {
+    color: #004da4 !important;
+}
+
+.kpiSubtitle .sapMText,
+.kpiSubtitle.sapMText {
+    font-size: 11px !important;
+    color: #727785 !important;
+    margin-top: 2px;
+}
+
 /* --- Misc legacy --- */
 .tabbedBar .sapMITBHead {
     text-align: center;

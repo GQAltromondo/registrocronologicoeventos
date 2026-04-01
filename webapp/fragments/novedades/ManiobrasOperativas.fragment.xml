@@ -9,19 +9,7 @@
                 <Title text="Maniobras Operativas" level="H5"/>
             </HBox>
             <VBox class="container">
-                <HBox justifyContent="SpaceBetween" alignItems="Center">
-                    <HBox alignItems="Center">
-                        <Label text="Equipo E/S a traves de" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
-                        <CheckBox text="Barra de Transferencia"/>
-                        <CheckBox text="Seccionador de paso"/>
-                        <CheckBox text="Acoplador"/>
-                    </HBox>
-                    <HBox alignItems="Center">
-                        <Label text="Interruptor F/S" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
-                        <Input/>
-                    </HBox>
-                </HBox>
-
+        
                 <IconTabBar expandable="false" backgroundDesign="Transparent" headerBackgroundDesign="Transparent">
                     <items>
                         <IconTabFilter text="Cambio de barra" showAll="true">

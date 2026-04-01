@@ -380,46 +380,90 @@
                         <Title text="Afectaciones" level="H5"/>
                     </HBox>
 
-                    <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween">
-                        <VBox width="20%">
-                            <VBox >
-
-                                <Label text="Pot Cortada [MW]" showColon="true" />
-                                <Input value="{NovedadesFormJsonModel>/Potenafect}"/>
-                            </VBox>
+                    <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" alignItems="Center">
+                        <!-- KPI: Perd. de aporte -->
+                        <VBox alignItems="Center" class="kpiCard">
+                            <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                <core:Icon src="sap-icon://electricity" color="#b35900" class="sapUiTinyMarginEnd"/>
+                                <Text text="Perd. de aporte" class="kpiTitle"/>
+                            </HBox>
+                            <Text text="{path: 'NovedadesFormJsonModel>/Potenafect', formatter: '.formatter.formatNumber'}" class="kpiValue kpiValueCritical"/>
+                            <Text text="Sumatoria [MW]" class="kpiSubtitle"/>
+                        </VBox>
+                        <!-- KPI: ENS -->
+                        <VBox alignItems="Center" class="kpiCard">
+                            <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                <core:Icon src="sap-icon://energy-saving-lightbulb" color="#a4001a" class="sapUiTinyMarginEnd"/>
+                                <Text text="ENS" class="kpiTitle"/>
+                            </HBox>
+                            <Text text="{path: 'NovedadesFormJsonModel>/Ensval', formatter: '.formatter.formatNumber'}" class="kpiValue kpiValueError"/>
+                            <Text text="Energia No Suministrada [MWh]" class="kpiSubtitle"/>
+                        </VBox>
+                        <!-- KPI: Tiempo Total -->
+                        <VBox alignItems="Center" class="kpiCard">
+                            <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                <core:Icon src="sap-icon://time-overtime" color="#004da4" class="sapUiTinyMarginEnd"/>
+                                <Text text="Tiempo Total" class="kpiTitle"/>
+                            </HBox>
+                            <Text text="{path: 'NovedadesFormJsonModel>/TiempoTotalMin', formatter: '.formatter.formatMinutesToHHMM'}" class="kpiValue kpiValueInfo"/>
+                            <Text text="Duracion [HH:MM]" class="kpiSubtitle"/>
+                        </VBox>
+                        <!-- Factor de Reduccion -->
+                        <VBox class="kpiCard" justifyContent="Center">
                             <VBox>
                                 <Label text="Factor de Reduc" showColon="true" />
                                 <Input value="{NovedadesFormJsonModel>/Factred}"/>
                             </VBox>
-
                         </VBox>
-                        <VBox width="30%">
-
-                            <VBox>
-                                <Label text="Perd. de aporte [MW]" showColon="true" />
-                                <Input value="{NovedadesFormJsonModel>/Perdidatotalmw}"/>
-                            </VBox>
-                            <VBox>
-                                <Label text="ENS [MWh]" showColon="true" />
-                                <Input value="{NovedadesFormJsonModel>/Ensval}"/>
-                            </VBox>
-                        </VBox>
-                        <VBox width="30%">
-
-                            <VBox>
-                                <Label text="Fecha/Hora de Reposicion" showColon="true" />
-
-                                <DateTimePicker value="{ 'path': 'ENSListJsonModel>/ENSRegisters/0/Reptime', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
-
-                            </VBox>
-                            <VBox>
-                                <Label text="Comentarios" showColon="true" width="70%" />
-                                <TextArea value="{ENSListJsonModel>/ENSRegisters/0/Comments}" width="100%"/>
-                            </VBox>
-                        </VBox>
-
-
                     </HBox>
+
+                    <!-- Tabla ENS -->
+                    <HBox class="sectionHeader" alignItems="Center" justifyContent="SpaceBetween">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://energy-saving-lightbulb" class="sapUiSmallMarginEnd" color="#004da4"/>
+                            <Title text="ENS - Energía No Suministrada" level="H6"/>
+                        </HBox>
+                        <Button icon="sap-icon://add" press=".onAddENS" type="Emphasized" tooltip="Agregar registro ENS" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                    </HBox>
+                    <Table id="tableENS" items="{ENSListJsonModel>/ENSRegisters}" growing="true" growingScrollToLoad="true">
+                        <columns>
+                            <Column>
+                                <header><Text text="Potencia [MW]"/></header>
+                            </Column>
+                            <Column>
+                                <header><Text text="Hora Inicio"/></header>
+                            </Column>
+                            <Column>
+                                <header><Text text="Hora Reposición"/></header>
+                            </Column>
+                            <Column>
+                                <header><Text text="ENS [MWH]"/></header>
+                            </Column>
+                            <Column>
+                                <header><Text text="Tiempo [MIN]"/></header>
+                            </Column>
+                            <Column>
+                                <header><Text text="Observaciones"/></header>
+                            </Column>
+                            <Column width="5rem" hAlign="Center">
+                                <header><Text text="Acciones"/></header>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Input value="{parts:['ENSListJsonModel>Potencia'], formatter: '.formatter.formatThousands'}" change=".calcRowCorte" liveChange=".onPotenciaLiveChange" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                    <DateTimePicker value="{ 'path': 'ENSListJsonModel>Begtime', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" change=".calcRowCorte" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                    <DateTimePicker value="{ 'path': 'ENSListJsonModel>Reptime', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" change=".calcRowCorte" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                    <Text text="{path: 'ENSListJsonModel>ENSRow', formatter: '.formatter.formatNumber'}"/>
+                                    <Text text="{ENSListJsonModel>Corte}"/>
+                                    <Input value="{ENSListJsonModel>Comments}" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                    <Button icon="sap-icon://delete" type="Transparent" press=".onDeleteENS" tooltip="Eliminar" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+
                 </VBox>
 
                 <!-- Seccion: Avisos -->

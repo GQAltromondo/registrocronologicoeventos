@@ -870,10 +870,13 @@ sap.ui.define([
 								that.onNavBack();
 							};
 
-
-
-							fnNavigateAndRefresh();
-
+							// Hook para guardar datos adicionales (ENS, etc.) antes de navegar
+							var oAfterSave = this._onAfterSaveSuccess ? this._onAfterSaveSuccess(data) : Promise.resolve();
+							oAfterSave.then(function () {
+								fnNavigateAndRefresh();
+							}).catch(function () {
+								fnNavigateAndRefresh();
+							});
 						}
 					}
 				})
