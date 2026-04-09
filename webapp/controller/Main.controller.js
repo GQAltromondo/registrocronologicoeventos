@@ -453,6 +453,38 @@ sap.ui.define([
 		 * Usa __type para direccionar a la función correspondiente según el tipo de registro
 		 * @param {sap.ui.base.Event} oEvent - Evento del botón
 		 */
+		onSee: function (oEvent) {
+			var oSrc = oEvent.getSource();
+			var oCtx = oSrc.getBindingContext("oGeneralModel")
+				|| oSrc.getBindingContext("oNovedadesModel")
+				|| oSrc.getBindingContext("oPerturbacionesModel")
+				|| oSrc.getBindingContext("oTProgramadasModel");
+
+			if (!oCtx) {
+				MessageBox.alert("No se encontró la fila (bindingContext).");
+				return;
+			}
+
+			var oRow = oCtx.getObject() || {};
+			var sIdNovedad = oRow.IdNovedad || oRow.Id;
+
+			if (!sIdNovedad) {
+				MessageBox.alert("La fila no tiene IdNovedad.");
+				return;
+			}
+
+			var strId = String(sIdNovedad);
+			while (strId.length < 10) strId = "0" + strId;
+
+			var Empresa = oRow.Empresa || ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+			var data = { NroNovedad: strId, Empresa: Empresa };
+
+			NovedadesService.SearchNovedad(data,
+				jQuery.proxy(this.onSuccessLoadCallbackView, this),
+				jQuery.proxy(this.onErrorLoadCallback, this)
+			);
+		},
+
 		onEditNove: function (oEvent) {
 			var oSrc = oEvent.getSource();
 
@@ -5465,6 +5497,10 @@ sap.ui.define([
 			ModelHelper.getModel("ENSListJsonModel", this.getView()).setData({
 				ENSRegisters: oSelectedNovedad.ENSRegXNS_NAV.results
 			});
+			// Normalizacion_nav
+			if (oSelectedNovedad.Normalizacion_nav && oSelectedNovedad.Normalizacion_nav.results && oSelectedNovedad.Normalizacion_nav.results.length > 0) {
+				ModelHelper.getModel("NormalizacionNS", this.getView()).setData(oSelectedNovedad.Normalizacion_nav.results[0]);
+			}
 			var consecuenteModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
 			var novedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());
 			consecuenteModel.setProperty("/Tplnr", novedadesModel.getProperty("/Tplnr"));

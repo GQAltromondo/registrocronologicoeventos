@@ -2,8 +2,9 @@ sap.ui.define([
     "transener/registrocronologicoeventos/utils/ModelHelper",
     "transener/registrocronologicoeventos/utils/FioriHelper",
     "transener/registrocronologicoeventos/utils/Logger",
-    "transener/registrocronologicoeventos/utils/ErrorHandler"
-], function (ModelHelper, FioriHelper, Logger, ErrorHandler) {
+    "transener/registrocronologicoeventos/utils/ErrorHandler",
+    "transener/registrocronologicoeventos/utils/Constants"
+], function (ModelHelper, FioriHelper, Logger, ErrorHandler, Constants) {
     "use strict";
     return {
         isLocalDev: function () {
@@ -161,6 +162,7 @@ sap.ui.define([
             var UserDataModel = data;
             UserDataModel.oVisualizador = true;
             UserDataModel.viewEquipos = this.validateViewEquipos(UserDataModel.groups);
+            UserDataModel.isEditor = this._checkIsEditor(UserDataModel.groups);
 
             UserDataModel.DateNow = new Date();
             var oModel = ModelHelper.getModel("UserDataModel");
@@ -191,6 +193,19 @@ sap.ui.define([
             }
 
             return groups.some(group => roles.includes(group));
+        },
+
+        _checkIsEditor: function (groups) {
+            if (!groups) { return false; }
+            if (typeof groups === "string") { groups = [groups]; }
+            return groups.some(function (group) {
+                return Constants.ROLES.EDITOR_GROUPS.indexOf(group) !== -1;
+            });
+        },
+
+        isEditor: function () {
+            var oUserData = ModelHelper.getModel("UserDataModel").getData();
+            return !!oUserData.isEditor;
         },
 
         onReadUserApiError: function (jqXHR, textStatus, error) {

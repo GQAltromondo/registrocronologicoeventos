@@ -14,8 +14,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/MessageBoxHelper",
 	"transener/registrocronologicoeventos/utils/ValidateHelper",
 	"transener/registrocronologicoeventos/utils/formatter",
-	"sap/ui/core/UIComponent"
-], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, LibroGuardiaService, MessageBoxHelper, ValidateHelper, formatter, UIComponent) {
+	"sap/ui/core/UIComponent",
+	"transener/registrocronologicoeventos/services/UserService"
+], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, LibroGuardiaService, MessageBoxHelper, ValidateHelper, formatter, UIComponent, UserService) {
 	"use strict";
 	return Controller.extend("transener.registrocronologicoeventos.controller.BaseController", {
 		/**
@@ -397,7 +398,7 @@ sap.ui.define([
 				}
 
 				// Determinar el TipoNovedad basado en los checkboxes
-				var sTipoNovedad = "";
+				var svedad = "";
 				var oFormPerturbacionesModel = ModelHelper.getModel("formPerturbacionesModel", oView);
 
 				if (oFormPerturbacionesModel) {
@@ -644,6 +645,10 @@ sap.ui.define([
 		 * Guarda una novedad (crea o actualiza según el modo)
 		 */
 		onSaveNovedad: function () {
+			if (!UserService.isEditor()) {
+				MessageBox.error("No tiene permisos para crear o editar novedades.");
+				return;
+			}
 			const oValidationResult = this.novedadesFormValid();
 			if (!oValidationResult.valid) {
 				// Marcar campos con error en rojo (ya lo hace ValidateHelper a través de propertyState)

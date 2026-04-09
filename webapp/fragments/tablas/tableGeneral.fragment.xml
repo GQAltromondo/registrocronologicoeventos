@@ -57,9 +57,9 @@
 			<t:template>
 				<HBox justifyContent="SpaceAround" wrap="Wrap">
 					<Button type="Transparent" press="onSee" icon="sap-icon://show"/>
-					<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save"/>
-					<Button type="Transparent" press="onEditNove" icon="sap-icon://edit"/>
-					<Button type="Transparent" press='onDelete' icon="sap-icon://delete"/>
+					<Button type="Transparent" press="saveChanges" enabled="false" icon="sap-icon://save" visible="{UserDataModel>/isEditor}"/>
+					<Button type="Transparent" press="onEditNove" icon="sap-icon://edit" visible="{UserDataModel>/isEditor}"/>
+					<Button type="Transparent" press='onDelete' icon="sap-icon://delete" visible="{UserDataModel>/isEditor}"/>
 				</HBox>
 			</t:template>
 		</t:Column>

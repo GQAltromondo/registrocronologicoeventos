@@ -31,12 +31,12 @@
                             <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                         </ComboBox>
                     </VBox>
-                    <VBox>
+                    <!-- <VBox>
                         <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
                         <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
                             <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                         </ComboBox>
-                    </VBox>
+                    </VBox> -->
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
@@ -65,12 +65,12 @@
                             <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                         </ComboBox>
                     </VBox>
-                    <VBox>
+                    <!-- <VBox>
                         <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
                         <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
                             <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                         </ComboBox>
-                    </VBox>
+                    </VBox> -->
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>

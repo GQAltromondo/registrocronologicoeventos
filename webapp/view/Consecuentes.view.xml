@@ -159,7 +159,7 @@
 		<footer>
 			<OverflowToolbar>
 				<ToolbarSpacer/>
-				<Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad"/>
+				<Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad" visible="{UserDataModel>/isEditor}"/>
 				<Button text="Cancelar" press="onNavBack"/>
 			</OverflowToolbar>
 		</footer>

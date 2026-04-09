@@ -127,6 +127,11 @@ sap.ui.define([
                         });
                     }
 
+                    // Normalizacion_nav
+                    if (oData.Normalizacion_nav && oData.Normalizacion_nav.results && oData.Normalizacion_nav.results.length > 0) {
+                        ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav.results[0]);
+                    }
+
                     // InformeCammesaSet
                     if (oData.InformeCammesaSet && oData.InformeCammesaSet.results && oData.InformeCammesaSet.results.length > 0) {
                         var oCammesa = oData.InformeCammesaSet.results[0];

@@ -41,6 +41,13 @@ sap.ui.define([], function () {
 		},
 
 		/**
+		 * Roles y grupos de autorización
+		 */
+		ROLES: {
+			EDITOR_GROUPS: ["ope_jefe_turno_cot","ope_oper-turno_cot","ope_programacion_cot"]
+		},
+
+		/**
 		 * Valores booleanos para campos
 		 */
 		BOOLEAN_VALUES: {
@@ -82,7 +89,7 @@ sap.ui.define([], function () {
 			TBA: {
 				General: ["DI","IN","HABI","INHI","COM","RH","RA","APADECSUB","ACT SUB V","GUI","MIN FREC","NGUI","NFORM","PT","RESTR","RSSP"],
 				Alarma: ["ALARMA","FT","FTP","IFUIM","NT","RTNA"],
-				CargaDeEquipos: ["INTF","CNOM","NRESTR"],
+				CargaDeEquipos: ["INTF","CNOM","NRESTR","VANO"],
 				EnBandaFueraDeBanda: ["EB","FB"],
 				ManiobrasOperativas: ["CR","DF","DG","EP","FP","PFIH","PFII","SOLGEN","SPG","SSG","TORET","TORS","TORT","U10%","U5%","UNORM"],
 			}
@@ -103,7 +110,7 @@ sap.ui.define([], function () {
 		/**
 		 * Propiedades expandidas para OData
 		 */
-		ODATA_EXPAND_PROPERTIES: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav",
+		ODATA_EXPAND_PROPERTIES: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav,Normalizacion_nav",
 
 		/**
 		 * Configuración de modelos OData

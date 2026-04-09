@@ -17,9 +17,9 @@
                     </ComboBox>
                 </VBox>
                 <MessageStrip text="{AlarmaJsonModel>/DescripcionSeleccionada}" visible="{= !!${AlarmaJsonModel>/DescripcionSeleccionada} }" class="sapUiSmallMarginBegin"/>
-                <VBox width="30%" alignItems="End">
+                <!-- <VBox width="30%" alignItems="End">
                     <TextArea width="100%"/>
-                </VBox>
+                </VBox> -->
             </HBox>
             <HBox class="container" justifyContent="Start">
                 <VBox class="sapUiMediumMarginEnd">

@@ -112,7 +112,9 @@ sap.ui.define([], function () {
 			delete oObject.ENSRegXNS_NAV;
 			delete oObject.SenialXNS_nav;
 			delete oObject.PruebasXNS_nav;
+			delete oObject.Normalizacion_nav;
 			delete oObject.TiempoTotalMin;
+			
 		},
 
 	};

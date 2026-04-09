@@ -79,9 +79,9 @@
 					<OverflowToolbar>
 
 						<ToolbarSpacer/>
-						<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress"/>
-						<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress"/>
-						<Button type="Ghost" text="{i18n>scheduled}" press="onProgramadasPress"/>
+						<Button type="Ghost" text="{i18n>Novedades}" press="onNovedadesPress" visible="{UserDataModel>/isEditor}"/>
+						<Button type="Ghost" text="{i18n>Perturbaciones}" press="onPerturbacionesPress" visible="{UserDataModel>/isEditor}"/>
+						<Button type="Ghost" text="{i18n>scheduled}" press="onProgramadasPress" visible="{UserDataModel>/isEditor}"/>
 						<MenuButton text="Reportes" type="Ghost" defaultAction="onDefaultAction" useDefaultActionOnly="true" class="buttonInverted" menuPosition="RightBottom">
 							<menu>
 								<Menu itemSelected="onMenuAction">

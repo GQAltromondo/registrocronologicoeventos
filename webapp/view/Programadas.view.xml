@@ -232,7 +232,7 @@
             <OverflowToolbar>
                 <ToolbarSpacer/>
                 <!-- equivalente a beginButton -->
-                <Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad"/>
+                <Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveNovedad" visible="{UserDataModel>/isEditor}"/>
                 <!-- equivalente a endButton -->
                 <Button text="Cerrar" press="onNavBack"/>
             </OverflowToolbar>

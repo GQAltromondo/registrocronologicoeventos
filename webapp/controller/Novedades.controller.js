@@ -435,10 +435,18 @@ sap.ui.define([
         var oCargaFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
         if (!oCargaFormModel.getData() || Object.keys(oCargaFormModel.getData()).length === 0) {
           oCargaFormModel.setData({
-            InformoEmpresa: "",
+            Porcentaje: "",
             FechaHora: null,
-            Comentarios: ""
+            InformoEmpresa: "",
+            Comentarios: "",
+            editingIndex: -1
           });
+        }
+
+        // Inicializar lista de Carga de Equipos
+        var oCargaEquiposListModel = ModelHelper.getModel("CargaEquiposListModel", oView);
+        if (!oCargaEquiposListModel.getData() || !oCargaEquiposListModel.getData().registros) {
+          oCargaEquiposListModel.setData({ registros: [] });
         }
 
         // Inicializar NormalizacionCarga con valores por defecto
@@ -457,6 +465,84 @@ sap.ui.define([
       } catch (e) {
         Logger.error("Error al inicializar modelos de CargaDeEquipos", e);
         ErrorHandler.handleError(e, "Inicializar modelos de CargaDeEquipos", false);
+      }
+    },
+
+    _clearCargaForm: function () {
+      var oFormModel = ModelHelper.getModel("CargaFormJsonModel", this.getView());
+      oFormModel.setData({
+        Porcentaje: "",
+        FechaHora: null,
+        InformoEmpresa: "",
+        Comentarios: "",
+        editingIndex: -1
+      });
+    },
+
+    onSaveCargaEquipo: function () {
+      var oView = this.getView();
+      var oFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
+      var oFormData = oFormModel.getData();
+      var oListModel = ModelHelper.getModel("CargaEquiposListModel", oView);
+      var aRegistros = oListModel.getData().registros || [];
+
+      if (!oFormData.Porcentaje) {
+        sap.m.MessageBox.alert("Debe ingresar el porcentaje de carga.");
+        return;
+      }
+
+      var oRegistro = {
+        Porcentaje: oFormData.Porcentaje,
+        FechaHora: oFormData.FechaHora,
+        InformoEmpresa: oFormData.InformoEmpresa,
+        Comentarios: oFormData.Comentarios
+      };
+
+      var iEditingIndex = oFormData.editingIndex;
+      if (iEditingIndex >= 0 && iEditingIndex < aRegistros.length) {
+        // Editar existente
+        aRegistros[iEditingIndex] = oRegistro;
+      } else {
+        // Agregar nuevo
+        aRegistros.push(oRegistro);
+      }
+
+      oListModel.refresh(true);
+      this._clearCargaForm();
+    },
+
+    onEditCargaEquipo: function (oEvent) {
+      var oView = this.getView();
+      var oCtx = oEvent.getSource().getBindingContext("CargaEquiposListModel");
+      var oItem = oCtx.getObject();
+      var sPath = oCtx.getPath();
+      var iIndex = parseInt(sPath.split("/").pop(), 10);
+
+      var oFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
+      oFormModel.setData({
+        Porcentaje: oItem.Porcentaje,
+        FechaHora: oItem.FechaHora,
+        InformoEmpresa: oItem.InformoEmpresa,
+        Comentarios: oItem.Comentarios,
+        editingIndex: iIndex
+      });
+    },
+
+    onDeleteCargaEquipo: function (oEvent) {
+      var oView = this.getView();
+      var oListModel = ModelHelper.getModel("CargaEquiposListModel", oView);
+      var oCtx = oEvent.getSource().getBindingContext("CargaEquiposListModel");
+      var sPath = oCtx.getPath();
+      var iIndex = parseInt(sPath.split("/").pop(), 10);
+      var aRegistros = oListModel.getData().registros;
+
+      aRegistros.splice(iIndex, 1);
+      oListModel.refresh(true);
+
+      // Si estaba editando este indice, limpiar el form
+      var oFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
+      if (oFormModel.getProperty("/editingIndex") === iIndex) {
+        this._clearCargaForm();
       }
     }
   });

@@ -3,7 +3,7 @@
 
     <FlexBox direction="Column" class="sapUiSmallMargin">
 
-        <!-- Seccion: Carga de Equipos -->
+        <!-- Seccion: Carga de Equipos - Formulario -->
         <VBox class="border_ctn sapUiSmallMarginBottom">
             <HBox class="sectionHeader" alignItems="Center">
                 <core:Icon src="sap-icon://machine" class="sapUiSmallMarginEnd" color="#004da4"/>
@@ -12,25 +12,63 @@
             <VBox class="container">
                 <HBox alignItems="Center">
                     <Label text="Porcentaje de carga / Superacion de limite / Supera valor nominal" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
-                    <Input value="{CargaFormJsonModel>/porcen}"/>
+                    <Input value="{CargaFormJsonModel>/Porcentaje}" editable="{= !${utilsModel>/readOnlyMode}}"/>
                 </HBox>
                 <HBox justifyContent="Start">
                     <VBox class="sapUiMediumMarginEnd">
+                        <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
+                        <DateTimePicker value="{ 'path': 'CargaFormJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                    </VBox>
+                    <VBox class="sapUiMediumMarginEnd">
                         <Label text="Se informa a Empresa" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{CargaFormJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                        <ComboBox width="300px" selectedKey="{CargaFormJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                             <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                         </ComboBox>
-                    </VBox>
-                    <VBox>
-                        <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
-                        <DateTimePicker value="{ 'path': 'CargaFormJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                    <TextArea value="{CargaFormJsonModel>/Comentarios}" width="100%"/>
+                    <TextArea value="{CargaFormJsonModel>/Comentarios}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                 </VBox>
             </VBox>
+            <HBox justifyContent="End" class="sapUiSmallMargin">
+                <Button text="{= ${CargaFormJsonModel>/editingIndex} >= 0 ? 'Guardar' : 'Agregar' }" press=".onSaveCargaEquipo" type="{= ${CargaFormJsonModel>/editingIndex} >= 0 ? 'Accept' : 'Emphasized' }" visible="{= !${utilsModel>/readOnlyMode}}"/>
+            </HBox>
+
+            <!-- Tabla de registros cargados -->
+            <Table items="{CargaEquiposListModel>/registros}" growing="true" growingScrollToLoad="true">
+                <columns>
+                    <Column>
+                        <header><Text text="% Carga / Superacion / Valor Nominal"/></header>
+                    </Column>
+                    <Column>
+                        <header><Text text="Fecha/Hora"/></header>
+                    </Column>
+                    <Column>
+                        <header><Text text="Se informa a Empresa"/></header>
+                    </Column>
+                    <Column>
+                        <header><Text text="Comentarios"/></header>
+                    </Column>
+                    <Column width="8rem" hAlign="Center">
+                        <header><Text text="Acciones"/></header>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{CargaEquiposListModel>Porcentaje}"/>
+                            <Text text="{path: 'CargaEquiposListModel>FechaHora', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd/MM/yyyy H:mm' }}"/>
+                            <Text text="{CargaEquiposListModel>InformoEmpresa}"/>
+                            <Text text="{CargaEquiposListModel>Comentarios}"/>
+                            <HBox>
+                                <Button icon="sap-icon://edit" type="Transparent" press=".onEditCargaEquipo" tooltip="Editar" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                                <Button icon="sap-icon://delete" type="Transparent" press=".onDeleteCargaEquipo" tooltip="Eliminar" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
         </VBox>
 
         <!-- Seccion: Normalizacion -->

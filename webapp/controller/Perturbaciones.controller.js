@@ -9,8 +9,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/NovedadesService",
 	"transener/registrocronologicoeventos/services/PruebasService",
 	"transener/registrocronologicoeventos/utils/Logger",
-	"transener/registrocronologicoeventos/services/oDataServices"
-], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger, oDataServices) {
+	"transener/registrocronologicoeventos/services/oDataServices",
+	"transener/registrocronologicoeventos/services/UserService"
+], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger, oDataServices, UserService) {
 	"use strict";
 	var oDialog = null;
 
@@ -115,6 +116,14 @@ sap.ui.define([
 						oUtilsModel.setProperty("/readOnlyMode", false);
 					}
 				}
+				// Si no es editor, forzar modo solo lectura
+				if (!UserService.isEditor()) {
+					oEditModel.setProperty("/editableMode", false);
+					oEditModel.setProperty("/mode", Constants.EDIT_MODES.VIEW);
+					if (oUtilsModel) {
+						oUtilsModel.setProperty("/readOnlyMode", true);
+					}
+				}
 			}
 
 			this.addSignal = true;
@@ -202,6 +211,11 @@ sap.ui.define([
 						ModelHelper.getModel("TestProtecciones", oView).setData({
 							PruebasProtecciones: oData.PruebasXNS_nav.results
 						});
+					}
+
+					// Normalizacion_nav
+					if (oData.Normalizacion_nav && oData.Normalizacion_nav.results && oData.Normalizacion_nav.results.length > 0) {
+						ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav.results[0]);
 					}
 
 					// InformeCammesaSet
@@ -1339,6 +1353,7 @@ sap.ui.define([
 
 		_onAfterSaveSuccess: function (oNovedadData) {
 			var oView = this.getView();
+			var that = this;
 			var aENS = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
 			if (!aENS || aENS.length === 0) {
 				return Promise.resolve();
@@ -1349,25 +1364,32 @@ sap.ui.define([
 			var oModel = oDataServices.getModel("");
 			var aPromises = [];
 
+			Logger.info("_onAfterSaveSuccess: Guardando " + aENS.length + " ENS. IdNovedad=" + sIdNovedad + ", Empresa=" + sEmpresa);
+
 			for (var i = 0; i < aENS.length; i++) {
 				var oENS = aENS[i];
+
+				Logger.info("ENS[" + i + "]: Modif='" + oENS.Modif + "', Potencia=" + oENS.Potencia + ", Corte=" + oENS.Corte);
+
 				var oPayload = {
 					IdNovedad: sIdNovedad,
 					Modif: oENS.Modif || "",
-					Potencia: oENS.Potencia ? oENS.Potencia.toString().replace(/\./g, "") : "0",
+					Potencia: String(that._parseLocalNumber(oENS.Potencia)),
 					Begtime: oENS.Begtime || null,
 					Reptime: oENS.Reptime || null,
-					Corte: oENS.Corte ? oENS.Corte.toString() : "0",
+					Corte: String(parseFloat(oENS.Corte) || 0),
 					Comments: oENS.Comments || "",
 					Empresa: sEmpresa
 				};
 
 				if (oENS.Modif) {
 					// Existente -> UPDATE
+					Logger.info("ENS[" + i + "]: UPDATE path=/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')");
 					var sPath = "/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')";
 					aPromises.push(this._updateENS(oModel, sPath, oPayload));
 				} else {
 					// Nuevo -> CREATE
+					Logger.info("ENS[" + i + "]: CREATE nuevo registro");
 					aPromises.push(this._createENS(oModel, oPayload));
 				}
 			}
