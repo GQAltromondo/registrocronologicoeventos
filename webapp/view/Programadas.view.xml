@@ -107,19 +107,19 @@
                                     <VBox >
                                         <Label text="Se energizó desde" showColon="true" />
                                         <HBox justifyContent="SpaceBetween">
-                                            <ComboBox selectedKey="{NormalizacionNS>/Energizo}" valueState="{NormalizacionNS>/EnergizoState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnergizoStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                            <ComboBox selectedKey="{NormalizacionNS>/EnergizoDesde}" class="cmbMD" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                                 <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                             </ComboBox>
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                            <DateTimePicker value="{ 'path': 'NormalizacionNS>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                         </HBox>
                                     </VBox>
                                     <VBox >
                                         <Label text="En Servicio" showColon="true" />
                                         <HBox justifyContent="SpaceBetween">
-                                            <ComboBox selectedKey="{NormalizacionNS>/EnServicio}" valueState="{NormalizacionNS>/EnServicioState}" class="cmbMD" valueStateText="{NormalizacionNS>/EnServicioStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                            <ComboBox selectedKey="{NormalizacionNS>/CargoDesde}" class="cmbMD" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                                 <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}" />
                                             </ComboBox>
-                                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnServicioFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                            <DateTimePicker value="{ 'path': 'NormalizacionNS>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                         </HBox>
                                     </VBox>
                                 </VBox>
@@ -149,13 +149,13 @@
                                 <HBox >
                                     <VBox class="halfConte">
                                         <Label text="Se informó a Empresa"/>
-                                        <ComboBox selectedKey="{NormalizacionNS>/InformoEmp}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
+                                        <ComboBox selectedKey="{NormalizacionNS>/InformaEmpresa}" items="{EmpresaTramitacionJsonModel>/Empresas}" showSecondaryValues="true" enabled="{= !${utilsModel>/readOnlyMode}}" class="cmbLG">
                                             <core:ListItem key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Descripcion}" additionalText="{EmpresaTramitacionJsonModel>Codigo}" />
                                         </ComboBox>
                                     </VBox>
                                     <VBox class="halfConte">
                                         <Label text="Comentarios" showColon="true"/>
-                                        <TextArea value="{NormalizacionNS>/ComentariosAviso}" width="100%"/>
+                                        <TextArea value="{NormalizacionNS>/InformaEmpComentarios}" width="100%"/>
                                     </VBox>
 
                                 </HBox>

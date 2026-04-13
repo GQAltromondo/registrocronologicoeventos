@@ -8,8 +8,9 @@ sap.ui.define([
     "transener/registrocronologicoeventos/services/CausasService",
     "transener/registrocronologicoeventos/services/NovedadesService",
     "transener/registrocronologicoeventos/utils/Logger",
-    "transener/registrocronologicoeventos/services/NormalizacionService"
-], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger, NormalizacionService) {
+    "transener/registrocronologicoeventos/services/NormalizacionService",
+    "transener/registrocronologicoeventos/services/CammesaService"
+], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger, NormalizacionService, CammesaService) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Programadas", {
@@ -24,19 +25,15 @@ sap.ui.define([
 
             // Inicializar modelo NormalizacionNS
             var oNormModel = ModelHelper.getModel("NormalizacionNS", oView);
-            if (!oNormModel.getData() || !oNormModel.getData().Energizo) {
+            if (!oNormModel.getData() || !oNormModel.getData().EnergizoDesde) {
                 oNormModel.setData({
-                    Energizo: "",
-                    EnergizoState: "None",
-                    EnergizoStateMessage: "",
-                    EnServicio: "",
-                    EnServicioState: "None",
-                    EnServicioStateMessage: "",
-                    ESIntPropioFecha: null,
+                    EnergizoDesde: "",
+                    EnergizoFecha: null,
+                    CargoDesde: "",
+                    CargoFecha: null,
                     Comentarios: "",
-                    FallaEqManiobra: "",
-                    InformoEmp: "",
-                    ComentariosAviso: ""
+                    InformaEmpresa: "",
+                    InformaEmpComentarios: ""
                 });
             }
 
@@ -79,9 +76,16 @@ sap.ui.define([
                 }
             }
 
+            // Resetear modelo InformaCammesa
+            ModelHelper.getModel("InformaCammesa", oView).setData({
+                Texto: "",
+                InformaCammesa: false
+            });
+
             // Guardar referencia de la novedad para saber si esta persistida
             this._sIdNovedad = (sIdNovedad && sIdNovedad !== "new") ? sIdNovedad : "";
             this._sEmpresa = sEmpresa || "";
+            this._bNormalizacionExists = false;
 
             if (this._sIdNovedad && sEmpresa) {
                 this._loadNovedadFromRoute(this._sIdNovedad, sEmpresa);
@@ -129,14 +133,17 @@ sap.ui.define([
                     }
 
                     // Normalizacion_nav
-                    if (oData.Normalizacion_nav && oData.Normalizacion_nav ) {
+                    if (oData.Normalizacion_nav && oData.Normalizacion_nav.IdNovedad) {
                         ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav);
+                        that._bNormalizacionExists = true;
+                    } else {
+                        that._bNormalizacionExists = false;
                     }
 
                     // InformeCammesaSet
                     if (oData.InformeCammesaSet && oData.InformeCammesaSet.results && oData.InformeCammesaSet.results.length > 0) {
                         var oCammesa = oData.InformeCammesaSet.results[0];
-                        oCammesa.InformaCammesa = oCammesa.InformaCammesa === "S";
+                        oCammesa.InformaCammesa = oCammesa.InformaCammesa === "S" || oCammesa.InformaCammesa === "X";
                         ModelHelper.getModel("InformaCammesa", oView).setData(oCammesa);
                     }
 
@@ -174,23 +181,32 @@ sap.ui.define([
             var oView = this.getView();
             var sIdNovedad = oNovedadData.IdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getData().IdNovedad;
             var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+            var aPromises = [];
+
+            // Guardar InformaCammesa
+            var oCammesaData = ModelHelper.getModel("InformaCammesa", oView).getData();
+            if (oCammesaData) {
+                aPromises.push(CammesaService.postCammesa(oCammesaData, sIdNovedad, sEmpresa));
+            }
 
             // Guardar Normalización
             var oNormData = ModelHelper.getModel("NormalizacionNS", oView).getData();
-            if (!oNormData) {
+            if (oNormData) {
+                var bNormExists = !!this._bNormalizacionExists;
+                aPromises.push(NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists));
+            }
+
+            if (aPromises.length === 0) {
                 return Promise.resolve();
             }
 
-            var oEditModel = ModelHelper.getModel("editModel", oView);
-            var sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();
-            var bNormExists = sMode === Constants.EDIT_MODES.EDIT;
-            return NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists)
+            return Promise.all(aPromises)
                 .then(function () {
-                    Logger.info("Normalización guardada correctamente");
+                    Logger.info("Registros secundarios guardados correctamente");
                 })
                 .catch(function (err) {
-                    Logger.error("Error guardando Normalización", err);
-                    sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar la normalización.");
+                    Logger.error("Error guardando registros secundarios", err);
+                    sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar algunos registros.");
                 });
         }
 

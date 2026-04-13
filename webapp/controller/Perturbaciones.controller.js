@@ -170,6 +170,7 @@ sap.ui.define([
 			// Guardar referencia de la novedad para saber si esta persistida
 			this._sIdNovedad = (sIdNovedad && sIdNovedad !== "new") ? sIdNovedad : "";
 			this._sEmpresa = sEmpresa || "";
+			this._bNormalizacionExists = false;
 
 			if (this._sIdNovedad && sEmpresa) {
 				this._loadNovedadFromRoute(this._sIdNovedad, sEmpresa);
@@ -253,8 +254,11 @@ sap.ui.define([
 					}
 
 					// Normalizacion_nav
-					if (oData.Normalizacion_nav && oData.Normalizacion_nav ) {
+					if (oData.Normalizacion_nav && oData.Normalizacion_nav.IdNovedad) {
 						ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav);
+						that._bNormalizacionExists = true;
+					} else {
+						that._bNormalizacionExists = false;
 					}
 
 					// InformeCammesaSet
@@ -1580,9 +1584,7 @@ sap.ui.define([
 			// Guardar Normalización
 			var oNormData = ModelHelper.getModel("NormalizacionNS", oView).getData();
 			if (oNormData) {
-				var oEditModel = ModelHelper.getModel("editModel", oView);
-				var sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();
-				var bNormExists = sMode === Constants.EDIT_MODES.EDIT;
+				var bNormExists = !!this._bNormalizacionExists;
 				aPromises.push(NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists));
 			}
 
