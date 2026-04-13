@@ -7,8 +7,9 @@ sap.ui.define([
     "transener/registrocronologicoeventos/services/EquiposService",
     "transener/registrocronologicoeventos/services/CausasService",
     "transener/registrocronologicoeventos/services/NovedadesService",
-    "transener/registrocronologicoeventos/utils/Logger"
-], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger) {
+    "transener/registrocronologicoeventos/utils/Logger",
+    "transener/registrocronologicoeventos/services/NormalizacionService"
+], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger, NormalizacionService) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Programadas", {
@@ -128,8 +129,8 @@ sap.ui.define([
                     }
 
                     // Normalizacion_nav
-                    if (oData.Normalizacion_nav && oData.Normalizacion_nav.results && oData.Normalizacion_nav.results.length > 0) {
-                        ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav.results[0]);
+                    if (oData.Normalizacion_nav && oData.Normalizacion_nav ) {
+                        ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav);
                     }
 
                     // InformeCammesaSet
@@ -167,6 +168,30 @@ sap.ui.define([
             const oNovedad = NovedadModel.getData();
             NovedadModel.setProperty("/CodCausa", "");
             CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa);
+        },
+
+        _onAfterSaveSuccess: function (oNovedadData) {
+            var oView = this.getView();
+            var sIdNovedad = oNovedadData.IdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getData().IdNovedad;
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+
+            // Guardar Normalización
+            var oNormData = ModelHelper.getModel("NormalizacionNS", oView).getData();
+            if (!oNormData) {
+                return Promise.resolve();
+            }
+
+            var oEditModel = ModelHelper.getModel("editModel", oView);
+            var sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();
+            var bNormExists = sMode === Constants.EDIT_MODES.EDIT;
+            return NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists)
+                .then(function () {
+                    Logger.info("Normalización guardada correctamente");
+                })
+                .catch(function (err) {
+                    Logger.error("Error guardando Normalización", err);
+                    sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar la normalización.");
+                });
         }
 
     });

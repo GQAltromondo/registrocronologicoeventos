@@ -5498,8 +5498,8 @@ sap.ui.define([
 				ENSRegisters: oSelectedNovedad.ENSRegXNS_NAV.results
 			});
 			// Normalizacion_nav
-			if (oSelectedNovedad.Normalizacion_nav && oSelectedNovedad.Normalizacion_nav.results && oSelectedNovedad.Normalizacion_nav.results.length > 0) {
-				ModelHelper.getModel("NormalizacionNS", this.getView()).setData(oSelectedNovedad.Normalizacion_nav.results[0]);
+			if (oSelectedNovedad.Normalizacion_nav && oSelectedNovedad.Normalizacion_nav && oSelectedNovedad.Normalizacion_nav.length > 0) {
+				ModelHelper.getModel("NormalizacionNS", this.getView()).setData(oSelectedNovedad.Normalizacion_nav[0]);
 			}
 			var consecuenteModel = ModelHelper.getModel("ConsecuentesFormJsonModel", this.getView());
 			var novedadesModel = ModelHelper.getModel("NovedadesFormJsonModel", this.getView());

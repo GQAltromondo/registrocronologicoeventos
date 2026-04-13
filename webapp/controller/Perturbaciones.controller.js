@@ -10,8 +10,10 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/services/PruebasService",
 	"transener/registrocronologicoeventos/utils/Logger",
 	"transener/registrocronologicoeventos/services/oDataServices",
-	"transener/registrocronologicoeventos/services/UserService"
-], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger, oDataServices, UserService) {
+	"transener/registrocronologicoeventos/services/UserService",
+	"transener/registrocronologicoeventos/services/NormalizacionService",
+	"transener/registrocronologicoeventos/services/CammesaService"
+], function (BaseController, formatter, ModelHelper, Constants, EquiposService, CausasService, ProteccionesService, NovedadesService, PruebasService, Logger, oDataServices, UserService, NormalizacionService, CammesaService) {
 	"use strict";
 	var oDialog = null;
 
@@ -26,6 +28,7 @@ sap.ui.define([
 
 			// Inicializar modelos
 			const oView = this.getView();
+			ModelHelper.getModel("NormalizacionNS", oView);
 			this._initPruebasFormModel(oView);
 			const oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
 			if (!oProteccionesModel.getData() || !oProteccionesModel.getData().Protecciones) {
@@ -91,6 +94,13 @@ sap.ui.define([
 					TBA_TX2: false, TBA_RX2: false, TBA_T22: false, TBA_TS22: false, TBA_SINEx2: false
 				});
 			}
+
+			this._iEditingProteccionIndex = -1;
+			this._oEditingProteccionSignalData = null;
+			this._sEditingProteccionPrefix = null;
+			this._sEditingProteccionEtKey = null;
+			this._iEditingPruebaIndex = -1;
+			this._oEditingPruebaRow = null;
 		},
 		_onRouteMatched: function (oEvent) {
 			var oArgs = oEvent.getParameter("arguments") || {};
@@ -127,6 +137,35 @@ sap.ui.define([
 			}
 
 			this.addSignal = true;
+
+			// Resetear estado de edición in-place
+			this._iEditingProteccionIndex = -1;
+			this._oEditingProteccionSignalData = null;
+			this._sEditingProteccionPrefix = null;
+			this._sEditingProteccionEtKey = null;
+			this._iEditingPruebaIndex = -1;
+			this._oEditingPruebaRow = null;
+			this._setProteccionButtonMode("add");
+			this._setPruebaButtonMode("add");
+
+			// Resetear modelo de InformaCammesa
+			ModelHelper.getModel("CammesaFormJsonModel", oView).setData({
+				InformaCammesa: false,
+				Texto: "",
+				FechaHora: null,
+				Autoriza: false
+			});
+
+			// Resetear modelo de normalización
+			ModelHelper.getModel("NormalizacionNS", oView).setData({
+				EnergizoDesde: "",
+				EnergizoFecha: null,
+				CargoDesde: "",
+				CargoFecha: null,
+				Comentarios: "",
+				InformaEmpresa: "",
+				InformaEmpComentarios: ""
+			});
 
 			// Guardar referencia de la novedad para saber si esta persistida
 			this._sIdNovedad = (sIdNovedad && sIdNovedad !== "new") ? sIdNovedad : "";
@@ -214,15 +253,15 @@ sap.ui.define([
 					}
 
 					// Normalizacion_nav
-					if (oData.Normalizacion_nav && oData.Normalizacion_nav.results && oData.Normalizacion_nav.results.length > 0) {
-						ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav.results[0]);
+					if (oData.Normalizacion_nav && oData.Normalizacion_nav ) {
+						ModelHelper.getModel("NormalizacionNS", oView).setData(oData.Normalizacion_nav);
 					}
 
 					// InformeCammesaSet
 					if (oData.InformeCammesaSet && oData.InformeCammesaSet.results && oData.InformeCammesaSet.results.length > 0) {
 						var oCammesa = oData.InformeCammesaSet.results[0];
-						oCammesa.Autoriza = oCammesa.Autoriza === "S";
-						oCammesa.InformaCammesa = oCammesa.InformaCammesa === "S";
+						oCammesa.Autoriza = oCammesa.Autoriza === "S" || oCammesa.Autoriza === "X";
+						oCammesa.InformaCammesa = oCammesa.InformaCammesa === "S" || oCammesa.InformaCammesa === "X";
 						ModelHelper.getModel("CammesaFormJsonModel", oView).setData(oCammesa);
 					}
 
@@ -307,10 +346,31 @@ sap.ui.define([
 			oProteccionesModel.refresh(true);
 			
 			},
-		
-		/**
-		 * Agrega las protecciones de los HBox a la lista
-		 */
+
+		_setProteccionButtonMode: function (sMode) {
+			var oBtn = this.byId("btnAddProteccion");
+			if (!oBtn) { return; }
+			if (sMode === "save") {
+				oBtn.setIcon("sap-icon://save");
+				oBtn.setTooltip("Guardar proteccion");
+			} else {
+				oBtn.setIcon("sap-icon://add");
+				oBtn.setTooltip("Agregar proteccion");
+			}
+		},
+
+		_setPruebaButtonMode: function (sMode) {
+			var oBtn = this.byId("btnAddPrueba");
+			if (!oBtn) { return; }
+			if (sMode === "save") {
+				oBtn.setIcon("sap-icon://save");
+				oBtn.setTooltip("Guardar prueba");
+			} else {
+				oBtn.setIcon("sap-icon://add");
+				oBtn.setTooltip("Agregar prueba");
+			}
+		},
+
 		onAddProteccion: function () {
 			const oView = this.getView();
 			const oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
@@ -510,86 +570,145 @@ sap.ui.define([
 				return oItem;
 			};
 
+			var bIsEditing = this._iEditingProteccionIndex >= 0;
 			var iAdded = 0;
 			var aNewItems = [];
 
-			if (bIsTBA) {
-				// Empresa 300: dos HBox - HBox1 usa Et2/sufijo 1, HBox2 usa Et1/sufijo 2
-				var oProteccionTBA1 = collectProteccionData("1", "Et2");
-				if (oProteccionTBA1.Et) {
-					var oItem1 = createProteccionItem(oProteccionTBA1, "1", "Et2");
-					if (oItem1) {
-						aProtecciones.push(oItem1);
-						aNewItems.push(oItem1);
+			if (bIsEditing) {
+				// Modo edición: recolectar solo del HBox correspondiente
+				var sEditPrefix = this._sEditingProteccionPrefix;
+				var sEditEtKey = this._sEditingProteccionEtKey;
+				var oProtData = collectProteccionData(sEditPrefix, sEditEtKey);
+				if (oProtData.Et) {
+					var oNewItem = createProteccionItem(oProtData, sEditPrefix, sEditEtKey);
+					if (oNewItem) {
+						// Preservar Posicion original
+						var oOldItem = aProtecciones[this._iEditingProteccionIndex];
+						if (oOldItem && oOldItem._signalData && oOldItem._signalData.Posicion) {
+							oNewItem._signalData.Posicion = oOldItem._signalData.Posicion;
+						}
+						aProtecciones[this._iEditingProteccionIndex] = oNewItem;
+						aNewItems.push(oNewItem);
 						iAdded++;
-						this._resetProteccionFields("1", true);
+						this._resetProteccionFields(sEditPrefix, bIsTBA);
 					}
 				}
 
-				var oProteccionTBA2 = collectProteccionData("2", "Et1");
-				if (oProteccionTBA2.Et) {
-					var oItem2 = createProteccionItem(oProteccionTBA2, "2", "Et1");
-					if (oItem2) {
-						aProtecciones.push(oItem2);
-						aNewItems.push(oItem2);
-						iAdded++;
-						this._resetProteccionFields("2", true);
-					}
-				}
-			} else {
-				// Empresa 100: HBox1 usa Et (sin numero en vista)/sufijo 1, HBox2 usa Et2/sufijo 2
-				var oProteccion1 = collectProteccionData("1", "Et");
-				var oProteccion2 = collectProteccionData("2", "Et2");
+				if (iAdded > 0) {
+					oProteccionesModel.setProperty("/Protecciones", aProtecciones);
+					oProteccionesModel.updateBindings();
 
-				if (oProteccion1.Et) {
-					var oItem1 = createProteccionItem(oProteccion1, "1", "Et");
-					if (oItem1) {
-						aProtecciones.push(oItem1);
-						aNewItems.push(oItem1);
-						iAdded++;
-						this._resetProteccionFields("1", false);
-					}
-				}
+					var sIdNovedad = that._sIdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/IdNovedad") || "";
+					var sEmpresaPost = that._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+					var oOldSignalData = this._oEditingProteccionSignalData;
 
-				if (oProteccion2.Et) {
-					var oItem2 = createProteccionItem(oProteccion2, "2", "Et2");
-					if (oItem2) {
-						aProtecciones.push(oItem2);
-						aNewItems.push(oItem2);
-						iAdded++;
-						this._resetProteccionFields("2", false);
-					}
-				}
-			}
-
-			// Actualizar el modelo
-			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
-			oProteccionesModel.updateBindings();
-
-			if (iAdded > 0) {
-				// Usar el IdNovedad guardado de la ruta (fiable, no depende de timing asincrono)
-				var sIdNovedad = that._sIdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/IdNovedad") || "";
-				var sEmpresaPost = that._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
-
-				// Novedad persistida -> POST individual al backend
-				if (sIdNovedad) {
-					aNewItems.forEach(function (oNewItem) {
-						var oPayload = jQuery.extend({}, oNewItem._signalData);
+					if (sIdNovedad && oOldSignalData && oOldSignalData.Id && oOldSignalData.Posicion) {
+						// DELETE viejo + POST nuevo
+						ProteccionesService.remove(oOldSignalData)
+							.then(function () {
+								var oPayload = jQuery.extend({}, aNewItems[0]._signalData);
+								return ProteccionesService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresaPost);
+							})
+							.then(function () {
+															})
+							.catch(function (oError) {
+								sap.m.MessageBox.error("Error al actualizar la proteccion en el servidor");
+								Logger.error("Error en actualizar proteccion", oError);
+							});
+					} else if (sIdNovedad) {
+						var oPayload = jQuery.extend({}, aNewItems[0]._signalData);
 						ProteccionesService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresaPost)
 							.then(function () {
-								sap.m.MessageToast.show("Proteccion guardada en el servidor");
-							})
+															})
 							.catch(function (oError) {
 								sap.m.MessageBox.error("Error al guardar la proteccion en el servidor");
 								Logger.error("Error en IndividualPOSTEdition", oError);
 							});
-					});
+					} else {
+											}
 				} else {
-					// Novedad no persistida -> solo local, se guarda al persistir la novedad
-					sap.m.MessageToast.show("Se agrego " + iAdded + " proteccion(es) a la lista");
+					sap.m.MessageBox.warning("Debe seleccionar al menos una ET para guardar la proteccion");
 				}
+
+				// Resetear estado de edición
+				this._iEditingProteccionIndex = -1;
+				this._oEditingProteccionSignalData = null;
+				this._sEditingProteccionPrefix = null;
+				this._sEditingProteccionEtKey = null;
+				this._setProteccionButtonMode("add");
 			} else {
-				sap.m.MessageBox.warning("Debe seleccionar al menos una ET para agregar protecciones");
+				// Modo agregar: comportamiento original
+				if (bIsTBA) {
+					var oProteccionTBA1 = collectProteccionData("1", "Et2");
+					if (oProteccionTBA1.Et) {
+						var oItem1 = createProteccionItem(oProteccionTBA1, "1", "Et2");
+						if (oItem1) {
+							aProtecciones.push(oItem1);
+							aNewItems.push(oItem1);
+							iAdded++;
+							this._resetProteccionFields("1", true);
+						}
+					}
+
+					var oProteccionTBA2 = collectProteccionData("2", "Et1");
+					if (oProteccionTBA2.Et) {
+						var oItem2 = createProteccionItem(oProteccionTBA2, "2", "Et1");
+						if (oItem2) {
+							aProtecciones.push(oItem2);
+							aNewItems.push(oItem2);
+							iAdded++;
+							this._resetProteccionFields("2", true);
+						}
+					}
+				} else {
+					var oProteccion1 = collectProteccionData("1", "Et");
+					var oProteccion2 = collectProteccionData("2", "Et2");
+
+					if (oProteccion1.Et) {
+						var oItem1 = createProteccionItem(oProteccion1, "1", "Et");
+						if (oItem1) {
+							aProtecciones.push(oItem1);
+							aNewItems.push(oItem1);
+							iAdded++;
+							this._resetProteccionFields("1", false);
+						}
+					}
+
+					if (oProteccion2.Et) {
+						var oItem2 = createProteccionItem(oProteccion2, "2", "Et2");
+						if (oItem2) {
+							aProtecciones.push(oItem2);
+							aNewItems.push(oItem2);
+							iAdded++;
+							this._resetProteccionFields("2", false);
+						}
+					}
+				}
+
+				oProteccionesModel.setProperty("/Protecciones", aProtecciones);
+				oProteccionesModel.updateBindings();
+
+				if (iAdded > 0) {
+					var sIdNovedad = that._sIdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/IdNovedad") || "";
+					var sEmpresaPost = that._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+
+					if (sIdNovedad) {
+						aNewItems.forEach(function (oNewItem) {
+							var oPayload = jQuery.extend({}, oNewItem._signalData);
+							ProteccionesService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresaPost)
+								.then(function () {
+																	})
+								.catch(function (oError) {
+									sap.m.MessageBox.error("Error al guardar la proteccion en el servidor");
+									Logger.error("Error en IndividualPOSTEdition", oError);
+								});
+						});
+					} else {
+						sap.m.MessageToast.show("Se agrego " + iAdded + " proteccion(es) a la lista");
+					}
+				} else {
+					sap.m.MessageBox.warning("Debe seleccionar al menos una ET para agregar protecciones");
+				}
 			}
 
 			this.addSignal = true;
@@ -787,6 +906,11 @@ sap.ui.define([
 			var oView = this.getView();
 			var oProteccionesModel = ModelHelper.getModel("NovedadesProtecciones", oView);
 
+			if (this._iEditingProteccionIndex >= 0) {
+				sap.m.MessageToast.show("Ya hay una proteccion en edicion. Guarde primero.");
+				return;
+			}
+
 			var oItem = oEvent.getSource().getParent().getParent();
 			var sPath = oItem.getBindingContextPath("NovedadesProtecciones");
 			var iIndex = parseInt(sPath.split("/").pop(), 10);
@@ -800,11 +924,9 @@ sap.ui.define([
 			var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "100";
 
 			if (oRow._signalData) {
-				// Datos desde OData: usar mapeo inverso
 				var sPrefix = (oRow._formData && oRow._formData.EtPrefix) || "1";
 				this._mapODataToFormFields(oRow._signalData, sPrefix, sEmpresa);
 			} else if (oRow._formData) {
-				// Datos creados localmente: restaurar desde _formData
 				var oFormData = oRow._formData;
 				var sEtKey = oFormData.EtKey || "Et1";
 				oProteccionesModel.setProperty("/" + sEtKey, oFormData.Et || oRow.ET || "");
@@ -819,28 +941,15 @@ sap.ui.define([
 				return;
 			}
 
-			// En modo edicion, si tiene datos OData, hacer DELETE para re-crear al agregar
-			var oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
-			var bEdition = oEditModel ? oEditModel.getProperty("/editableMode") : false;
+			// Guardar estado de edición (no se elimina la fila ni se hace DELETE)
+			this._iEditingProteccionIndex = iIndex;
+			this._oEditingProteccionSignalData = oRow._signalData || null;
+			this._sEditingProteccionPrefix = (oRow._formData && oRow._formData.EtPrefix) || "1";
+			this._sEditingProteccionEtKey = (oRow._formData && oRow._formData.EtKey) || "Et1";
 
-			if (bEdition && oRow._signalData && oRow._signalData.Id && oRow._signalData.Posicion) {
-				ProteccionesService.remove(oRow._signalData)
-					.then(function () {
-						Logger.info("Senializacion eliminada para re-edicion", { posicion: oRow._signalData.Posicion });
-					})
-					.catch(function (oError) {
-						Logger.error("Error al eliminar senializacion para edicion", oError);
-					});
-			}
-
-			// Eliminar la fila de la lista
-			aProtecciones.splice(iIndex, 1);
-			oProteccionesModel.setProperty("/Protecciones", aProtecciones);
-			oProteccionesModel.refresh(true);
-
+			this._setProteccionButtonMode("save");
 			this.addSignal = false;
-			sap.m.MessageToast.show("Proteccion cargada para edicion");
-		},
+					},
 
 		/**
 		 * Elimina una proteccion de la lista.
@@ -854,6 +963,11 @@ sap.ui.define([
 			var sPath = oItem.getBindingContextPath("NovedadesProtecciones");
 			var iIndex = parseInt(sPath.split("/").pop(), 10);
 
+			if (iIndex === this._iEditingProteccionIndex) {
+				sap.m.MessageToast.show("No se puede eliminar una proteccion en edicion");
+				return;
+			}
+
 			var aProtecciones = oProteccionesModel.getProperty("/Protecciones") || [];
 			if (iIndex < 0 || iIndex >= aProtecciones.length) {
 				return;
@@ -863,10 +977,15 @@ sap.ui.define([
 			var oEditModel = sap.ui.getCore().getModel("editModel") || oView.getModel("editModel");
 			var bEdition = oEditModel ? oEditModel.getProperty("/editableMode") : false;
 
+			var that = this;
 			var fnRemoveLocal = function () {
 				aProtecciones.splice(iIndex, 1);
 				oProteccionesModel.setProperty("/Protecciones", aProtecciones);
 				oProteccionesModel.refresh(true);
+				// Ajustar índice de edición si se eliminó una fila anterior
+				if (that._iEditingProteccionIndex >= 0 && iIndex < that._iEditingProteccionIndex) {
+					that._iEditingProteccionIndex--;
+				}
 				sap.m.MessageToast.show("Proteccion eliminada");
 			};
 
@@ -997,6 +1116,36 @@ sap.ui.define([
 			oModel.setData(this._getPruebasFormDefaults());
 		},
 
+		_buildPruebaPayload: function (oFormData) {
+			return {
+				HoraPrueba: oFormData.HoraPrueba,
+				SolicitoTercero: !!oFormData.Terceros,
+				SolicitoTransener: !!oFormData.PersonalTransener,
+				ET: oFormData.Et || "",
+				InformoEmp: oFormData.InformoEmp || "",
+				InformoComentarios: oFormData.ComentariosAviso || "",
+				LocFalla: oFormData.LocFalla || "",
+				OtrasActuaciones: oFormData.OtrasActuaciones || "",
+				Comentarios: oFormData.Comentarios || "",
+				Pitr: !!oFormData.Diferencial,
+				Pito: !!oFormData.DPO,
+				Pit: !!oFormData.Impedancia,
+				Pili: !!oFormData.MaximaCorriente,
+				RR: !!oFormData.PFI,
+				Rrpi: !!oFormData.U,
+				Rx: !!oFormData.MenorU,
+				Li: !!oFormData.SinSenal,
+				Fr: !!oFormData.R,
+				FS: !!oFormData.S,
+				Ft: !!oFormData.T,
+				Fn: !!oFormData.Tierra,
+				Tx: !!oFormData.SinExcitacion,
+				Km: false,
+				T2: false,
+				Ts2: false
+			};
+		},
+
 		/**
 		 * Recolecta datos del formulario de pruebas, agrega a la tabla
 		 * y en modo edicion hace POST individual.
@@ -1044,6 +1193,8 @@ sap.ui.define([
 				}
 			});
 
+			var oODataFields = this._buildPruebaPayload(oFormData);
+
 			var oItem = {
 				SolicitadaPor: sSolicitadaPor,
 				HoraPrueba: oFormData.HoraPrueba,
@@ -1057,31 +1208,72 @@ sap.ui.define([
 				Posicion: (iMaxPos + 1).toString(),
 				_formData: jQuery.extend({}, oFormData)
 			};
+			jQuery.extend(oItem, oODataFields);
 
-			aPruebas.push(oItem);
-			oListModel.setProperty("/PruebasProtecciones", aPruebas);
-			oListModel.refresh(true);
-
-			// POST si novedad persistida
+			var bIsEditing = this._iEditingPruebaIndex >= 0;
 			var sIdNovedad = this._sIdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getProperty("/IdNovedad") || "";
 			var sEmpresa = this._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
 
-			if (sIdNovedad) {
-				var oPayload = {
-					HoraPrueba: oFormData.HoraPrueba,
-					Comentarios: oFormData.Comentarios || "",
-					Posicion: oItem.Posicion
-				};
-				PruebasService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresa)
-					.then(function () {
-						sap.m.MessageToast.show("Prueba guardada en el servidor");
-					})
-					.catch(function (oError) {
-						sap.m.MessageBox.error("Error al guardar la prueba en el servidor");
-						Logger.error("Error en PruebasService.IndividualPOSTEdition", oError);
-					});
+			if (bIsEditing) {
+				// Preservar Posicion original
+				var oOldRow = this._oEditingPruebaRow;
+				oItem.Posicion = aPruebas[this._iEditingPruebaIndex].Posicion;
+
+				// Actualizar in-place
+				aPruebas[this._iEditingPruebaIndex] = oItem;
+				oListModel.setProperty("/PruebasProtecciones", aPruebas);
+				oListModel.refresh(true);
+
+				if (sIdNovedad && oOldRow && oOldRow.Posicion) {
+					// DELETE viejo + POST nuevo
+					PruebasService.remove({ Empresa: sEmpresa, Posicion: oOldRow.Posicion, IdNovedad: sIdNovedad })
+						.then(function () {
+							var oPayload = jQuery.extend({}, oODataFields);
+							oPayload.Posicion = oItem.Posicion;
+							return PruebasService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresa);
+						})
+						.then(function () {
+													})
+						.catch(function (oError) {
+							sap.m.MessageBox.error("Error al actualizar la prueba en el servidor");
+							Logger.error("Error en actualizar prueba", oError);
+						});
+				} else if (sIdNovedad) {
+					var oPayload = jQuery.extend({}, oODataFields);
+					oPayload.Posicion = oItem.Posicion;
+					PruebasService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresa)
+						.then(function () {
+													})
+						.catch(function (oError) {
+							sap.m.MessageBox.error("Error al guardar la prueba en el servidor");
+							Logger.error("Error en PruebasService.IndividualPOSTEdition", oError);
+						});
+				} else {
+									}
+
+				// Resetear estado de edición
+				this._iEditingPruebaIndex = -1;
+				this._oEditingPruebaRow = null;
+				this._setPruebaButtonMode("add");
 			} else {
-				sap.m.MessageToast.show("Prueba agregada a la lista");
+				// Modo agregar: comportamiento original
+				aPruebas.push(oItem);
+				oListModel.setProperty("/PruebasProtecciones", aPruebas);
+				oListModel.refresh(true);
+
+				if (sIdNovedad) {
+					var oPayload = jQuery.extend({}, oODataFields);
+					oPayload.Posicion = oItem.Posicion;
+					PruebasService.IndividualPOSTEdition(oPayload, sIdNovedad, sEmpresa)
+						.then(function () {
+													})
+						.catch(function (oError) {
+							sap.m.MessageBox.error("Error al guardar la prueba en el servidor");
+							Logger.error("Error en PruebasService.IndividualPOSTEdition", oError);
+						});
+				} else {
+					sap.m.MessageToast.show("Prueba agregada a la lista");
+				}
 			}
 
 			this._resetPruebasForm();
@@ -1094,6 +1286,11 @@ sap.ui.define([
 			var oView = this.getView();
 			var oListModel = ModelHelper.getModel("TestProtecciones", oView);
 
+			if (this._iEditingPruebaIndex >= 0) {
+				sap.m.MessageToast.show("Ya hay una prueba en edicion. Guarde primero.");
+				return;
+			}
+
 			var oItem = oEvent.getSource().getParent().getParent();
 			var sPath = oItem.getBindingContextPath("TestProtecciones");
 			var iIndex = parseInt(sPath.split("/").pop(), 10);
@@ -1103,35 +1300,41 @@ sap.ui.define([
 
 			var oRow = aPruebas[iIndex];
 
-			// Restaurar formulario desde _formData si existe
 			if (oRow._formData) {
 				ModelHelper.getModel("PruebasFormJsonModel", oView).setData(jQuery.extend({}, oRow._formData));
 			} else {
-				// Datos desde OData, restaurar lo que se pueda
 				var oFormModel = ModelHelper.getModel("PruebasFormJsonModel", oView);
 				oFormModel.setData(this._getPruebasFormDefaults());
 				oFormModel.setProperty("/HoraPrueba", oRow.HoraPrueba || null);
 				oFormModel.setProperty("/Comentarios", oRow.Comentarios || "");
+				oFormModel.setProperty("/Terceros", !!oRow.SolicitoTercero);
+				oFormModel.setProperty("/PersonalTransener", !!oRow.SolicitoTransener);
+				oFormModel.setProperty("/Et", oRow.ET || "");
+				oFormModel.setProperty("/InformoEmp", oRow.InformoEmp || "");
+				oFormModel.setProperty("/ComentariosAviso", oRow.InformoComentarios || "");
+				oFormModel.setProperty("/LocFalla", oRow.LocFalla || "");
+				oFormModel.setProperty("/OtrasActuaciones", oRow.OtrasActuaciones || "");
+				oFormModel.setProperty("/Diferencial", !!oRow.Pitr);
+				oFormModel.setProperty("/DPO", !!oRow.Pito);
+				oFormModel.setProperty("/Impedancia", !!oRow.Pit);
+				oFormModel.setProperty("/MaximaCorriente", !!oRow.Pili);
+				oFormModel.setProperty("/PFI", !!oRow.RR);
+				oFormModel.setProperty("/U", !!oRow.Rrpi);
+				oFormModel.setProperty("/MenorU", !!oRow.Rx);
+				oFormModel.setProperty("/SinSenal", !!oRow.Li);
+				oFormModel.setProperty("/R", !!oRow.Fr);
+				oFormModel.setProperty("/S", !!oRow.FS);
+				oFormModel.setProperty("/T", !!oRow.Ft);
+				oFormModel.setProperty("/Tierra", !!oRow.Fn);
+				oFormModel.setProperty("/SinExcitacion", !!oRow.Tx);
 			}
 
-			// Si persistida, DELETE para re-crear
-			var sIdNovedad = this._sIdNovedad || "";
-			if (sIdNovedad && oRow.Posicion) {
-				var sEmpresa = this._sEmpresa || "";
-				PruebasService.remove({ Empresa: sEmpresa, Posicion: oRow.Posicion, IdNovedad: sIdNovedad })
-					.then(function () {
-						Logger.info("Prueba eliminada para re-edicion", { posicion: oRow.Posicion });
-					})
-					.catch(function (oError) {
-						Logger.error("Error al eliminar prueba para edicion", oError);
-					});
-			}
+			// Guardar estado de edición (no se elimina la fila ni se hace DELETE)
+			this._iEditingPruebaIndex = iIndex;
+			this._oEditingPruebaRow = jQuery.extend({}, oRow);
 
-			aPruebas.splice(iIndex, 1);
-			oListModel.setProperty("/PruebasProtecciones", aPruebas);
-			oListModel.refresh(true);
-			sap.m.MessageToast.show("Prueba cargada para edicion");
-		},
+			this._setPruebaButtonMode("save");
+					},
 
 		/**
 		 * Elimina una prueba de la tabla. Si persistida, DELETE al backend.
@@ -1144,16 +1347,25 @@ sap.ui.define([
 			var sPath = oItem.getBindingContextPath("TestProtecciones");
 			var iIndex = parseInt(sPath.split("/").pop(), 10);
 
+			if (iIndex === this._iEditingPruebaIndex) {
+				sap.m.MessageToast.show("No se puede eliminar una prueba en edicion");
+				return;
+			}
+
 			var aPruebas = oListModel.getProperty("/PruebasProtecciones") || [];
 			if (iIndex < 0 || iIndex >= aPruebas.length) { return; }
 
 			var oRow = aPruebas[iIndex];
 			var sIdNovedad = this._sIdNovedad || "";
 
+			var that = this;
 			var fnRemoveLocal = function () {
 				aPruebas.splice(iIndex, 1);
 				oListModel.setProperty("/PruebasProtecciones", aPruebas);
 				oListModel.refresh(true);
+				if (that._iEditingPruebaIndex >= 0 && iIndex < that._iEditingPruebaIndex) {
+					that._iEditingPruebaIndex--;
+				}
 				sap.m.MessageToast.show("Prueba eliminada");
 			};
 
@@ -1354,51 +1566,69 @@ sap.ui.define([
 		_onAfterSaveSuccess: function (oNovedadData) {
 			var oView = this.getView();
 			var that = this;
-			var aENS = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
-			if (!aENS || aENS.length === 0) {
-				return Promise.resolve();
-			}
-
 			var sIdNovedad = oNovedadData.IdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getData().IdNovedad;
 			var sEmpresa = this._sEmpresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
 			var oModel = oDataServices.getModel("");
 			var aPromises = [];
 
-			Logger.info("_onAfterSaveSuccess: Guardando " + aENS.length + " ENS. IdNovedad=" + sIdNovedad + ", Empresa=" + sEmpresa);
+			// Guardar InformaCammesa
+			var oCammesaData = ModelHelper.getModel("CammesaFormJsonModel", oView).getData();
+			if (oCammesaData) {
+				aPromises.push(CammesaService.postCammesa(oCammesaData, sIdNovedad, sEmpresa));
+			}
 
-			for (var i = 0; i < aENS.length; i++) {
-				var oENS = aENS[i];
+			// Guardar Normalización
+			var oNormData = ModelHelper.getModel("NormalizacionNS", oView).getData();
+			if (oNormData) {
+				var oEditModel = ModelHelper.getModel("editModel", oView);
+				var sMode = (oEditModel.getProperty("/mode") || "").toLowerCase();
+				var bNormExists = sMode === Constants.EDIT_MODES.EDIT;
+				aPromises.push(NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists));
+			}
 
-				Logger.info("ENS[" + i + "]: Modif='" + oENS.Modif + "', Potencia=" + oENS.Potencia + ", Corte=" + oENS.Corte);
+			// Guardar ENS
+			var aENS = ModelHelper.getModel("ENSListJsonModel", oView).getData().ENSRegisters;
+			if (aENS && aENS.length > 0) {
+				Logger.info("_onAfterSaveSuccess: Guardando " + aENS.length + " ENS. IdNovedad=" + sIdNovedad + ", Empresa=" + sEmpresa);
 
-				var oPayload = {
-					IdNovedad: sIdNovedad,
-					Modif: oENS.Modif || "",
-					Potencia: String(that._parseLocalNumber(oENS.Potencia)),
-					Begtime: oENS.Begtime || null,
-					Reptime: oENS.Reptime || null,
-					Corte: String(parseFloat(oENS.Corte) || 0),
-					Comments: oENS.Comments || "",
-					Empresa: sEmpresa
-				};
+				for (var i = 0; i < aENS.length; i++) {
+					var oENS = aENS[i];
 
-				if (oENS.Modif) {
-					// Existente -> UPDATE
-					Logger.info("ENS[" + i + "]: UPDATE path=/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')");
-					var sPath = "/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')";
-					aPromises.push(this._updateENS(oModel, sPath, oPayload));
-				} else {
-					// Nuevo -> CREATE
-					Logger.info("ENS[" + i + "]: CREATE nuevo registro");
-					aPromises.push(this._createENS(oModel, oPayload));
+					Logger.info("ENS[" + i + "]: Modif='" + oENS.Modif + "', Potencia=" + oENS.Potencia + ", Corte=" + oENS.Corte);
+
+					var oPayload = {
+						IdNovedad: sIdNovedad,
+						Modif: oENS.Modif || "",
+						Potencia: String(that._parseLocalNumber(oENS.Potencia)),
+						Begtime: oENS.Begtime || null,
+						Reptime: oENS.Reptime || null,
+						Corte: String(parseFloat(oENS.Corte) || 0),
+						Comments: oENS.Comments || "",
+						Empresa: sEmpresa
+					};
+
+					if (oENS.Modif) {
+						// Existente -> UPDATE
+						Logger.info("ENS[" + i + "]: UPDATE path=/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')");
+						var sPath = "/ENSRegisterSet(IdNovedad='" + sIdNovedad + "',Modif='" + oENS.Modif + "',Empresa='" + sEmpresa + "')";
+						aPromises.push(this._updateENS(oModel, sPath, oPayload));
+					} else {
+						// Nuevo -> CREATE
+						Logger.info("ENS[" + i + "]: CREATE nuevo registro");
+						aPromises.push(this._createENS(oModel, oPayload));
+					}
 				}
 			}
 
+			if (aPromises.length === 0) {
+				return Promise.resolve();
+			}
+
 			return Promise.all(aPromises).then(function () {
-				Logger.info("ENS registros guardados correctamente");
+				Logger.info("Registros secundarios guardados correctamente");
 			}).catch(function (err) {
-				Logger.error("Error guardando ENS", err);
-				sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar algunos registros ENS.");
+				Logger.error("Error guardando registros secundarios", err);
+				sap.m.MessageBox.warning("La novedad se guardó pero hubo errores al guardar algunos registros.");
 			});
 		},
 

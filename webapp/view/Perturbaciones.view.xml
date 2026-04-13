@@ -66,7 +66,7 @@
                             <core:Icon src="sap-icon://shield" class="sapUiSmallMarginEnd" color="#004da4"/>
                             <Title text="Protecciones Actuantes" level="H5"/>
                         </HBox>
-                        <Button icon="sap-icon://add" press="onAddProteccion" type="Emphasized" tooltip="Agregar proteccion"/>
+                        <Button id="btnAddProteccion" icon="sap-icon://add" press="onAddProteccion" type="Emphasized" tooltip="Agregar proteccion"/>
                     </HBox>
                     <HBox class="border_ctn_2 sapUiSmallMarginBottom" justifyContent="SpaceBetween" visible="{= ${Empresa>/selectedSociety} === '100' }">
                         <VBox class="paddingSM" width="20%">
@@ -503,7 +503,7 @@
                         </VBox>
                         <VBox>
                             <Label text="Fecha energizacion" showColon="true" class="sectionLabel"/>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            <DateTimePicker value="{ 'path': 'NormalizacionNS>/EnergizoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                         </VBox>
                     </HBox>
                     <HBox class="container">
@@ -515,7 +515,7 @@
                         </VBox>
                         <VBox>
                             <Label text="Fecha carga" showColon="true" class="sectionLabel"/>
-                            <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                            <DateTimePicker value="{ 'path': 'NormalizacionNS>/CargoFecha', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" editable="{= !${utilsModel>/readOnlyMode}}"/>
                         </VBox>
                     </HBox>
                     <VBox class="container">
@@ -561,17 +561,17 @@
 
                                     <HBox alignItems="Center">
                                         <Label text="La indisponibilidad se informa a CAMMESA :" />
-                                        <CheckBox selected="{InformaCammesa>/InformaCammesa}" />
+                                        <CheckBox selected="{CammesaFormJsonModel>/InformaCammesa}" />
 
                                     </HBox>
                                     <HBox alignItems="Center">
-                                        <Label text="SubIndice" showColon="true" />
-                                        <Input/>
+                                        <Label text="SubIndice" showColon="true" class="sapUiSmallMarginEnd"/>
+                                        <Input value="{NovedadesFormJsonModel>/Subindice}" width="150px" enabled="false"/>
                                     </HBox>
 
                                 </HBox>
                                 <VBox class="container">
-                                    <TextArea width="100%"></TextArea>
+                                    <TextArea value="{CammesaFormJsonModel>/Texto}" width="100%"></TextArea>
                                 </VBox>
                             </VBox>
                         </IconTabFilter>
@@ -580,7 +580,7 @@
 
                                 <HBox justifyContent="SpaceBetween" alignItems="Center" class="container">
                                     <Title text="Pruebas Realizadas"/>
-                                    <Button icon="sap-icon://add" press=".onAddPrueba"/>
+                                    <Button id="btnAddPrueba" icon="sap-icon://add" press=".onAddPrueba" type="Emphasized" tooltip="Agregar prueba"/>
                                 </HBox>
 
                                 <HBox class="container">
