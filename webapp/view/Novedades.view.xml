@@ -16,19 +16,19 @@
                     <HBox class="container" justifyContent="SpaceBetween">
                         <VBox>
                             <Label text="Tipo de Novedad" showColon="true" class="sectionLabel"/>
-                            <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }">
-                                <core:Item key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}"/>
+                            <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                                <core:ListItem key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}" enabled="{parts:[{path:'Novedades>Codigo'},{path:'editModel>/mode'}], formatter:'.formatter.isNovedadEnabled'}"/>
                             </ComboBox>
                         </VBox>
                         <VBox>
                             <Label text="Ubicacion" showColon="true" class="sectionLabel"/>
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }">
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Tplnr}" valueState="{NovedadLGFormJsonModel>/TplnrState}" valueStateText="{NovedadLGFormJsonModel>/TplnrStateMessage}" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                 <core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo} - {Estaciones>Descripcion}"/>
                             </ComboBox>
                         </VBox>
                         <VBox>
                             <Label text="Equipo" showColon="true" class="sectionLabel"/>
-                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                            <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadLGFormJsonModel>/Equnr}" valueState="{NovedadLGFormJsonModel>/EqunrState}" valueStateText="{NovedadLGFormJsonModel>/EqunrStateMessage}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
                                 <core:ListItem key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
                             </ComboBox>
                         </VBox>
@@ -38,7 +38,7 @@
                         </VBox>
                         <VBox>
                             <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
-                            <DateTimePicker value="{ 'path': 'NovedadLGFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" valueState="{NovedadLGFormJsonModel>/InicioNoveState}" valueStateText="{NovedadLGFormJsonModel>/InicioNoveStateMessage}"/>
+                            <DateTimePicker value="{ 'path': 'NovedadLGFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }" valueState="{NovedadLGFormJsonModel>/InicioNoveState}" valueStateText="{NovedadLGFormJsonModel>/InicioNoveStateMessage}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
                         </VBox>
                     </HBox>
                 </VBox>
@@ -51,7 +51,7 @@
         <footer>
             <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveGuardia"/>
+                <Button type="Emphasized" text="{ parts: [ 'editModel>/editableMode' ], formatter: '.formatter.formatName' }" press="onSaveGuardia" visible="{= !${utilsModel>/readOnlyMode}}"/>
                 <Button text="Cancelar" press="onNavBack"/>
             </OverflowToolbar>
         </footer>

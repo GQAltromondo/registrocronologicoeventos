@@ -30,8 +30,7 @@
 		<t:Column width='200px'>
 				<Label text="{i18n>place}"/>
 				<t:template>
-					<!--<Text text="{oNovedadesModel>Tplnr}"/>-->
-					<ComboBox selectionChange="handleTableChanges" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" selectedKey="{oTProgramadasModel>Tplnr}">
+					<ComboBox selectionChange="onTableLugarChange" items="{ path: 'Estaciones>/Estaciones', templateShareable: true }" selectedKey="{oTProgramadasModel>Tplnr}">
 						<core:Item key="{Estaciones>Codigo}" text="{Estaciones>Codigo}"/>
 					</ComboBox>
 				</t:template>
@@ -39,7 +38,15 @@
 			<t:Column width='150px'>
 				<Label text="{i18n>team}"/>
 				<t:template>
-					<Text text="{oTProgramadasModel>Equnr}"/>
+					<HBox>
+						<Text text="{oTProgramadasModel>Equnr}" visible="{= !${oTProgramadasModel>__lugarChanged}}"/>
+						<ComboBox selectionChange="handleTableChanges"
+							items="{ path: 'oTProgramadasModel>__equipos', templateShareable: false }"
+							selectedKey="{oTProgramadasModel>Equnr}"
+							visible="{= !!${oTProgramadasModel>__lugarChanged}}">
+							<core:Item key="{oTProgramadasModel>CodigoEquipo}" text="{oTProgramadasModel>CodigoEquipo} - {oTProgramadasModel>DescEquipo}"/>
+						</ComboBox>
+					</HBox>
 				</t:template>
 			</t:Column>
 			<t:Column width='150px'>

@@ -9,7 +9,7 @@
             </HBox>
             <VBox class="container">
                 <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                <TextArea width="100%" value="{NovedadLGFormJsonModel>/Novedad}"/>
+                <TextArea width="100%" value="{NovedadLGFormJsonModel>/Novedad}" editable="{= !${utilsModel>/readOnlyMode}}"/>
             </VBox>
         </VBox>
     </FlexBox>

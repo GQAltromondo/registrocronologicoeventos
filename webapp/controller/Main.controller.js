@@ -476,8 +476,8 @@ sap.ui.define([
 				return;
 			}
 
-			// Si es NOVEDAD de GuardiasListSet, navegar directo sin buscar en NovedadesServicioSet
-			if (sType === "NOVEDAD") {
+			// Si es NOVEDAD de GuardiasListSet (por __type o por venir de oNovedadesModel)
+			if (sType === "NOVEDAD" || oSrc.getBindingContext("oNovedadesModel")) {
 				this._viewNovedadFromGuardiasList(oRow);
 				return;
 			}
@@ -816,6 +816,12 @@ sap.ui.define([
 
 			var serverFilters = [];
 			var NSFilters = [];
+
+			// Filtrar por empresa del usuario
+			var sEmpresaFiltro = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+			if (sEmpresaFiltro) {
+				NSFilters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, sEmpresaFiltro));
+			}
 
 			if (lugarKey) {
 				serverFilters.push(new sap.ui.model.Filter("Lugar", sap.ui.model.FilterOperator.EQ, lugarKey));
@@ -5195,6 +5201,112 @@ sap.ui.define([
 			}
 			return pattern.format(date);
 		},
+		onTableLugarChange: function (oEvent) {
+			var oComboBox = oEvent.getSource();
+			var sNewTplnr = oComboBox.getSelectedKey();
+
+			// Buscar la tabla padre y el modelo
+			var oTable = oComboBox;
+			while (oTable && oTable.getMetadata().getName() !== "sap.ui.table.Table") {
+				oTable = oTable.getParent();
+			}
+			if (!oTable) return;
+
+			var oInfo = oTable.getBindingInfo("rows");
+			var sModelName = oInfo && oInfo.model;
+			if (!sModelName) return;
+
+			var oCtx = oComboBox.getBindingContext(sModelName);
+			if (!oCtx) return;
+
+			var sPath = oCtx.getPath();
+			var oModel = oCtx.getModel();
+
+			// Limpiar Equnr de la fila y activar modo combo
+			oModel.setProperty(sPath + "/Equnr", "");
+			oModel.setProperty(sPath + "/__equipos", []);
+			oModel.setProperty(sPath + "/__lugarChanged", true);
+
+			// Cargar equipos de la nueva estación
+			if (sNewTplnr) {
+				var sEmpresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+				var aFilter = [
+					new sap.ui.model.Filter("Estacion", sap.ui.model.FilterOperator.EQ, sNewTplnr),
+					new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, sEmpresa)
+				];
+				var roles = ModelHelper.getModel("UserJsonModel").getProperty("/roles") || [];
+				aFilter.push(new sap.ui.model.Filter("Rol", sap.ui.model.FilterOperator.EQ,
+					roles.includes("ope_solic-lic_transener") ? "ope_solic-lic_transener" : (roles[0] || "")
+				));
+
+				EquiposService.getEquiposPromise(aFilter).then(function (data) {
+					oModel.setProperty(sPath + "/__equipos", data.results || []);
+				}).catch(function () {
+					oModel.setProperty(sPath + "/__equipos", []);
+				});
+			}
+
+			// Habilitar botón save de la fila
+			this.handleTableChanges(oEvent);
+		},
+
+		saveChanges: function (oEvent) {
+			var oButton = oEvent.getSource();
+
+			// Buscar la tabla y el modelo
+			var oTable = oButton;
+			while (oTable && oTable.getMetadata().getName() !== "sap.ui.table.Table") {
+				oTable = oTable.getParent();
+			}
+			if (!oTable) return;
+
+			var oInfo = oTable.getBindingInfo("rows");
+			var sModelName = oInfo && oInfo.model;
+			if (!sModelName) return;
+
+			var oCtx = oButton.getBindingContext(sModelName);
+			if (!oCtx) return;
+
+			var oRowData = oCtx.getObject();
+			var sIdNovedad = oRowData.IdNovedad || oRowData.Id || "";
+			var sEmpresa = ModelHelper.getModel("Empresa", this.getView()).getProperty("/selectedSociety");
+
+			if (!sIdNovedad) {
+				sap.m.MessageBox.alert("No se encontró el Id de la novedad.");
+				return;
+			}
+
+			// Formatear ID con padding
+			var strId = String(sIdNovedad);
+			while (strId.length < 10) strId = "0" + strId;
+
+			var sPath = "/NovedadesServicioSet(IdNovedad='" + strId + "',Empresa='" + sEmpresa + "')";
+
+			// Preparar datos para el update: solo campos editables de la tabla
+			var oUpdateData = {
+				InicioNove: oRowData.InicioNove || null,
+				FechaFinNove: oRowData.FechaFinNove || null,
+				Tplnr: oRowData.Tplnr || "",
+				Equnr: oRowData.Equnr || ""
+			};
+
+			var oODataModel = oDataService.getModel("");
+			oButton.setEnabled(false);
+
+			oODataModel.update(sPath, oUpdateData, {
+				method: "MERGE",
+				success: function () {
+					sap.m.MessageToast.show("Registro actualizado correctamente");
+					Logger.info("saveChanges: Registro actualizado", { id: strId });
+				},
+				error: function (oError) {
+					oButton.setEnabled(true);
+					Logger.error("saveChanges: Error al actualizar registro", oError);
+					ErrorHandler.handleODataError(oError, "actualizar registro");
+				}
+			});
+		},
+
 		handleTableChanges: function (oEvent) {
 			const oSrc = oEvent.getSource();
 

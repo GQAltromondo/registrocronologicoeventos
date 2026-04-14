@@ -33,7 +33,13 @@ sap.ui.define([
       if (oEditModel) {
         oEditModel.setProperty("/mode", sMode);
         var bIsEditMode = sMode === Constants.EDIT_MODES.EDIT;
-        oEditModel.setProperty("/editableMode", bIsEditMode);
+        oEditModel.setProperty("/editableMode", bIsEditMode || sMode === Constants.EDIT_MODES.CREATE);
+      }
+
+      // Configurar readOnlyMode
+      var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+      if (oUtilsModel) {
+        oUtilsModel.setProperty("/readOnlyMode", sMode === Constants.EDIT_MODES.VIEW);
       }
 
       // Leer los datos del modelo NovedadLGFormJsonModel
@@ -71,10 +77,10 @@ sap.ui.define([
     },
 
     _processNovedadData: function (oNovedadData, sMode, oNovedadModel, oView) {
-      // Si está en modo CREATE, limpiar CodNovedad y fragmentos
+      // Si está en modo CREATE, limpiar modelo completo y fragmentos
       if (sMode === Constants.EDIT_MODES.CREATE) {
-        Logger.debug("Modo CREATE detectado, limpiando CodNovedad y fragmentos");
-        oNovedadModel.setProperty("/CodNovedad", "");
+        Logger.debug("Modo CREATE detectado, limpiando modelo y fragmentos");
+        oNovedadModel.setData({});
         this._clearFragmentContainer();
         return;
       }
@@ -191,6 +197,19 @@ sap.ui.define([
         Logger.debug("TipoNovedad deseleccionado, limpiando CodNovedad y fragmentos");
         oNovedadModel.setProperty("/CodNovedad", "");
         this._clearFragmentContainer();
+        return;
+      }
+
+      // Rechazar códigos restringidos solo en modo create
+      var oEditModel = ModelHelper.getModel("editModel", oView);
+      var sMode = oEditModel ? (oEditModel.getProperty("/mode") || "").toLowerCase() : "";
+      if (sMode !== Constants.EDIT_MODES.EDIT && sMode !== Constants.EDIT_MODES.VIEW
+          && Constants.RESTRICTED_NOVEDAD_CODES && Constants.RESTRICTED_NOVEDAD_CODES.indexOf(sSelectedKey) !== -1) {
+        Logger.warn("onNovedadSelected: código restringido seleccionado: " + sSelectedKey);
+        oSource.setSelectedKey("");
+        oNovedadModel.setProperty("/CodNovedad", "");
+        this._clearFragmentContainer();
+        MessageToast.show("Este tipo de novedad no se puede seleccionar manualmente.");
         return;
       }
 

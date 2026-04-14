@@ -1,4 +1,4 @@
-sap.ui.define(["sap/ui/core/format/NumberFormat", "sap/ui/core/format/DateFormat"], function (NumberFormat, DateFormat) {
+sap.ui.define(["sap/ui/core/format/NumberFormat", "sap/ui/core/format/DateFormat", "transener/registrocronologicoeventos/utils/Constants"], function (NumberFormat, DateFormat, Constants) {
 	"use strict";
 	return {
 
@@ -92,6 +92,13 @@ sap.ui.define(["sap/ui/core/format/NumberFormat", "sap/ui/core/format/DateFormat
 		formatName: function (bEditable) {
 			return (bEditable) ? "Guardar Cambios" : "Guardar";
 		},
+
+		isNovedadEnabled: function (sCodigo, sMode) {
+			if (sMode === "edit" || sMode === "view") {
+				return true;
+			}
+			return Constants.RESTRICTED_NOVEDAD_CODES.indexOf(sCodigo) === -1;
+		}
 
 	};
 });

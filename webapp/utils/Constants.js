@@ -86,7 +86,7 @@ sap.ui.define([], function () {
 		 */
 		NOVEDAD_FRAGMENT_MAPPING: {
 			TRA: {
-				General: ["ADAP","AUTO","AUTR","DENE","DESC","DFOR","DISP","ENER","ESER","ESPO", "FINA","FSER","FSPO","HABI","INDI","INFO","INHI","INIC","MANU","NADA","NAUT","R495","R500","R5005","REAN","RMON","RTRI","SREC","SUSP"],
+				General: ["ADAP","AREC","AUTO","AUTR","CANC","CARG","CREC","DENE","DESC","DESE","DEVU","DFOR","DISP","ENER","ENTR","ESER","ESPO","ESPT","FINA","FSD1","FSPE","FSPR","FSER","FSPO","FSPT","HABI","ICLI","IELI","INDI","INFO","INHI","INIC","MANU","NADA","NAUT","NENT","PRUE","R495","R500","R5005","RBMA","RECD","REAN","RMON","RTRI","RUNB","SNOR","SREC","SUSP"],
 				Alarma: ["ALAR","RTNA"],
 				CargaDeEquipos: ["CMAX","CNOM","INTF","NRLI","SULI",],
 				EnBandaFueraDeBanda: ["EBAN","FBAN"],
@@ -108,6 +108,13 @@ sap.ui.define([], function () {
 		FRAGMENT_PATHS: {
 			NOVEDADES_BASE: "transener.registrocronologicoeventos.fragments.novedades."
 		},
+
+		RESTRICTED_NOVEDAD_CODES: [
+			"AREC", "ENTR", "CANC", "DEVU", "NENT", "CREC",
+			"DESE", "ESPT", "FSPT", "FSD1", "FSPE", "FSPR",
+			"PRUE", "R495", "RBMA", "RUNB", "RECD", "CARG",
+			"DENE", "DESC", "ENER", "ICLI", "IELI", "SNOR"
+		],
 
 		/**
 		 * Operadores de prueba
