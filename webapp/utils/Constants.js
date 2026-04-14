@@ -44,7 +44,14 @@ sap.ui.define([], function () {
 		 * Roles y grupos de autorización
 		 */
 		ROLES: {
-			EDITOR_GROUPS: ["ope_jefe_turno_cot","ope_oper-turno_cot","ope_programacion_cot"]
+			EDITOR_GROUPS: ["ope_jefe_turno_cot","ope_oper-turno_cot","ope_programacion_cot"],
+			SUPER_GROUPS: ["ope_jefe_turno_cot", "Jefe_COT", "Jefe_COTDT", "ope_jefe_cot", "ope_jefe_cotdt"]
+		},
+
+		TURNO: {
+			STATUS_ABIERTO: "ABIERTO",
+			STATUS_CERRADO: "CERRADO",
+			TIMEZONE_OFFSET_HOURS: -3
 		},
 
 		/**
@@ -134,7 +141,12 @@ sap.ui.define([], function () {
 			DELETE_ERROR: "Error al eliminar el registro",
 			VALIDATION_ERROR: "Existen campos con errores de validación",
 			NETWORK_ERROR: "Error de conexión. Verifique su conexión a internet.",
-			UNAUTHORIZED: "No tiene permisos para realizar esta operación"
+			UNAUTHORIZED: "No tiene permisos para realizar esta operación",
+			TURNO_CERRADO: "No se pueden crear registros en un turno CERRADO.",
+			NO_PERTENECE_TURNO: "No se pueden crear registros en un turno al que no pertenece.",
+			NO_TURNO_ENCONTRADO: "No se encontró un turno abierto para la fecha seleccionada.",
+			NO_PUEDE_EDITAR_AJENO: "No se pueden modificar los registros de otro operador.",
+			NO_PUEDE_ELIMINAR_AJENO: "No se pueden eliminar los registros de otro operador."
 		},
 
 		/**

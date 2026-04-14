@@ -15,8 +15,9 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/ValidateHelper",
 	"transener/registrocronologicoeventos/utils/formatter",
 	"sap/ui/core/UIComponent",
-	"transener/registrocronologicoeventos/services/UserService"
-], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, LibroGuardiaService, MessageBoxHelper, ValidateHelper, formatter, UIComponent, UserService) {
+	"transener/registrocronologicoeventos/services/UserService",
+	"transener/registrocronologicoeventos/services/TurnsService"
+], function (Controller, MessageBox, Fragment, ModelHelper, Logger, ErrorHandler, Constants, EquiposService, NovedadesService, SubindiceService, MotivosService, LibroGuardiaService, MessageBoxHelper, ValidateHelper, formatter, UIComponent, UserService, TurnsService) {
 	"use strict";
 	return Controller.extend("transener.registrocronologicoeventos.controller.BaseController", {
 		/**
@@ -615,29 +616,51 @@ sap.ui.define([
 				oGuardiaData.Id = data.Id;
 			}
 
-			// Guardar en Libro de Guardia (CREATE o UPDATE según el modo)
-			var oPromise = bIsEditMode
-				? LibroGuardiaService.updateGuardia(oGuardiaData, oView)
-				: LibroGuardiaService.createGuardia(oGuardiaData, oView);
+			var that = this;
+			var sEmpresa = "";
+			try {
+				var oEmpresaModel = ModelHelper.getModel("Empresa", oView);
+				sEmpresa = oEmpresaModel ? oEmpresaModel.getProperty("/selectedSociety") : "";
+				if (!sEmpresa) {
+					var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+					sEmpresa = oUtilsModel ? oUtilsModel.getProperty("/Empresa") : "";
+				}
+			} catch (e) {
+				Logger.debug("onSaveGuardia: No se pudo obtener empresa", e);
+			}
 
-			oPromise
-				.then((oResponse) => {
-					Logger.info("onSaveGuardia: Registro " + (bIsEditMode ? "actualizado" : "creado") + " exitosamente en Libro de Guardia");
-					// El mensaje ya se muestra en el servicio (MessageToast)
-
-					// Publicar evento para refrescar datos en Main
-					var oBus = sap.ui.getCore().getEventBus();
-					if (oBus) {
-						oBus.publish("Main", "onInit");
-						Logger.debug("onSaveGuardia: Evento publicado para refrescar datos en Main");
+			// Validar turno antes de guardar
+			TurnsService.validateCreatePermission(data.InicioNove, sEmpresa, oView)
+				.then(function (oResult) {
+					if (!oResult.allowed) {
+						MessageBox.error(oResult.message);
+						return;
 					}
 
-					// Navegar de vuelta a la vista principal
-					this.onNavBack();
+					// Guardar en Libro de Guardia (CREATE o UPDATE según el modo)
+					var oPromise = bIsEditMode
+						? LibroGuardiaService.updateGuardia(oGuardiaData, oView)
+						: LibroGuardiaService.createGuardia(oGuardiaData, oView);
+
+					oPromise
+						.then(function (oResponse) {
+							Logger.info("onSaveGuardia: Registro " + (bIsEditMode ? "actualizado" : "creado") + " exitosamente en Libro de Guardia");
+
+							var oBus = sap.ui.getCore().getEventBus();
+							if (oBus) {
+								oBus.publish("Main", "onInit");
+								Logger.debug("onSaveGuardia: Evento publicado para refrescar datos en Main");
+							}
+
+							that.onNavBack();
+						})
+						.catch(function (oError) {
+							Logger.error("onSaveGuardia: Error al " + (bIsEditMode ? "actualizar" : "crear") + " registro en Libro de Guardia", oError);
+						});
 				})
-				.catch((oError) => {
-					Logger.error("onSaveGuardia: Error al " + (bIsEditMode ? "actualizar" : "crear") + " registro en Libro de Guardia", oError);
-					// El error ya se maneja en el servicio
+				.catch(function (oError) {
+					Logger.error("onSaveGuardia: Error al validar turno", oError);
+					MessageBox.error("Error al validar el turno. Intente nuevamente.");
 				});
 		},
 

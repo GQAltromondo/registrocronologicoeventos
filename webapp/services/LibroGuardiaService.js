@@ -232,6 +232,52 @@ sap.ui.define([
 		 * @param {Function} fnRefreshCallback - Callback opcional para refrescar datos después de crear
 		 * @returns {Promise} Promise que se resuelve cuando el registro se crea exitosamente
 		 */
+		deleteGuardia: function (sId, oView) {
+			var that = this;
+			return new Promise(function (resolve, reject) {
+				if (!sId) {
+					Logger.error("LibroGuardiaService.deleteGuardia: No se proporcionó el Id del registro");
+					reject(new Error("El Id del registro es requerido para eliminar"));
+					return;
+				}
+
+				var sEmpresa = that._getEmpresa(oView);
+				if (!sEmpresa) {
+					Logger.error("LibroGuardiaService.deleteGuardia: No se pudo obtener la empresa");
+					reject(new Error("No se pudo obtener la empresa"));
+					return;
+				}
+
+				var oModel = null;
+				if (oView) {
+					oModel = oView.getModel("LGuardias");
+				}
+				if (!oModel) {
+					oModel = sap.ui.getCore().getModel("LGuardias");
+				}
+				if (!oModel) {
+					Logger.error("LibroGuardiaService.deleteGuardia: No se pudo obtener el modelo OData");
+					reject(new Error("No se pudo obtener el modelo OData"));
+					return;
+				}
+
+				var sPath = that._entitySet + "(Id='" + sId + "',Empresa='" + sEmpresa + "')";
+
+				oModel.remove(sPath, {
+					success: function () {
+						Logger.info("LibroGuardiaService.deleteGuardia: Registro eliminado correctamente", { id: sId });
+						MessageToast.show("Registro eliminado correctamente");
+						resolve();
+					},
+					error: function (oError) {
+						Logger.error("LibroGuardiaService.deleteGuardia: Error al eliminar registro", oError);
+						ErrorHandler.handleODataError(oError, "eliminar registro en Libro de Guardia");
+						reject(oError);
+					}
+				});
+			});
+		},
+
 		createGuardiaAndRefresh: function (oData, oView, fnRefreshCallback) {
 			return this.createGuardia(oData, oView)
 				.then(function (oResponse) {

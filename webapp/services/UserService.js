@@ -208,6 +208,25 @@ sap.ui.define([
             return !!oUserData.isEditor;
         },
 
+        isSuperOperator: function () {
+            var oUserData = ModelHelper.getModel("UserDataModel").getData();
+            var aGroups = oUserData.groups || [];
+            if (typeof aGroups === "string") { aGroups = [aGroups]; }
+            return aGroups.some(function (group) {
+                return Constants.ROLES.SUPER_GROUPS.indexOf(group) !== -1;
+            });
+        },
+
+        getLoginName: function () {
+            var oUserData = ModelHelper.getModel("UserDataModel").getData();
+            return oUserData.login_name || "";
+        },
+
+        getLegajo: function () {
+            var oUserData = ModelHelper.getModel("UserDataModel").getData();
+            return oUserData.Legajo || "";
+        },
+
         onReadUserApiError: function (jqXHR, textStatus, error) {
             var sessionTimeoutResponseCode = 503;
             if (error && error.response && error.response.statusCode === sessionTimeoutResponseCode) {

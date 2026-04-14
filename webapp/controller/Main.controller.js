@@ -34,13 +34,15 @@ sap.ui.define([
 	"transener/registrocronologicoeventos/utils/Constants",
 	"transener/registrocronologicoeventos/utils/BusyDialogHelper",
 	"transener/registrocronologicoeventos/utils/SocietyHelper",
+	"transener/registrocronologicoeventos/services/TurnsService",
+	"transener/registrocronologicoeventos/services/LibroGuardiaService",
 ], function (BaseController, MessageToast, Fragment, MessageBox, VBox, Dialog, UserService,
 	PerturbacionesService, DispActuantesService, TipificacionesFallasService, EstadoTiempoService, MotivosService, ClimasService,
 	CausasService,
 	NovedadesService, TiposNovedadesService, EmpresaTramitacionService,
 	PersonalHabilitadoService, LicenciaService, EquiposService, ReportesService, EstacionesService, oDataService, formatter, ModelHelper, ValidateHelper,
 	MessageBoxHelper,
-	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper, SocietyHelper) {
+	FormatHelper, Logger, ErrorHandler, Constants, BusyDialogHelper, SocietyHelper, TurnsService, LibroGuardiaService) {
 	"use strict";
 
 
@@ -466,6 +468,7 @@ sap.ui.define([
 			}
 
 			var oRow = oCtx.getObject() || {};
+			var sType = oRow.__type;
 			var sIdNovedad = oRow.IdNovedad || oRow.Id;
 
 			if (!sIdNovedad) {
@@ -473,6 +476,13 @@ sap.ui.define([
 				return;
 			}
 
+			// Si es NOVEDAD de GuardiasListSet, navegar directo sin buscar en NovedadesServicioSet
+			if (sType === "NOVEDAD") {
+				this._viewNovedadFromGuardiasList(oRow);
+				return;
+			}
+
+			// Para PERT/PROG: buscar en NovedadesServicioSet y navegar en modo view
 			var strId = String(sIdNovedad);
 			while (strId.length < 10) strId = "0" + strId;
 
@@ -514,28 +524,36 @@ sap.ui.define([
 			let strId = String(sIdNovedad);
 			while (strId.length < 10) strId = "0" + strId;
 
-			// Usar __type para direccionar a la función correspondiente
-			switch (sType) {
-				case "NOVEDAD":
-					// Para novedades de GuardiasListSet: mapear datos directamente sin buscar en servidor
-					this._editNovedadFromGuardiasList(oRow);
-					break;
-
-				case "PERT":
-					// Para perturbaciones: bloquear, cargar datos y navegar a vista de Perturbaciones
-					this._editPerturbacionOrProgramadaFromGeneral(strId);
-					break;
-
-				case "PROG":
-					// Para programadas: bloquear, cargar datos y navegar a vista de Programadas
-					this._editPerturbacionOrProgramadaFromGeneral(strId);
-					break;
-
-				default:
-					MessageBox.alert("Tipo de registro no reconocido: " + sType);
-					Logger.warn("onEditNove: tipo de registro no reconocido", { type: sType, row: oRow });
-					break;
+			// PERT y PROG no requieren validación de turno/creador
+			if (sType === "PERT" || sType === "PROG") {
+				this._editPerturbacionOrProgramadaFromGeneral(strId);
+				return;
 			}
+
+			// Solo NOVEDAD (GuardiasListSet) requiere validación de turno/creador
+			var sCreadoPor = oRow.Creado_Por || oRow.CreadoPor || "";
+			var oRaw = oRow.__raw || oRow;
+			var dFecha = oRaw.InicioNove || oRaw.Fechahora || null;
+			if (dFecha && !(dFecha instanceof Date)) {
+				dFecha = new Date(dFecha);
+			}
+
+			var that = this;
+			var oView = this.getView();
+			var oValidationPromise = dFecha
+				? TurnsService.validateEditDeletePermission(dFecha, sCreadoPor, "editar", oView)
+				: Promise.resolve({ allowed: true });
+
+			oValidationPromise.then(function (oResult) {
+				if (!oResult.allowed) {
+					MessageBox.error(oResult.message);
+					return;
+				}
+				that._editNovedadFromGuardiasList(oRow);
+			}).catch(function (oError) {
+				Logger.error("onEditNove: Error al validar permisos de edición", oError);
+				MessageBox.error("Error al validar permisos. Intente nuevamente.");
+			});
 		},
 
 		/**
@@ -624,6 +642,69 @@ sap.ui.define([
 
 
 
+		_viewNovedadFromGuardiasList: function (oRow) {
+			var oView = this.getView();
+			var that = this;
+			var oRawData = oRow.__raw || oRow;
+
+			var oBusyDialog = this.crearDialogoBusy();
+			oBusyDialog.setText("Cargando datos de la novedad...");
+			this.abrirDialogoBusy(oBusyDialog);
+
+			this._clearAllFormModels(oView);
+
+			var oNovedadData = {
+				Id: oRawData.Id || oRow.IdNovedad || "",
+				InicioNove: oRawData.Fechahora || oRawData.InicioNove || null,
+				Tplnr: oRawData.LugarFormat || oRawData.Tplnr || "",
+				Equnr: oRawData.Equipo || oRawData.Equnr || "",
+				CodNovedad: oRawData.Tiponovedad || oRawData.CodNovedad || "",
+				Empresa: oRawData.Empresa || ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety"),
+				Novedad: oRawData.Novedad || ""
+			};
+
+			if (!oNovedadData.CodNovedad && (oRawData.TipoNovedad || oRawData.Tiponovedad)) {
+				oNovedadData.CodNovedad = oRawData.TipoNovedad || oRawData.Tiponovedad;
+			}
+			if (!oNovedadData.Equnr && oRawData.Equipo) {
+				oNovedadData.Equnr = oRawData.Equipo;
+			}
+
+			var aPromises = [];
+			if (oNovedadData.CodNovedad && oNovedadData.Empresa) {
+				aPromises.push(MotivosService.loadModel(oNovedadData.CodNovedad, oNovedadData.Empresa));
+				aPromises.push(CausasService.loadModel(oNovedadData.CodNovedad, "", oNovedadData.Empresa));
+			}
+
+			Promise.all(aPromises).then(() => {
+				var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
+				oNovedadModel.setData(oNovedadData);
+
+				var oEditModel = ModelHelper.getModel("editModel", oView);
+				if (oEditModel) {
+					oEditModel.setProperty("/mode", Constants.EDIT_MODES.VIEW);
+					oEditModel.setProperty("/editableMode", false);
+				}
+
+				var oUtilsModel = ModelHelper.getModel("utilsModel", oView);
+				if (oUtilsModel) {
+					oUtilsModel.setProperty("/readOnlyMode", true);
+				}
+
+				that.cerrarDialogoBusy(oBusyDialog);
+
+				setTimeout(() => {
+					that.getOwnerComponent().getRouter().navTo(
+						"Novedades",
+						{ mode: Constants.EDIT_MODES.VIEW }
+					);
+				}, 100);
+			}).catch((oError) => {
+				that.cerrarDialogoBusy(oBusyDialog);
+				ErrorHandler.handleODataError(oError, "cargar datos de novedad", true);
+			});
+		},
+
 		/**
 		 * Edita una perturbación o programada desde la tabla General
 		 * @param {string} strId - ID formateado de la novedad
@@ -667,9 +748,30 @@ sap.ui.define([
 			}
 
 			var oSelectedData = oContext.getObject();
-			// Las novedades de oNovedadesModel vienen de GuardiasListSet, ya tienen todos los datos
-			// No necesitan buscar en NovedadesServicioSet
-			this._editNovedadFromGuardiasList(oSelectedData);
+
+			// Validar permisos de edición por creador/turno
+			var sCreadoPor = oSelectedData.Creado_Por || oSelectedData.CreadoPor || "";
+			var dFecha = oSelectedData.Fechahora || oSelectedData.InicioNove || null;
+			if (dFecha && !(dFecha instanceof Date)) {
+				dFecha = new Date(dFecha);
+			}
+
+			var that = this;
+			var oView = this.getView();
+			var oValidationPromise = dFecha
+				? TurnsService.validateEditDeletePermission(dFecha, sCreadoPor, "editar", oView)
+				: Promise.resolve({ allowed: true });
+
+			oValidationPromise.then(function (oResult) {
+				if (!oResult.allowed) {
+					MessageBox.error(oResult.message);
+					return;
+				}
+				that._editNovedadFromGuardiasList(oSelectedData);
+			}).catch(function (oError) {
+				Logger.error("onEditNoveLG: Error al validar permisos de edición", oError);
+				MessageBox.error("Error al validar permisos. Intente nuevamente.");
+			});
 		},
 
 		onCloseDialog: function () {
@@ -925,8 +1027,100 @@ sap.ui.define([
 
 
 
-		onDelete: function () {
-			MessageToast.show("Delete Pressed");
+		onDelete: function (oEvent) {
+			var oSrc = oEvent.getSource();
+
+			// Intentar obtener contexto desde cualquier modelo de tabla
+			var oCtx = oSrc.getBindingContext("oGeneralModel")
+				|| oSrc.getBindingContext("oNovedadesModel")
+				|| oSrc.getBindingContext("oPerturbacionesModel")
+				|| oSrc.getBindingContext("oTProgramadasModel");
+			if (!oCtx) {
+				MessageBox.alert("No se encontró la fila a eliminar.");
+				return;
+			}
+
+			var oRow = oCtx.getObject() || {};
+			var oRaw = oRow.__raw || oRow;
+			var sId = oRow.IdNovedad || oRow.Id || oRaw.IdNovedad || oRaw.Id || "";
+
+			// Determinar el tipo: desde __type (tabla General) o desde el modelo de binding
+			var sType = oRow.__type;
+			if (!sType) {
+				var sModelName = oCtx.getModel().toString();
+				if (oSrc.getBindingContext("oPerturbacionesModel")) {
+					sType = "PERT";
+				} else if (oSrc.getBindingContext("oTProgramadasModel")) {
+					sType = "PROG";
+				} else {
+					sType = "NOVEDAD";
+				}
+			}
+
+			if (!sId) {
+				MessageBox.alert("No se encontró el Id del registro a eliminar.");
+				return;
+			}
+
+			var that = this;
+			var oView = this.getView();
+
+			// Solo NOVEDAD (GuardiasListSet) requiere validación de turno/creador
+			var fnDoDelete = function () {
+				MessageBox.confirm("¿Está seguro que desea eliminar este registro?", {
+					title: "Confirmar eliminación",
+					onClose: function (sAction) {
+						if (sAction !== MessageBox.Action.OK) {
+							return;
+						}
+
+						var oDeletePromise;
+						if (sType === "NOVEDAD") {
+							oDeletePromise = LibroGuardiaService.deleteGuardia(sId, oView);
+						} else {
+							var strId = String(sId);
+							while (strId.length < 10) strId = "0" + strId;
+							oDeletePromise = NovedadesService.deleteNovedad(strId);
+						}
+
+						oDeletePromise.then(function () {
+							var oBus = sap.ui.getCore().getEventBus();
+							if (oBus) {
+								oBus.publish("Main", "onInit");
+							}
+						}).catch(function (oError) {
+							Logger.error("onDelete: Error al eliminar registro", oError);
+						});
+					}
+				});
+			};
+
+			// PERT y PROG no requieren validación de turno/creador
+			if (sType !== "NOVEDAD") {
+				fnDoDelete();
+				return;
+			}
+
+			var sCreadoPor = oRow.Creado_Por || oRow.CreadoPor || oRaw.Creado_Por || oRaw.CreadoPor || "";
+			var dFecha = oRaw.InicioNove || oRaw.Fechahora || oRow.InicioNove || null;
+			if (dFecha && !(dFecha instanceof Date)) {
+				dFecha = new Date(dFecha);
+			}
+
+			var oValidationPromise = dFecha
+				? TurnsService.validateEditDeletePermission(dFecha, sCreadoPor, "eliminar", oView)
+				: Promise.resolve({ allowed: true });
+
+			oValidationPromise.then(function (oResult) {
+				if (!oResult.allowed) {
+					MessageBox.error(oResult.message);
+					return;
+				}
+				fnDoDelete();
+			}).catch(function (oError) {
+				Logger.error("onDelete: Error al validar permisos de eliminación", oError);
+				MessageBox.error("Error al validar permisos. Intente nuevamente.");
+			});
 		},
 		// onCheckBoxSelect ahora se hereda de BaseController
 		// novedadesFormValid ahora se hereda de BaseController
@@ -5358,8 +5552,11 @@ sap.ui.define([
 					if (sFrag.includes("formProgramadas")) {
 						this.getOwnerComponent().getRouter().navTo(
 							"Programadas",
-							{ mode: Constants.EDIT_MODES.VIEW },
-							{ query: { id: oSelectedNovedad.IdNovedad } }
+							{
+								mode: Constants.EDIT_MODES.VIEW,
+								idNovedad: oSelectedNovedad.IdNovedad,
+								empresa: oSelectedNovedad.Empresa
+							}
 						);
 						return;
 					}

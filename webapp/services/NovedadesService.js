@@ -248,6 +248,9 @@ sap.ui.define([
 		deleteNovedad: function (idNovedad) {
 			return new Promise(function (resolve, reject) {
 				var empresa = ModelHelper.getModel("utilsModel").getProperty("/Empresa");
+				if (!empresa) {
+					empresa = ModelHelper.getModel("Empresa").getProperty("/selectedSociety");
+				}
 				var entity = "/NovedadesServicioSet(IdNovedad='" + idNovedad + "',Empresa='" + empresa + "')";
 				oDataServices.getModel("").remove(entity, {
 					success: resolve,

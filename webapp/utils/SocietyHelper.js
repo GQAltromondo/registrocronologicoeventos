@@ -56,7 +56,14 @@ sap.ui.define([
                         });
 
                         sEmpresa = oData.results[0].Empresa;
-                        
+
+                        // Guardar Legajo y Usuario SAP en UserDataModel
+                        var oUserDataModel = ModelHelper.getModel("UserDataModel");
+                        if (oUserDataModel && oData.results[0]) {
+                            oUserDataModel.setProperty("/Legajo", oData.results[0].Legajo || "");
+                            oUserDataModel.setProperty("/login_name_sap", oData.results[0].Usuario || "");
+                        }
+
                         // Si empresa es 999, mostrar diálogo de selección
                         if (sEmpresa == 999) {
                             sEmpresa = await this._showSocietyDialog(oController, aEmpresas);
