@@ -124,7 +124,7 @@ sap.ui.define([], function () {
 		/**
 		 * Propiedades expandidas para OData
 		 */
-		ODATA_EXPAND_PROPERTIES: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav,Normalizacion_nav",
+		ODATA_EXPAND_PROPERTIES: "ConsecuentesSet,InformeCammesaSet,ComentariosSet,ENSRegXNS_NAV,SenialXNS_nav,PruebasXNS_nav,Normalizacion_nav,Indisponibilidades_nav",
 
 		/**
 		 * Configuración de modelos OData
