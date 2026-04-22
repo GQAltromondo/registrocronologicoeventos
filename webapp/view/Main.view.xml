@@ -7,6 +7,15 @@
 	<App id="app">
 		<pages>
 			<Page id="page" title="{i18n>title}" class="sapUiNoContentPadding">
+				<headerContent>
+					<ToggleButton
+						id="btnBypassTurno"
+						text="{= ${appCurrentInfo>/bypassTurnoValidation} ? 'Validación turnos: OFF' : 'Validación turnos: ON' }"
+						pressed="{appCurrentInfo>/bypassTurnoValidation}"
+						type="{= ${appCurrentInfo>/bypassTurnoValidation} ? 'Reject' : 'Default' }"
+						press="onToggleTurnoValidation"
+						tooltip="Deshabilita la validación de TurnosHeaderSet para pruebas"/>
+				</headerContent>
 				<content>
 				<FlexBox class="wrapper" direction="Column" >
 					<Panel headerText="Filtrar" expandable="true" expanded="true">

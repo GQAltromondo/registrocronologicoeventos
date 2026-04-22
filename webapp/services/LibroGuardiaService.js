@@ -10,6 +10,8 @@ sap.ui.define([
 	return {
 		_entitySet: "/GuardiasListSet",
 
+		_expandGuardia: "NovedadesSet,ManiobrasOperativas_nav,NormalizacionLG_nav,Alarmas_nav,CargaEquipos_nav,FueraBanda_nav",
+
 		/**
 		 * Obtiene la empresa desde el modelo
 		 * @param {sap.ui.core.mvc.View} oView - Vista actual (opcional)
@@ -299,6 +301,233 @@ sap.ui.define([
 					Logger.error("LibroGuardiaService.createGuardiaAndRefresh: Error", oError);
 					throw oError;
 				});
+		},
+
+		_getLGModel: function (oView) {
+			var oModel = null;
+			if (oView) {
+				oModel = oView.getModel("LGuardias");
+			}
+			if (!oModel) {
+				oModel = sap.ui.getCore().getModel("LGuardias");
+			}
+			if (!oModel) {
+				oModel = oDataServices.getModel();
+			}
+			return oModel;
+		},
+
+		getGuardiaConDetalle: function (sId, sEmpresa, oView) {
+			var that = this;
+			return new Promise(function (resolve, reject) {
+				if (!sId) {
+					Logger.warn("LibroGuardiaService.getGuardiaConDetalle: Id requerido");
+					reject(new Error("El Id de la guardia es requerido"));
+					return;
+				}
+				var sEmp = sEmpresa || that._getEmpresa(oView);
+				if (!sEmp) {
+					Logger.warn("LibroGuardiaService.getGuardiaConDetalle: Empresa requerida");
+					reject(new Error("La Empresa es requerida"));
+					return;
+				}
+				var oModel = that._getLGModel(oView);
+				if (!oModel) {
+					Logger.error("LibroGuardiaService.getGuardiaConDetalle: No se pudo obtener el modelo OData");
+					reject(new Error("No se pudo obtener el modelo OData"));
+					return;
+				}
+				var sPath = that._entitySet + "(Id='" + sId + "',Empresa='" + sEmp + "')";
+				Logger.debug("LibroGuardiaService.getGuardiaConDetalle: Leyendo", { path: sPath, expand: that._expandGuardia });
+				oModel.read(sPath, {
+					urlParameters: { "$expand": that._expandGuardia },
+					success: function (oData) {
+						Logger.info("LibroGuardiaService.getGuardiaConDetalle: Guardia leída con detalle", { id: sId });
+						resolve(oData);
+					},
+					error: function (oError) {
+						Logger.error("LibroGuardiaService.getGuardiaConDetalle: Error al leer guardia con detalle", oError);
+						ErrorHandler.handleODataError(oError, "leer guardia con detalle");
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		_createChild: function (sSet, oData, sAccion, oView) {
+			var that = this;
+			return new Promise(function (resolve, reject) {
+				if (!oData) {
+					reject(new Error("No se proporcionaron datos para " + sAccion));
+					return;
+				}
+				var oPayload = Object.assign({}, oData);
+				delete oPayload.__metadata;
+				if (!oPayload.Empresa) {
+					oPayload.Empresa = that._getEmpresa(oView);
+				}
+				if (!oPayload.Empresa || !oPayload.IdNovedad) {
+					Logger.warn("LibroGuardiaService." + sAccion + ": Faltan Empresa o IdNovedad", oPayload);
+					reject(new Error("Empresa e IdNovedad son requeridos"));
+					return;
+				}
+				var oModel = that._getLGModel(oView);
+				if (!oModel) {
+					reject(new Error("No se pudo obtener el modelo OData"));
+					return;
+				}
+				Logger.debug("LibroGuardiaService." + sAccion + ": Creando", oPayload);
+				oModel.create(sSet, oPayload, {
+					success: function (oResp) {
+						Logger.info("LibroGuardiaService." + sAccion + ": Registro creado");
+						MessageToast.show("Registro creado correctamente");
+						resolve(oResp);
+					},
+					error: function (oError) {
+						Logger.error("LibroGuardiaService." + sAccion + ": Error", oError);
+						ErrorHandler.handleODataError(oError, sAccion);
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		_updateChild: function (sSet, oData, aKeyNames, sAccion, oView) {
+			var that = this;
+			return new Promise(function (resolve, reject) {
+				if (!oData) {
+					reject(new Error("No se proporcionaron datos para " + sAccion));
+					return;
+				}
+				var oPayload = Object.assign({}, oData);
+				delete oPayload.__metadata;
+				if (!oPayload.Empresa) {
+					oPayload.Empresa = that._getEmpresa(oView);
+				}
+				for (var i = 0; i < aKeyNames.length; i++) {
+					if (!oPayload[aKeyNames[i]]) {
+						Logger.warn("LibroGuardiaService." + sAccion + ": Falta clave " + aKeyNames[i], oPayload);
+						reject(new Error("Falta clave requerida: " + aKeyNames[i]));
+						return;
+					}
+				}
+				var oModel = that._getLGModel(oView);
+				if (!oModel) {
+					reject(new Error("No se pudo obtener el modelo OData"));
+					return;
+				}
+				var aKeyParts = aKeyNames.map(function (k) {
+					return k + "='" + oPayload[k] + "'";
+				});
+				var sPath = sSet + "(" + aKeyParts.join(",") + ")";
+				Logger.debug("LibroGuardiaService." + sAccion + ": Actualizando", { path: sPath, payload: oPayload });
+				oModel.update(sPath, oPayload, {
+					method: "PUT",
+					success: function (oResp) {
+						Logger.info("LibroGuardiaService." + sAccion + ": Registro actualizado");
+						MessageToast.show("Registro actualizado correctamente");
+						resolve(oResp);
+					},
+					error: function (oError) {
+						Logger.error("LibroGuardiaService." + sAccion + ": Error", oError);
+						ErrorHandler.handleODataError(oError, sAccion);
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		_deleteChild: function (sSet, oKeys, aKeyNames, sAccion, oView) {
+			var that = this;
+			return new Promise(function (resolve, reject) {
+				if (!oKeys) {
+					reject(new Error("No se proporcionaron claves para " + sAccion));
+					return;
+				}
+				var oK = Object.assign({}, oKeys);
+				if (!oK.Empresa) {
+					oK.Empresa = that._getEmpresa(oView);
+				}
+				for (var i = 0; i < aKeyNames.length; i++) {
+					if (!oK[aKeyNames[i]]) {
+						Logger.warn("LibroGuardiaService." + sAccion + ": Falta clave " + aKeyNames[i], oK);
+						reject(new Error("Falta clave requerida: " + aKeyNames[i]));
+						return;
+					}
+				}
+				var oModel = that._getLGModel(oView);
+				if (!oModel) {
+					reject(new Error("No se pudo obtener el modelo OData"));
+					return;
+				}
+				var aKeyParts = aKeyNames.map(function (k) {
+					return k + "='" + oK[k] + "'";
+				});
+				var sPath = sSet + "(" + aKeyParts.join(",") + ")";
+				Logger.debug("LibroGuardiaService." + sAccion + ": Eliminando", { path: sPath });
+				oModel.remove(sPath, {
+					success: function () {
+						Logger.info("LibroGuardiaService." + sAccion + ": Registro eliminado");
+						MessageToast.show("Registro eliminado correctamente");
+						resolve();
+					},
+					error: function (oError) {
+						Logger.error("LibroGuardiaService." + sAccion + ": Error", oError);
+						ErrorHandler.handleODataError(oError, sAccion);
+						reject(oError);
+					}
+				});
+			});
+		},
+
+		createManiobra: function (oData, oView) {
+			return this._createChild("/ManiobrasOperativasSet", oData, "createManiobra", oView);
+		},
+		updateManiobra: function (oData, oView) {
+			return this._updateChild("/ManiobrasOperativasSet", oData, ["Empresa", "IdNovedad", "Posicion"], "updateManiobra", oView);
+		},
+		deleteManiobra: function (oKeys, oView) {
+			return this._deleteChild("/ManiobrasOperativasSet", oKeys, ["Empresa", "IdNovedad", "Posicion"], "deleteManiobra", oView);
+		},
+
+		createNormalizacion: function (oData, oView) {
+			return this._createChild("/NormalizacionLGSet", oData, "createNormalizacion", oView);
+		},
+		updateNormalizacion: function (oData, oView) {
+			return this._updateChild("/NormalizacionLGSet", oData, ["Empresa", "IdNovedad"], "updateNormalizacion", oView);
+		},
+		deleteNormalizacion: function (oKeys, oView) {
+			return this._deleteChild("/NormalizacionLGSet", oKeys, ["Empresa", "IdNovedad"], "deleteNormalizacion", oView);
+		},
+
+		createAlarma: function (oData, oView) {
+			return this._createChild("/AlarmasLGSet", oData, "createAlarma", oView);
+		},
+		updateAlarma: function (oData, oView) {
+			return this._updateChild("/AlarmasLGSet", oData, ["Empresa", "IdNovedad", "Posicion"], "updateAlarma", oView);
+		},
+		deleteAlarma: function (oKeys, oView) {
+			return this._deleteChild("/AlarmasLGSet", oKeys, ["Empresa", "IdNovedad", "Posicion"], "deleteAlarma", oView);
+		},
+
+		createCargaEquipo: function (oData, oView) {
+			return this._createChild("/CargaEquiposSet", oData, "createCargaEquipo", oView);
+		},
+		updateCargaEquipo: function (oData, oView) {
+			return this._updateChild("/CargaEquiposSet", oData, ["Empresa", "IdNovedad", "Posicion"], "updateCargaEquipo", oView);
+		},
+		deleteCargaEquipo: function (oKeys, oView) {
+			return this._deleteChild("/CargaEquiposSet", oKeys, ["Empresa", "IdNovedad", "Posicion"], "deleteCargaEquipo", oView);
+		},
+
+		createFueraBanda: function (oData, oView) {
+			return this._createChild("/FueraBandaSet", oData, "createFueraBanda", oView);
+		},
+		updateFueraBanda: function (oData, oView) {
+			return this._updateChild("/FueraBandaSet", oData, ["Empresa", "IdNovedad", "Posicion"], "updateFueraBanda", oView);
+		},
+		deleteFueraBanda: function (oKeys, oView) {
+			return this._deleteChild("/FueraBandaSet", oKeys, ["Empresa", "IdNovedad", "Posicion"], "deleteFueraBanda", oView);
 		}
 	};
 });

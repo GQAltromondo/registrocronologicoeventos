@@ -194,6 +194,9 @@
                                         </HBox>
                                     </VBox>
                                     <VBox width="100%">
+                                        <HBox justifyContent="End">
+                                            <Button id="btnAddIndisponibilidad" icon="sap-icon://add" press=".onAddIndisponibilidad" type="Emphasized" tooltip="Agregar indisponibilidad" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                                        </HBox>
                                         <HBox class="HBoxContent">
                                             <Label text="Referencia" class="sapUiTinyMarginEnd"/>
                                             <Input enabled="false" value="{NovedadesFormJsonModel>/IdNovedad}" width="150px"/>
@@ -206,21 +209,57 @@
 
                                 </HBox>
                                 <HBox >
-                                    <VBox class="halfConte">
+                                    <VBox class="halfConte" width="50%">
                                         <Label text="Comentarios (Parte de Indisponibilidad)"/>
-                                        <TextArea value="{InformaCammesa>/Texto}" width="100%"/>
-                                        <HBox alignItems="Center">
-                                            <Label text="La indisponibilidad se informa a CAMMESA :" />
-                                            <CheckBox selected="{InformaCammesa>/InformaCammesa}" />
-                                        </HBox>
+                                        <TextArea value="{IndispFormModel>/ComentarioIndis}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                     </VBox>
-                                    <VBox class="halfConte">
+                                    <VBox class="halfConte" width="50%">
                                         <Label text="Comentarios" showColon="true"/>
-                                        <TextArea value="{InformaCammesa>/Texto}" width="100%"/>
+                                        <TextArea value="{IndispFormModel>/Comentarios}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
                                     </VBox>
-
                                 </HBox>
+                                <HBox alignItems="Center">
+                                    <Label text="La indisponibilidad se informa a CAMMESA :" />
+                                    <CheckBox selected="{IndispFormModel>/InformaCammesa}" enabled="{= !${utilsModel>/readOnlyMode}}"/>
+                                </HBox>
+                                <VBox width="100%">
+                                    <Label text="Comentario CAMMESA" showColon="true"/>
+                                    <TextArea value="{IndispFormModel>/ComentarioCammesa}" width="100%" editable="{= !${utilsModel>/readOnlyMode}}"/>
+                                </VBox>
                             </VBox>
+
+                            <!-- Tabla Indisponibilidades -->
+                            <Table id="tablaIndisponibilidades" class="sapUiSmallMarginTop" items="{IndisponibilidadesModel>/Indisponibilidades}" growing="true">
+                                <columns>
+                                    <Column><header><Text text="Fecha Indisponible"/></header></Column>
+                                    <Column><header><Text text="Fecha Disponible"/></header></Column>
+                                    <Column><header><Text text="Causa"/></header></Column>
+                                    <Column><header><Text text="Motivo"/></header></Column>
+                                    <Column><header><Text text="Comentario Indisp."/></header></Column>
+                                    <Column><header><Text text="Comentarios"/></header></Column>
+                                    <Column><header><Text text="Informa CAMMESA"/></header></Column>
+                                    <Column><header><Text text="Comentario CAMMESA"/></header></Column>
+                                    <Column width="6rem" hAlign="Center"><header><Text text="Acciones"/></header></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Text text="{path: 'IndisponibilidadesModel>IndispFecha', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd/MM/yyyy HH:mm' }}"/>
+                                            <Text text="{path: 'IndisponibilidadesModel>DispoFecha', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd/MM/yyyy HH:mm' }}"/>
+                                            <Text text="{IndisponibilidadesModel>CodCausa}"/>
+                                            <Text text="{IndisponibilidadesModel>CodMotivo}"/>
+                                            <Text text="{IndisponibilidadesModel>ComentarioIndis}"/>
+                                            <Text text="{IndisponibilidadesModel>Comentarios}"/>
+                                            <Text text="{= ${IndisponibilidadesModel>InformaCammesa} ? 'Si' : 'No'}"/>
+                                            <Text text="{IndisponibilidadesModel>ComentarioCammesa}"/>
+                                            <HBox>
+                                                <Button icon="sap-icon://edit" type="Transparent" press=".onEditIndisponibilidad" tooltip="Editar" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                                                <Button icon="sap-icon://delete" type="Transparent" press=".onDeleteIndisponibilidad" tooltip="Eliminar" visible="{= !${utilsModel>/readOnlyMode}}"/>
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
                         </IconTabFilter>
                     </items>
                 </IconTabBar>

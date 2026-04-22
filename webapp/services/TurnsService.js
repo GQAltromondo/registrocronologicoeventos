@@ -20,6 +20,15 @@ sap.ui.define([
 			return oModel;
 		},
 
+		_isBypassActive: function () {
+			try {
+				var oModel = sap.ui.getCore().getModel("appCurrentInfo");
+				return !!(oModel && oModel.getProperty("/bypassTurnoValidation"));
+			} catch (e) {
+				return false;
+			}
+		},
+
 		_adjustTimezone: function (date) {
 			var d = new Date(date.getTime());
 			d.setHours(d.getHours() + Constants.TURNO.TIMEZONE_OFFSET_HOURS);
@@ -117,6 +126,11 @@ sap.ui.define([
 		validateCreatePermission: function (fechaNovedad, empresa, oView) {
 			var that = this;
 
+			if (this._isBypassActive()) {
+				Logger.warn("validateCreatePermission: bypass activo, se omite validación de turno");
+				return Promise.resolve({ allowed: true });
+			}
+
 			return this.loadDateTurn(fechaNovedad, oView).then(function (respAll) {
 				var aResults = respAll.results || [];
 				var bTurnoCerrado = aResults.some(function (turno) {
@@ -152,6 +166,12 @@ sap.ui.define([
 
 		validateEditDeletePermission: function (fechaNovedad, creadoPor, accion, oView) {
 			var that = this;
+
+			if (this._isBypassActive()) {
+				Logger.warn("validateEditDeletePermission: bypass activo, se omite validación de turno");
+				return Promise.resolve({ allowed: true });
+			}
+
 			var sLoginName = UserService.getLoginName();
 			var sMessage = accion === "eliminar"
 				? Constants.ERROR_MESSAGES.NO_PUEDE_ELIMINAR_AJENO

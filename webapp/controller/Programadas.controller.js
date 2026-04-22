@@ -9,8 +9,9 @@ sap.ui.define([
     "transener/registrocronologicoeventos/services/NovedadesService",
     "transener/registrocronologicoeventos/utils/Logger",
     "transener/registrocronologicoeventos/services/NormalizacionService",
-    "transener/registrocronologicoeventos/services/CammesaService"
-], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger, NormalizacionService, CammesaService) {
+    "transener/registrocronologicoeventos/services/CammesaService",
+    "transener/registrocronologicoeventos/services/IndisponibilidadesService"
+], function (BaseController, formatter, History, ModelHelper, Constants, EquiposService, CausasServices, NovedadesService, Logger, NormalizacionService, CammesaService, IndisponibilidadesService) {
     "use strict";
 
     return BaseController.extend("transener.registrocronologicoeventos.controller.Programadas", {
@@ -48,6 +49,24 @@ sap.ui.define([
 
             // Inicializar modelo ConsequentListJsonModel
             ModelHelper.getModel("ConsequentListJsonModel", oView);
+
+            // Inicializar modelo Indisponibilidades
+            var oIndispListModel = ModelHelper.getModel("IndisponibilidadesModel", oView);
+            if (!oIndispListModel.getData() || !oIndispListModel.getData().hasOwnProperty("Indisponibilidades")) {
+                oIndispListModel.setData({ Indisponibilidades: [] });
+            }
+
+            // Inicializar modelo IndispFormModel (formulario de edicion de indisponibilidad)
+            var oIndispFormModel = ModelHelper.getModel("IndispFormModel", oView);
+            if (!oIndispFormModel.getData() || !oIndispFormModel.getData().hasOwnProperty("ComentarioIndis")) {
+                oIndispFormModel.setData({
+                    ComentarioIndis: "",
+                    Comentarios: "",
+                    ComentarioCammesa: "",
+                    InformaCammesa: false
+                });
+            }
+            this._iEditingIndisponibilidadIndex = -1;
         },
 
         _onRouteMatched: function (oEvent) {
@@ -79,6 +98,16 @@ sap.ui.define([
             // Resetear modelo InformaCammesa
             ModelHelper.getModel("InformaCammesa", oView).setData({
                 Texto: "",
+                InformaCammesa: false
+            });
+
+            // Reset Indisponibilidades
+            this._iEditingIndisponibilidadIndex = -1;
+            ModelHelper.getModel("IndisponibilidadesModel", oView).setData({ Indisponibilidades: [] });
+            ModelHelper.getModel("IndispFormModel", oView).setData({
+                ComentarioIndis: "",
+                Comentarios: "",
+                ComentarioCammesa: "",
                 InformaCammesa: false
             });
 
@@ -152,6 +181,17 @@ sap.ui.define([
                         ModelHelper.getModel("CommentsFormJsonModel", oView).setData(oData.ComentariosSet.results[0]);
                     }
 
+                    // Indisponibilidades_nav
+                    if (oData.Indisponibilidades_nav && oData.Indisponibilidades_nav.results && oData.Indisponibilidades_nav.results.length > 0) {
+                        ModelHelper.getModel("IndisponibilidadesModel", oView).setData({
+                            Indisponibilidades: oData.Indisponibilidades_nav.results.map(function (oItem) {
+                                oItem.InformaCammesa = oItem.InformaCammesa === "S" || oItem.InformaCammesa === "X" || oItem.InformaCammesa === true;
+                                oItem._formData = jQuery.extend({}, oItem);
+                                return oItem;
+                            })
+                        });
+                    }
+
                     // Cargar equipos y causas
                     that.getNSInfo();
                 })
@@ -177,6 +217,154 @@ sap.ui.define([
             CausasServices.loadModel(oNovedad.CodNovedad, oNovedad.CodMotivo, Empresa);
         },
 
+        // ==================== Indisponibilidades CRUD ====================
+
+        _setIndisponibilidadButtonMode: function (sMode) {
+            var oBtn = this.byId("btnAddIndisponibilidad");
+            if (!oBtn) { return; }
+            if (sMode === "save") {
+                oBtn.setIcon("sap-icon://save");
+                oBtn.setTooltip("Guardar indisponibilidad");
+            } else {
+                oBtn.setIcon("sap-icon://add");
+                oBtn.setTooltip("Agregar indisponibilidad");
+            }
+        },
+
+        _readIndisponibilidadFromForm: function () {
+            var oView = this.getView();
+            var oNovedadData = ModelHelper.getModel("NovedadesFormJsonModel", oView).getData();
+            var oFormData = ModelHelper.getModel("IndispFormModel", oView).getData();
+            return {
+                IndispFecha: oNovedadData.InicioNove || null,
+                DispoFecha: oNovedadData.FinNov || null,
+                CodCausa: oNovedadData.CodCausa || "",
+                CodMotivo: oNovedadData.CodMotivo || "",
+                ComentarioIndis: oFormData.ComentarioIndis || "",
+                Comentarios: oFormData.Comentarios || "",
+                InformaCammesa: oFormData.InformaCammesa || false,
+                ComentarioCammesa: oFormData.ComentarioCammesa || ""
+            };
+        },
+
+        _loadIndisponibilidadToForm: function (oRow) {
+            var oView = this.getView();
+            var oNovedadModel = ModelHelper.getModel("NovedadesFormJsonModel", oView);
+            var oFormModel = ModelHelper.getModel("IndispFormModel", oView);
+            oNovedadModel.setProperty("/InicioNove", oRow.IndispFecha);
+            oNovedadModel.setProperty("/FinNov", oRow.DispoFecha);
+            if (oRow.CodCausa) { oNovedadModel.setProperty("/CodCausa", oRow.CodCausa); }
+            if (oRow.CodMotivo) { oNovedadModel.setProperty("/CodMotivo", oRow.CodMotivo); }
+            oFormModel.setData({
+                ComentarioIndis: oRow.ComentarioIndis || "",
+                Comentarios: oRow.Comentarios || "",
+                ComentarioCammesa: oRow.ComentarioCammesa || "",
+                InformaCammesa: oRow.InformaCammesa || false
+            });
+        },
+
+        onAddIndisponibilidad: function () {
+            var oView = this.getView();
+            var oNewItem = this._readIndisponibilidadFromForm();
+            var oListModel = ModelHelper.getModel("IndisponibilidadesModel", oView);
+            var aItems = oListModel.getProperty("/Indisponibilidades") || [];
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+
+            if (this._iEditingIndisponibilidadIndex >= 0) {
+                var iIdx = this._iEditingIndisponibilidadIndex;
+                var oOldItem = aItems[iIdx];
+                oNewItem.Posicion = oOldItem.Posicion;
+                aItems[iIdx] = oNewItem;
+                oListModel.setProperty("/Indisponibilidades", aItems);
+
+                if (this._sIdNovedad && oOldItem.Posicion) {
+                    IndisponibilidadesService.upsert(jQuery.extend({}, oNewItem), this._sIdNovedad, sEmpresa)
+                        .catch(function (err) {
+                            Logger.error("Error al actualizar indisponibilidad", err);
+                            sap.m.MessageToast.show("Error al actualizar indisponibilidad");
+                        });
+                }
+
+                this._iEditingIndisponibilidadIndex = -1;
+                this._setIndisponibilidadButtonMode("add");
+            } else {
+                var iMaxPos = 0;
+                aItems.forEach(function (o) {
+                    var iPos = parseInt(o.Posicion, 10) || 0;
+                    if (iPos > iMaxPos) { iMaxPos = iPos; }
+                });
+                oNewItem.Posicion = (iMaxPos + 1).toString();
+                aItems.push(oNewItem);
+                oListModel.setProperty("/Indisponibilidades", aItems);
+
+                if (this._sIdNovedad) {
+                    IndisponibilidadesService.create(jQuery.extend({}, oNewItem), this._sIdNovedad, sEmpresa)
+                        .catch(function (err) {
+                            Logger.error("Error al crear indisponibilidad", err);
+                            sap.m.MessageToast.show("Error al crear indisponibilidad");
+                        });
+                }
+            }
+        },
+
+        onEditIndisponibilidad: function (oEvent) {
+            if (this._iEditingIndisponibilidadIndex >= 0) {
+                sap.m.MessageToast.show("Ya hay una indisponibilidad en edicion");
+                return;
+            }
+
+            var oCtx = oEvent.getSource().getBindingContext("IndisponibilidadesModel");
+            var sPath = oCtx.getPath();
+            var iIndex = parseInt(sPath.split("/").pop(), 10);
+            var oRow = ModelHelper.getModel("IndisponibilidadesModel", this.getView()).getProperty(sPath);
+
+            this._loadIndisponibilidadToForm(oRow);
+            this._iEditingIndisponibilidadIndex = iIndex;
+            this._setIndisponibilidadButtonMode("save");
+        },
+
+        onDeleteIndisponibilidad: function (oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("IndisponibilidadesModel");
+            var sPath = oCtx.getPath();
+            var iIndex = parseInt(sPath.split("/").pop(), 10);
+            var oView = this.getView();
+            var oListModel = ModelHelper.getModel("IndisponibilidadesModel", oView);
+            var aItems = oListModel.getProperty("/Indisponibilidades") || [];
+            var oRow = aItems[iIndex];
+            var sEmpresa = ModelHelper.getModel("Empresa", oView).getProperty("/selectedSociety") || "";
+            var that = this;
+
+            if (this._iEditingIndisponibilidadIndex === iIndex) {
+                sap.m.MessageToast.show("No se puede eliminar una fila en edicion");
+                return;
+            }
+
+            var fnRemoveLocal = function () {
+                aItems.splice(iIndex, 1);
+                oListModel.setProperty("/Indisponibilidades", aItems);
+                if (that._iEditingIndisponibilidadIndex > iIndex) {
+                    that._iEditingIndisponibilidadIndex--;
+                }
+            };
+
+            if (this._sIdNovedad && oRow.Posicion) {
+                IndisponibilidadesService.remove({
+                    Empresa: sEmpresa,
+                    Posicion: oRow.Posicion,
+                    IdNovedad: this._sIdNovedad
+                }).then(function () {
+                    fnRemoveLocal();
+                }).catch(function (err) {
+                    Logger.error("Error al eliminar indisponibilidad", err);
+                    sap.m.MessageToast.show("Error al eliminar indisponibilidad");
+                });
+            } else {
+                fnRemoveLocal();
+            }
+        },
+
+        // ==================== Fin Indisponibilidades ====================
+
         _onAfterSaveSuccess: function (oNovedadData) {
             var oView = this.getView();
             var sIdNovedad = oNovedadData.IdNovedad || ModelHelper.getModel("NovedadesFormJsonModel", oView).getData().IdNovedad;
@@ -195,6 +383,9 @@ sap.ui.define([
                 var bNormExists = !!this._bNormalizacionExists;
                 aPromises.push(NormalizacionService.saveNormalizacion(oNormData, sIdNovedad, sEmpresa, bNormExists));
             }
+
+            // Guardar Indisponibilidades
+            aPromises.push(IndisponibilidadesService.saveAllIndisponibilidades(sIdNovedad, sEmpresa));
 
             if (aPromises.length === 0) {
                 return Promise.resolve();

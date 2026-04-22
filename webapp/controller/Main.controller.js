@@ -48,6 +48,17 @@ sap.ui.define([
 
 	return BaseController.extend("transener.registrocronologicoeventos,SocietyHelper.controller.Main", {
 		formatter: formatter,
+
+		onToggleTurnoValidation: function (oEvent) {
+			var bPressed = oEvent.getParameter("pressed");
+			var oAppModel = ModelHelper.getModel("appCurrentInfo", this.getView());
+			if (oAppModel) {
+				oAppModel.setProperty("/bypassTurnoValidation", bPressed);
+			}
+			Logger.warn("Main.onToggleTurnoValidation: bypass de validación de turnos " + (bPressed ? "ACTIVADO" : "DESACTIVADO"));
+			MessageToast.show("Validación de turnos " + (bPressed ? "deshabilitada" : "habilitada"));
+		},
+
 		onInit: function () {
 			const oView = this.getView()
 			ModelHelper.getModel(oView, "Empresa").setData({ selectedSociety: "" })
