@@ -11,23 +11,23 @@
             <VBox class="container">
                 <HBox alignItems="Center">
                     <Label text="Fuera de banda en el nivel de" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
-                    <CheckBox text="500 kV"/>
-                    <CheckBox text="345/330 kV"/>
-                    <CheckBox text="220 kV"/>
-                    <CheckBox text="132 kV"/>
+                    <CheckBox text="500 kV" selected="{FueraBandaJsonModel>/Nivel500}"/>
+                    <CheckBox text="345/330 kV" selected="{FueraBandaJsonModel>/Nivel345}"/>
+                    <CheckBox text="220 kV" selected="{FueraBandaJsonModel>/Nivel220}"/>
+                    <CheckBox text="132 kV" selected="{FueraBandaJsonModel>/Nivel132}"/>
                 </HBox>
                 <HBox alignItems="Center">
                     <Label text="Tension Requerida (KV)" class="sectionLabel sapUiSmallMarginEnd"/>
-                    <Input width="90px"/>
+                    <Input width="90px" value="{FueraBandaJsonModel>/TensionRequerida}"/>
                 </HBox>
                 <VBox>
                     <Label text="Motivos" showColon="true" class="sectionLabel"/>
-                    <TextArea width="100%"/>
+                    <TextArea width="100%" value="{FueraBandaJsonModel>/Motivos}"/>
                 </VBox>
                 <HBox justifyContent="Start">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Solicitado por" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/SolicitadoPor}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <ComboBox width="300px" selectedKey="{FueraBandaJsonModel>/SolicitadoPor}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
                             <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                         </ComboBox>
                     </VBox>
@@ -40,7 +40,7 @@
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                    <TextArea width="100%"/>
+                    <TextArea width="100%" value="{FueraBandaJsonModel>/Comentarios}"/>
                 </VBox>
             </VBox>
         </VBox>
@@ -55,13 +55,13 @@
                 <HBox alignItems="End">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Fecha/Hora en banda" showColon="true" class="sectionLabel"/>
-                        <DateTimePicker value="{ 'path': 'NovedadesFormJsonModel>/InicioNove', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                        <DateTimePicker value="{ 'path': 'NormalizacionLGJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                 </HBox>
                 <HBox justifyContent="Start">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="A solicitud de" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectedKey="{NovedadesFormJsonModel>/NormalizacionASolicitud}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <ComboBox width="300px" selectedKey="{NormalizacionLGJsonModel>/ASolicitudDe}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
                             <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                         </ComboBox>
                     </VBox>
@@ -74,7 +74,7 @@
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                    <TextArea width="100%"/>
+                    <TextArea width="100%" value="{NormalizacionLGJsonModel>/Comentarios}"/>
                 </VBox>
             </VBox>
         </VBox>

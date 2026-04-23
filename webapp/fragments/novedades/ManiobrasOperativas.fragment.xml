@@ -16,37 +16,43 @@
                             <VBox class="container">
                                 <VBox>
                                     <Label text="Se pasan los siguientes campos" class="sectionLabel"/>
-                                    <TextArea width="100%"/>
+                                    <TextArea width="100%" value="{ManiobraJsonModel>/TextoCampos}"/>
                                 </VBox>
                                 <HBox justifyContent="Start">
                                     <VBox class="sapUiMediumMarginEnd">
                                         <Label text="De Barra" class="sectionLabel"/>
-                                        <ComboBox/>
+                                        <ComboBox selectedKey="{ManiobraJsonModel>/DeBarra}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                            <core:Item key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                                        </ComboBox>
                                     </VBox>
                                     <VBox>
                                         <Label text="A Barra" class="sectionLabel"/>
-                                        <ComboBox/>
+                                        <ComboBox selectedKey="{ManiobraJsonModel>/ABarra}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                            <core:Item key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                                        </ComboBox>
                                     </VBox>
                                 </HBox>
                                 <VBox>
                                     <Label text="Fallo de equipo durante la maniobra" class="sectionLabel"/>
-                                    <ComboBox/>
+                                    <ComboBox selectedKey="{ManiobraJsonModel>/FalloEquipo}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                                        <core:Item key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                                    </ComboBox>
                                 </VBox>
                                 <VBox>
                                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                                    <TextArea width="100%"/>
+                                    <TextArea width="100%" value="{ManiobraJsonModel>/Comentarios}"/>
                                 </VBox>
                                 <HBox justifyContent="Start">
                                     <VBox class="sapUiMediumMarginEnd">
                                         <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
-                                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
-                                            <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}"/>
+                                        <ComboBox width="300px" selectedKey="{ManiobraJsonModel>/InformoPersonal}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                                            <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                                         </ComboBox>
                                     </VBox>
                                     <VBox>
                                         <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
-                                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
-                                            <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}"/>
+                                        <ComboBox width="300px" selectedKey="{ManiobraJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                                            <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                                         </ComboBox>
                                     </VBox>
                                 </HBox>
@@ -67,35 +73,37 @@
                 <HBox justifyContent="Start" alignItems="End">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
-                        <DatePicker/>
+                        <DateTimePicker value="{ 'path': 'NormalizacionLGJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                     <HBox alignItems="Center">
                         <Label text="Se Normaliza configuracion" showColon="true" class="sectionLabel sapUiSmallMarginEnd"/>
-                        <RadioButton text="SI" groupName="normConfig"/>
-                        <RadioButton text="NO" groupName="normConfig"/>
+                        <RadioButton text="SI" groupName="normConfig" selected="{= ${NormalizacionLGJsonModel>/SeNormalizaConfig} === 'S' }" select=".onSeNormalizaConfigSI"/>
+                        <RadioButton text="NO" groupName="normConfig" selected="{= ${NormalizacionLGJsonModel>/SeNormalizaConfig} === 'N' }" select=".onSeNormalizaConfigNO"/>
                     </HBox>
                 </HBox>
                 <VBox>
                     <Label text="Fallo de equipo durante la maniobra" class="sectionLabel"/>
-                    <ComboBox/>
+                    <ComboBox selectedKey="{NormalizacionLGJsonModel>/FalloEquipo}" items="{ path: 'EquiposModel>/Equipos', templateShareable: true }">
+                        <core:Item key="{EquiposModel>CodigoEquipo}" text="{EquiposModel>CodigoEquipo} - {EquiposModel>DescEquipo}"/>
+                    </ComboBox>
                 </VBox>
                 <HBox justifyContent="Start">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
-                            <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}"/>
+                        <ComboBox width="300px" selectedKey="{NormalizacionLGJsonModel>/InformoPersonal}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                            <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                         </ComboBox>
                     </VBox>
                     <VBox>
                         <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NovedadesFormJsonModel>/Tplnr}" items="{ path: 'EstacionesJsonModel>/Estaciones', templateShareable: true }">
-                            <core:Item key="{EstacionesJsonModel>Estacion}" text="{path: 'EstacionesJsonModel>Descripcion'}"/>
+                        <ComboBox width="300px" selectedKey="{NormalizacionLGJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                            <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                         </ComboBox>
                     </VBox>
                 </HBox>
                 <VBox>
                     <Label text="Comentarios referente a la normalizacion" showColon="true" class="sectionLabel"/>
-                    <TextArea width="100%"/>
+                    <TextArea width="100%" value="{NormalizacionLGJsonModel>/Comentarios}"/>
                 </VBox>
             </VBox>
         </VBox>

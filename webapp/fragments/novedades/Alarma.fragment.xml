@@ -12,7 +12,7 @@
             <HBox class="container" justifyContent="SpaceBetween" alignItems="End">
                 <VBox>
                     <Label text="Codigo de Alarma" showColon="true" class="sectionLabel"/>
-                    <ComboBox width="300px" selectionChange=".onAlarmaChange" selectedKey="{AlarmaJsonModel>/CodAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
+                    <ComboBox width="300px" selectionChange=".onAlarmaChange" selectedKey="{AlarmaJsonModel>/CodigoAlarma}" items="{ path: 'AlarmaModel>/', templateShareable: true }">
                         <core:Item key="{AlarmaModel>codigo}" text="{AlarmaModel>codigo} - {AlarmaModel>nombre}"/>
                     </ComboBox>
                 </VBox>
@@ -24,8 +24,8 @@
             <HBox class="container" justifyContent="Start">
                 <VBox class="sapUiMediumMarginEnd">
                     <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
-                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/InformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                        <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/InformoPersonal}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                     </ComboBox>
                 </VBox>
                 <VBox>
@@ -50,26 +50,26 @@
             <HBox class="container" justifyContent="Start" alignItems="End">
                 <VBox class="sapUiMediumMarginEnd">
                     <Label text="Fecha/Hora" showColon="true" class="sectionLabel"/>
-                    <DateTimePicker value="{ 'path': 'AlarmaJsonModel>/FechaHoraNormalizacion', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                    <DateTimePicker value="{ 'path': 'AlarmaJsonModel>/NormFechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                 </VBox>
             </HBox>
             <HBox class="container" justifyContent="Start">
                 <VBox class="sapUiMediumMarginEnd">
                     <Label text="Se Informo a Personal" showColon="true" class="sectionLabel"/>
-                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/NormalizacionInformoTecnico}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
-                        <core:Item key="{PersonalHabilitadoModel>Codigo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
+                    <ComboBox width="300px" selectedKey="{AlarmaJsonModel>/NormInformoPersonal}" items="{ path: 'PersonalHabilitadoModel>/Todos', templateShareable: true }">
+                        <core:Item key="{PersonalHabilitadoModel>Legajo}" text="{PersonalHabilitadoModel>Legajo} - {PersonalHabilitadoModel>Nombre}"/>
                     </ComboBox>
                 </VBox>
                 <VBox>
                     <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
-                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                    <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{AlarmaJsonModel>/NormInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
                         <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                     </ComboBox>
                 </VBox>
             </HBox>
             <VBox class="container">
                 <Label text="Comentarios referente a la normalizacion" showColon="true" class="sectionLabel"/>
-                <TextArea width="600px" value="{AlarmaJsonModel>/ComentariosNormalizacion}"/>
+                <TextArea width="600px" value="{AlarmaJsonModel>/NormComentarios}"/>
             </VBox>
         </VBox>
 

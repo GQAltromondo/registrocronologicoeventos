@@ -81,6 +81,7 @@ sap.ui.define([
       if (sMode === Constants.EDIT_MODES.CREATE) {
         Logger.debug("Modo CREATE detectado, limpiando modelo y fragmentos");
         oNovedadModel.setData({});
+        this._initializeAllNovedadChildModels(oView);
         this._clearFragmentContainer();
         return;
       }
@@ -215,6 +216,12 @@ sap.ui.define([
 
       oNovedadModel.setProperty("/CodNovedad", sSelectedKey);
       Logger.debug("CodNovedad actualizado en modelo: " + sSelectedKey);
+
+      // Cambio de fragment: descartar datos del fragment anterior reseteando modelos hijos.
+      // Solo aplica en create/empty — en edit/view los datos vienen de oDetalle y no deben perderse.
+      if (sMode !== Constants.EDIT_MODES.EDIT && sMode !== Constants.EDIT_MODES.VIEW) {
+        this._initializeAllNovedadChildModels(oView);
+      }
 
       // Buscar y cargar el fragmento correspondiente
       var sFragmentName = this._findFragmentByCodNovedad(sSelectedKey);
@@ -391,6 +398,10 @@ sap.ui.define([
           this._initializeAlarmaModels(oView);
         } else if (sFragmentPath.indexOf("CargaDeEquipos") !== -1) {
           this._initializeCargaModels(oView);
+        } else if (sFragmentPath.indexOf("EnBandaFueraDeBanda") !== -1) {
+          this._initializeFueraBandaModels(oView);
+        } else if (sFragmentPath.indexOf("ManiobrasOperativas") !== -1) {
+          this._initializeManiobrasModels(oView);
         }
       } catch (e) {
         Logger.error("Error cargando fragmento: " + sFragmentPath, e);
@@ -399,47 +410,20 @@ sap.ui.define([
     },
     _initializeAlarmaModels: function (oView) {
       try {
-        // Inicializar AlarmaModel con 4 elementos
         var oAlarmaModel = new sap.ui.model.json.JSONModel();
         oAlarmaModel.loadData(
           sap.ui.require.toUrl("transener/registrocronologicoeventos/model/AlarmasModel.json")
         );
-
         oView.setModel(oAlarmaModel, "AlarmaModel");
-
-
-
-        // Inicializar AlarmaJsonModel con valores por defecto
-        var oAlarmaJsonModel = ModelHelper.getModel("AlarmaJsonModel", oView);
-        if (!oAlarmaJsonModel.getData() || Object.keys(oAlarmaJsonModel.getData()).length === 0) {
-          oAlarmaJsonModel.setData({
-            CodAlarma: "",
-            InformoTecnico: "",
-            InformoEmpresa: "",
-            Comentarios: "",
-            FechaHoraNormalizacion: null,
-            NormalizacionInformoTecnico: "",
-            NormalizacionInformoEmpresa: "",
-            ComentariosNormalizacion: ""
-          });
-        }
-
-        Logger.debug("Modelos AlarmaModel y AlarmaJsonModel inicializados correctamente");
+        Logger.debug("AlarmaModel (datos de referencia) cargado");
       } catch (e) {
         Logger.error("Error al inicializar modelos de Alarma", e);
         ErrorHandler.handleError(e, "Inicializar modelos de Alarma", false);
       }
     },
 
-    /**
-     * Inicializa los modelos para el fragmento CargaDeEquipos
-     * Incluye medidasModel con 4 opciones, CargaFormJsonModel y NormalizacionCarga
-     * @param {sap.ui.core.mvc.View} oView - Vista actual
-     * @private
-     */
     _initializeCargaModels: function (oView) {
       try {
-        // Inicializar medidasModel con 4 opciones
         var oMedidasModel = ModelHelper.getModel("medidasModel", oView);
         oMedidasModel.setData({
           Medidas: [
@@ -449,42 +433,23 @@ sap.ui.define([
             { Codigo: "MED4", Descripcion: "Medida 4" }
           ]
         });
-
-        // Inicializar CargaFormJsonModel con valores por defecto
-        var oCargaFormModel = ModelHelper.getModel("CargaFormJsonModel", oView);
-        if (!oCargaFormModel.getData() || Object.keys(oCargaFormModel.getData()).length === 0) {
-          oCargaFormModel.setData({
-            Porcentaje: "",
-            FechaHora: null,
-            InformoEmpresa: "",
-            Comentarios: "",
-            editingIndex: -1
-          });
-        }
-
-        // Inicializar lista de Carga de Equipos
-        var oCargaEquiposListModel = ModelHelper.getModel("CargaEquiposListModel", oView);
-        if (!oCargaEquiposListModel.getData() || !oCargaEquiposListModel.getData().registros) {
-          oCargaEquiposListModel.setData({ registros: [] });
-        }
-
-        // Inicializar NormalizacionCarga con valores por defecto
-        var oNormalizacionModel = ModelHelper.getModel("NormalizacionCarga", oView);
-        if (!oNormalizacionModel.getData() || Object.keys(oNormalizacionModel.getData()).length === 0) {
-          oNormalizacionModel.setData({
-            Fechahora: null,
-            NormalizacionInformoEmpresa: "",
-            otrasMedidas: "",
-            FechaFinMedidas: null,
-            Comentarios: ""
-          });
-        }
-
-        Logger.debug("Modelos de CargaDeEquipos inicializados correctamente");
+        Logger.debug("medidasModel (datos de referencia) inicializado");
       } catch (e) {
         Logger.error("Error al inicializar modelos de CargaDeEquipos", e);
         ErrorHandler.handleError(e, "Inicializar modelos de CargaDeEquipos", false);
       }
+    },
+
+    _initializeFueraBandaModels: function () { /* sin datos de referencia propios */ },
+
+    _initializeManiobrasModels: function () { /* sin datos de referencia propios */ },
+
+    onSeNormalizaConfigSI: function () {
+      ModelHelper.getModel("NormalizacionLGJsonModel", this.getView()).setProperty("/SeNormalizaConfig", "S");
+    },
+
+    onSeNormalizaConfigNO: function () {
+      ModelHelper.getModel("NormalizacionLGJsonModel", this.getView()).setProperty("/SeNormalizaConfig", "N");
     },
 
     _clearCargaForm: function () {

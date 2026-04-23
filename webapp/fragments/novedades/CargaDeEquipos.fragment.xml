@@ -81,11 +81,11 @@
                 <HBox justifyContent="Start">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Fecha / Hora" showColon="true" class="sectionLabel"/>
-                        <DateTimePicker value="{ 'path': 'NormalizacionCarga>/Fechahora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                        <DateTimePicker value="{ 'path': 'NormalizacionLGJsonModel>/FechaHora', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                     <VBox>
                         <Label text="Se Informo a Empresa" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionCarga>/NormalizacionInformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionLGJsonModel>/InformoEmpresa}" items="{ path: 'EmpresaTramitacionJsonModel>/Empresas', templateShareable: true }">
                             <core:Item key="{EmpresaTramitacionJsonModel>Codigo}" text="{EmpresaTramitacionJsonModel>Codigo} - {EmpresaTramitacionJsonModel>Descripcion}"/>
                         </ComboBox>
                     </VBox>
@@ -93,36 +93,36 @@
                 <VBox>
                     <Label text="Medidas adoptadas" showColon="true" class="sectionLabel"/>
                     <HBox alignItems="Center">
-                        <CheckBox text="Se Ingreso generacion"/>
-                        <CheckBox text="Se Restringio generacion"/>
+                        <CheckBox text="Se Ingreso generacion" selected="{NormalizacionLGJsonModel>/MedIngresoGen}"/>
+                        <CheckBox text="Se Restringio generacion" selected="{NormalizacionLGJsonModel>/MedRestricGen}"/>
                     </HBox>
                     <HBox alignItems="Center">
-                        <CheckBox text="Corte de demanda"/>
-                        <CheckBox text="Sin intervencion"/>
+                        <CheckBox text="Corte de demanda" selected="{NormalizacionLGJsonModel>/MedCorteDem}"/>
+                        <CheckBox text="Sin intervencion" selected="{NormalizacionLGJsonModel>/MedSinInterv}"/>
                     </HBox>
                     <HBox alignItems="Center">
-                        <CheckBox text="Se cambio la configuracion de red" class="sapUiMediumMarginEnd"/>
+                        <CheckBox text="Se cambio la configuracion de red" selected="{NormalizacionLGJsonModel>/MedCambConfig}" class="sapUiMediumMarginEnd"/>
                         <Label text="Reduccion de tension" class="sapUiSmallMarginEnd"/>
-                        <CheckBox text="10%"/>
-                        <CheckBox text="5%"/>
-                        <CheckBox text="Otro"/>
+                        <CheckBox text="10%" selected="{NormalizacionLGJsonModel>/MedReduc10}"/>
+                        <CheckBox text="5%" selected="{NormalizacionLGJsonModel>/MedReduc5}"/>
+                        <CheckBox text="Otro" selected="{NormalizacionLGJsonModel>/MedReducOtro}"/>
                     </HBox>
                 </VBox>
                 <HBox alignItems="End">
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="Otra Medida" showColon="true" class="sectionLabel"/>
-                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionCarga>/otrasMedidas}" items="{ path: 'medidasModel>/Medidas', templateShareable: true }">
+                        <ComboBox width="300px" selectionChange=".onSelectionChange" selectedKey="{NormalizacionLGJsonModel>/OtraMedida}" items="{ path: 'medidasModel>/Medidas', templateShareable: true }">
                             <core:ListItem key="{medidasModel>Codigo}" text="{medidasModel>Descripcion}"/>
                         </ComboBox>
                     </VBox>
                     <VBox>
                         <Label text="Fecha / Hora finalizacion medidas" showColon="true" class="sectionLabel"/>
-                        <DateTimePicker value="{ 'path': 'NormalizacionCarga>/FechaFinMedidas', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
+                        <DateTimePicker value="{ 'path': 'NormalizacionLGJsonModel>/FechaFinMed', 'type': 'sap.ui.model.type.DateTime', 'formatOptions': { 'pattern': 'dd/MM/yyyy H:mm' } }"/>
                     </VBox>
                 </HBox>
                 <VBox>
                     <Label text="Comentarios" showColon="true" class="sectionLabel"/>
-                    <TextArea value="{NormalizacionCarga>/Comentarios}" width="100%"/>
+                    <TextArea value="{NormalizacionLGJsonModel>/Comentarios}" width="100%"/>
                 </VBox>
             </VBox>
         </VBox>

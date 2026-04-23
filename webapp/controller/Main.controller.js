@@ -617,10 +617,65 @@ sap.ui.define([
 				aPromises.push(LicenciaService.loadList(oNovedadData.Empresa, oNovedadData.IdNovedad));
 			}
 
-			Promise.all(aPromises).then(() => {
+			// Leer la guardia con $expand de todas las navigation properties
+			var oDetallePromise = (oNovedadData.Id && oNovedadData.Empresa)
+				? LibroGuardiaService.getGuardiaConDetalle(oNovedadData.Id, oNovedadData.Empresa, oView)
+					.catch(function (oError) {
+						Logger.warn("_editNovedadFromGuardiasList: No se pudo obtener detalle con expand", oError);
+						return null;
+					})
+				: Promise.resolve(null);
+			aPromises.push(oDetallePromise);
+
+			Promise.all(aPromises).then((aResults) => {
+				var oDetalle = aResults[aResults.length - 1];
+
 				// Establecer los datos en el modelo
 				var oNovedadModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
 				oNovedadModel.setData(oNovedadData);
+
+				// Resetear modelos hijos a defaults antes de popular desde oDetalle
+				this._initializeAllNovedadChildModels(oView);
+
+				// Distribuir los datos expandidos a los modelos de fragments
+				if (oDetalle) {
+					ModelHelper.getModel("GuardiaDetalleModel", oView).setData(oDetalle);
+
+					var fnStrip = function (o) {
+						var c = Object.assign({}, o);
+						delete c.__metadata;
+						return c;
+					};
+
+					var aAlarmas = (oDetalle.Alarmas_nav && oDetalle.Alarmas_nav.results) || [];
+					if (aAlarmas.length > 0) {
+						ModelHelper.getModel("AlarmaJsonModel", oView).setData(fnStrip(aAlarmas[0]));
+					}
+
+					var aNorm = (oDetalle.NormalizacionLG_nav && oDetalle.NormalizacionLG_nav.results) || [];
+					if (aNorm.length > 0) {
+						ModelHelper.getModel("NormalizacionLGJsonModel", oView).setData(fnStrip(aNorm[0]));
+					}
+
+					var aManiobras = (oDetalle.ManiobrasOperativas_nav && oDetalle.ManiobrasOperativas_nav.results) || [];
+					if (aManiobras.length > 0) {
+						ModelHelper.getModel("ManiobraJsonModel", oView).setData(fnStrip(aManiobras[0]));
+					}
+
+					var aCargas = (oDetalle.CargaEquipos_nav && oDetalle.CargaEquipos_nav.results) || [];
+					if (aCargas.length > 0) {
+						ModelHelper.getModel("CargaEquiposListModel", oView).setData({
+							registros: aCargas.map(fnStrip)
+						});
+					}
+
+					var oFB = oDetalle.FueraBanda_nav || null;
+					if (oFB && typeof oFB === "object" && !Array.isArray(oFB)) {
+						ModelHelper.getModel("FueraBandaJsonModel", oView).setData(fnStrip(oFB));
+					} else if (oFB && oFB.results && oFB.results.length > 0) {
+						ModelHelper.getModel("FueraBandaJsonModel", oView).setData(fnStrip(oFB.results[0]));
+					}
+				}
 
 				// Configurar el modo de edición
 				var oEditModel = ModelHelper.getModel("editModel", oView);
@@ -834,23 +889,10 @@ sap.ui.define([
 				NSFilters.push(new sap.ui.model.Filter("Empresa", sap.ui.model.FilterOperator.EQ, sEmpresaFiltro));
 			}
 
-			if (lugarKey) {
-				serverFilters.push(new sap.ui.model.Filter("Lugar", sap.ui.model.FilterOperator.EQ, lugarKey));
-				NSFilters.push(new sap.ui.model.Filter("Tplnr", sap.ui.model.FilterOperator.EQ, lugarText));
-			}
-
-			if (novedadesKeys && novedadesKeys.length) {
-				var arr = [];
-				novedadesKeys.forEach(function (nov) {
-					arr.push(new sap.ui.model.Filter("Tiponovedad", sap.ui.model.FilterOperator.EQ, nov));
-				});
-				serverFilters.push(new sap.ui.model.Filter(arr, false));
-			}
-
-			if (tipoEquipoKey) {
-				serverFilters.push(new sap.ui.model.Filter("Equipo", sap.ui.model.FilterOperator.EQ, tipoEquipoKey));
-				NSFilters.push(new sap.ui.model.Filter("Equnr", sap.ui.model.FilterOperator.EQ, tipoEquipoKey));
-			}
+			// Server-side enviamos sólo Empresa + fecha. Lugar, Equipo y TipoNovedad
+			// se filtran client-side sobre ambas respuestas (GuardiasListSet y
+			// NovedadesServicioSet) para soportar multi-selección y la lógica de
+			// mapeo AREC/CARG/CREC/DESE/RECD sobre Perturbaciones/Programadas.
 
 			if (fromDate && toDate) {
 				serverFilters.push(new sap.ui.model.Filter({
@@ -962,7 +1004,24 @@ sap.ui.define([
 			oGuardiasSetModel.read("/GuardiasListSet", {
 				filters: serverFilters,
 				success: function (data) {
-					state.guardias = (data && data.results) ? data.results : [];
+					var results = (data && data.results) ? data.results : [];
+					if (lugarKey) {
+						results = results.filter(function (r) {
+							return (r.Lugar || "").trim() === lugarKey;
+						});
+					}
+					if (tipoEquipoKey) {
+						results = results.filter(function (r) {
+							return (r.Equipo || "").trim() === tipoEquipoKey;
+						});
+					}
+					if (novedadesKeys && novedadesKeys.length) {
+						var aKeys = novedadesKeys.map(function (k) { return (k || "").trim(); });
+						results = results.filter(function (r) {
+							return aKeys.indexOf((r.Tiponovedad || "").trim()) !== -1;
+						});
+					}
+					state.guardias = results;
 					state.guardiasDone = true;
 					publishIfReady();
 				},
@@ -977,14 +1036,50 @@ sap.ui.define([
 				filters: NSFilters,
 				urlParameters: { "$expand": Constants.ODATA_EXPAND_PROPERTIES },
 				success: function (data) {
-					var results = (data && data.results) ? data.results : [];
-					results.forEach(function (item) {
-						if (item.CodNovedad === "P" || item.CodNovedad === "C") {
-							state.perturbaciones.push(item);
+					var rows = (data && data.results) ? data.results : [];
+
+					if (lugarText) {
+						rows = rows.filter(function (r) {
+							return (r.Tplnr || "").trim() === lugarText;
+						});
+					}
+					if (tipoEquipoKey) {
+						rows = rows.filter(function (r) {
+							return (r.Equnr || "").trim() === tipoEquipoKey;
+						});
+					}
+
+					if (novedadesKeys && novedadesKeys.length) {
+						var aKeys = novedadesKeys.map(function (k) { return (k || "").trim(); });
+						rows = rows.filter(function (r) {
+							return aKeys.some(function (k) {
+								switch (k) {
+									// Perturbaciones (CodNovedad="P") — semántica estricta de los checkboxes
+									case "AREC": return r.CodNovedad === "P" && r.Recierre === true  && r.GenIndisponibilidad === false;
+									case "DESE": return r.CodNovedad === "P" && r.Recierre === false && r.GenIndisponibilidad === true;
+									case "RECD": return r.CodNovedad === "P" && r.Recierre === true  && r.GenIndisponibilidad === true;
+									// Emergencia — se almacena como CodNovedad="D", cae en la pestaña Programadas
+									case "FSPE": return r.CodNovedad === "D" && r.GenIndisponibilidad === true && r.Forzada === true;
+									// Cualquier Programada
+									case "CARG": return r.CodNovedad !== "P" && r.CodNovedad !== "C";
+									default:     return false;
+								}
+							});
+						});
+					}
+
+					var aPert = [];
+					var aProg = [];
+					rows.forEach(function (it) {
+						if (it.CodNovedad === "P" || it.CodNovedad === "C") {
+							aPert.push(it);
 						} else {
-							state.programadas.push(item);
+							aProg.push(it);
 						}
 					});
+
+					state.perturbaciones = aPert;
+					state.programadas = aProg;
 					state.opsDone = true;
 					publishIfReady();
 				},
@@ -1008,7 +1103,7 @@ sap.ui.define([
 			var oView = this.getView();
 			oView.byId("LugarFilter").setSelectedKey("");
 			oView.byId("EquipoFilter").setSelectedKey("");
-			oView.byId("NovedadesFilter").setSelectedItems("");
+			oView.byId("NovedadesFilter").setSelectedKeys([]);
 			oView.byId("FromDateFilter").setValue(null);
 			oView.byId("ToDateFilter").setValue(null);
 			oView.byId("InitialDate").setValue(null);

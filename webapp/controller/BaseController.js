@@ -645,23 +645,196 @@ sap.ui.define([
 					oPromise
 						.then(function (oResponse) {
 							Logger.info("onSaveGuardia: Registro " + (bIsEditMode ? "actualizado" : "creado") + " exitosamente en Libro de Guardia");
-
+							var sIdGuardia = bIsEditMode
+								? oGuardiaData.Id
+								: ((oResponse && oResponse.Id) || oGuardiaData.Id);
+							return that._saveHijosNovedadLG(sIdGuardia, sEmpresa, bIsEditMode, oView);
+						})
+						.then(function () {
 							var oBus = sap.ui.getCore().getEventBus();
 							if (oBus) {
 								oBus.publish("Main", "onInit");
 								Logger.debug("onSaveGuardia: Evento publicado para refrescar datos en Main");
 							}
-
 							that.onNavBack();
 						})
 						.catch(function (oError) {
-							Logger.error("onSaveGuardia: Error al " + (bIsEditMode ? "actualizar" : "crear") + " registro en Libro de Guardia", oError);
+							Logger.error("onSaveGuardia: Error al " + (bIsEditMode ? "actualizar" : "crear") + " registro o sus hijos", oError);
 						});
 				})
 				.catch(function (oError) {
 					Logger.error("onSaveGuardia: Error al validar turno", oError);
 					MessageBox.error("Error al validar el turno. Intente nuevamente.");
 				});
+		},
+
+		_getAlarmaDefaults: function () {
+			return {
+				Empresa: "", IdNovedad: "", Posicion: "",
+				CodigoAlarma: "", InformoPersonal: "", InformoEmpresa: "", Comentarios: "",
+				DescripcionSeleccionada: "",
+				NormFechaHora: null, NormInformoPersonal: "", NormInformoEmpresa: "", NormComentarios: ""
+			};
+		},
+
+		_getNormalizacionLGDefaults: function () {
+			return {
+				Empresa: "", IdNovedad: "", Posicion: "",
+				Contexto: "", FechaHora: null, SeNormalizaConfig: "", FalloEquipo: "",
+				InformoPersonal: "", InformoEmpresa: "", ASolicitudDe: "", Comentarios: "",
+				MedIngresoGen: false, MedRestricGen: false, MedSinInterv: false, MedCambConfig: false,
+				MedReduc10: false, MedReduc5: false, MedReducOtro: false,
+				OtraMedida: "", MedCorteDem: false, FechaFinMed: null
+			};
+		},
+
+		_getManiobraDefaults: function () {
+			return {
+				Empresa: "", IdNovedad: "", Posicion: "",
+				TipoManiobra: "", TextoCampos: "", DeBarra: "", ABarra: "", FalloEquipo: "",
+				Comentarios: "", InformoPersonal: "", InformoEmpresa: ""
+			};
+		},
+
+		_getFueraBandaDefaults: function () {
+			return {
+				Empresa: "", IdNovedad: "", Posicion: "",
+				Nivel500: false, Nivel345: false, Nivel220: false, Nivel132: false,
+				TensionRequerida: "", Motivos: "", SolicitadoPor: "", Comentarios: ""
+			};
+		},
+
+		_getCargaFormDefaults: function () {
+			return { Porcentaje: "", FechaHora: null, InformoEmpresa: "", Comentarios: "", editingIndex: -1 };
+		},
+
+		/**
+		 * Resetea todos los modelos de formulario de hijos de una novedad a sus defaults.
+		 * Usar al abrir nueva novedad, antes de popular datos en editar, y al cambiar CodNovedad.
+		 */
+		_initializeAllNovedadChildModels: function (oView) {
+			ModelHelper.getModel("AlarmaJsonModel", oView).setData(this._getAlarmaDefaults());
+			ModelHelper.getModel("NormalizacionLGJsonModel", oView).setData(this._getNormalizacionLGDefaults());
+			ModelHelper.getModel("ManiobraJsonModel", oView).setData(this._getManiobraDefaults());
+			ModelHelper.getModel("FueraBandaJsonModel", oView).setData(this._getFueraBandaDefaults());
+			ModelHelper.getModel("CargaFormJsonModel", oView).setData(this._getCargaFormDefaults());
+			ModelHelper.getModel("CargaEquiposListModel", oView).setData({ registros: [] });
+			Logger.debug("Modelos hijos de novedad inicializados (defaults)");
+		},
+
+		_saveHijosNovedadLG: function (sIdGuardia, sEmpresa, bIsEditMode, oView) {
+			if (!sIdGuardia) {
+				Logger.warn("_saveHijosNovedadLG: IdNovedad no disponible, se omite el guardado de hijos");
+				return Promise.resolve();
+			}
+
+			var aPromises = [];
+			var oDetModel = ModelHelper.getModel("GuardiaDetalleModel", oView);
+			var oDet = (oDetModel && oDetModel.getData()) || {};
+
+			var fnGuardarHijoConPosicion = function (sModelName, aOriginales, fnCreate, fnUpdate, fnCleanPayload) {
+				var oModel = ModelHelper.getModel(sModelName, oView);
+				var oData = oModel && oModel.getData();
+				if (!oData) return;
+				var oPayload = Object.assign({}, oData);
+				if (typeof fnCleanPayload === "function") fnCleanPayload(oPayload);
+				oPayload.Empresa = sEmpresa;
+				oPayload.IdNovedad = sIdGuardia;
+				if (!oPayload.Posicion) oPayload.Posicion = "001";
+				var bExiste = bIsEditMode && aOriginales.some(function (r) {
+					return r.Posicion === oPayload.Posicion;
+				});
+				aPromises.push((bExiste ? fnUpdate : fnCreate)(oPayload, oView));
+			};
+
+			// Determinar contexto a partir del CodNovedad real (no del estado residual de AlarmaJsonModel,
+			// que es global y puede quedar contaminado si el usuario venía de una novedad Alarma).
+			var oNovedadFormModel = ModelHelper.getModel("NovedadLGFormJsonModel", oView);
+			var sCodNovedad = (oNovedadFormModel && oNovedadFormModel.getProperty("/CodNovedad")) || "";
+			var oMapping = (Constants.NOVEDAD_FRAGMENT_MAPPING && Constants.NOVEDAD_FRAGMENT_MAPPING[sEmpresa === Constants.EMPRESAS.TBA ? "TBA" : "TRA"]) || {};
+			var bEsContextoAlarma = !!(oMapping.Alarma && oMapping.Alarma.indexOf(sCodNovedad) !== -1);
+			Logger.info("_saveHijosNovedadLG: CodNovedad=" + sCodNovedad + ", bEsContextoAlarma=" + bEsContextoAlarma);
+
+			// AlarmaLG — incluye Norm* embebidos. Si hay alarma, NormalizacionLG no se guarda aparte.
+			var aAlarmasOrig = (oDet.Alarmas_nav && oDet.Alarmas_nav.results) || [];
+			fnGuardarHijoConPosicion(
+				"AlarmaJsonModel",
+				aAlarmasOrig,
+				LibroGuardiaService.createAlarma.bind(LibroGuardiaService),
+				LibroGuardiaService.updateAlarma.bind(LibroGuardiaService),
+				function (p) { delete p.DescripcionSeleccionada; }
+			);
+
+			// NormalizacionLG (clave: Empresa + IdNovedad — una por novedad, sin Posicion).
+			// Solo se salta en contexto Alarma (la normalización viaja embebida en el payload de Alarma).
+			if (!bEsContextoAlarma) {
+				var oNormModel = ModelHelper.getModel("NormalizacionLGJsonModel", oView);
+				var oNorm = oNormModel && oNormModel.getData();
+				if (oNorm) {
+					var oNormPayload = Object.assign({}, oNorm);
+					oNormPayload.Empresa = sEmpresa;
+					oNormPayload.IdNovedad = sIdGuardia;
+					var aNormOrig = (oDet.NormalizacionLG_nav && oDet.NormalizacionLG_nav.results) || [];
+					var bNormExiste = bIsEditMode && aNormOrig.length > 0;
+					Logger.info("_saveHijosNovedadLG: Guardando Normalizacion (existe=" + bNormExiste + ")", oNormPayload);
+					aPromises.push((bNormExiste
+						? LibroGuardiaService.updateNormalizacion
+						: LibroGuardiaService.createNormalizacion).call(LibroGuardiaService, oNormPayload, oView));
+				} else {
+					Logger.warn("_saveHijosNovedadLG: NormalizacionLGJsonModel sin datos — no se guarda");
+				}
+			} else {
+				Logger.info("_saveHijosNovedadLG: Contexto Alarma — Normalizacion viaja embebida, no se guarda aparte");
+			}
+
+			// ManiobraOperativa
+			var aManOrig = (oDet.ManiobrasOperativas_nav && oDet.ManiobrasOperativas_nav.results) || [];
+			fnGuardarHijoConPosicion(
+				"ManiobraJsonModel",
+				aManOrig,
+				LibroGuardiaService.createManiobra.bind(LibroGuardiaService),
+				LibroGuardiaService.updateManiobra.bind(LibroGuardiaService)
+			);
+
+			// FueraBanda
+			var oFBOrig = oDet.FueraBanda_nav;
+			var aFBOrig = [];
+			if (oFBOrig) {
+				aFBOrig = Array.isArray(oFBOrig.results)
+					? oFBOrig.results
+					: (oFBOrig.Posicion ? [oFBOrig] : []);
+			}
+			fnGuardarHijoConPosicion(
+				"FueraBandaJsonModel",
+				aFBOrig,
+				LibroGuardiaService.createFueraBanda.bind(LibroGuardiaService),
+				LibroGuardiaService.updateFueraBanda.bind(LibroGuardiaService)
+			);
+
+			// CargaEquipo (lista)
+			var oCargaListModel = ModelHelper.getModel("CargaEquiposListModel", oView);
+			var aCargaRegistros = (oCargaListModel && oCargaListModel.getData() && oCargaListModel.getData().registros) || [];
+			var aCargaOrig = (oDet.CargaEquipos_nav && oDet.CargaEquipos_nav.results) || [];
+			aCargaRegistros.forEach(function (oCarga, i) {
+				var oCargaPayload = Object.assign({}, oCarga);
+				oCargaPayload.Empresa = sEmpresa;
+				oCargaPayload.IdNovedad = sIdGuardia;
+				if (!oCargaPayload.Posicion) oCargaPayload.Posicion = ("00" + (i + 1)).slice(-3);
+				var bCargaExiste = bIsEditMode && aCargaOrig.some(function (r) {
+					return r.Posicion === oCargaPayload.Posicion;
+				});
+				aPromises.push((bCargaExiste
+					? LibroGuardiaService.updateCargaEquipo
+					: LibroGuardiaService.createCargaEquipo).call(LibroGuardiaService, oCargaPayload, oView));
+			});
+
+			if (aPromises.length === 0) {
+				Logger.debug("_saveHijosNovedadLG: No hay hijos para guardar");
+				return Promise.resolve();
+			}
+
+			Logger.info("_saveHijosNovedadLG: Guardando " + aPromises.length + " hijo(s) de la novedad " + sIdGuardia);
+			return Promise.all(aPromises);
 		},
 
 		/**

@@ -16,7 +16,7 @@
                     <HBox class="container" justifyContent="SpaceBetween">
                         <VBox>
                             <Label text="Tipo de Novedad" showColon="true" class="sectionLabel"/>
-                            <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode}}">
+                            <ComboBox width="300px" selectionChange=".onNovedadSelected" selectedKey="{NovedadLGFormJsonModel>/CodNovedad}" valueState="{NovedadLGFormJsonModel>/CodNovedadState}" valueStateText="{NovedadLGFormJsonModel>/CodNovedadStateMessage}" items="{ path: 'Novedades>/novs', templateShareable: true }" enabled="{= !${utilsModel>/readOnlyMode} &amp;&amp; ${editModel>/mode} !== 'edit'}">
                                 <core:ListItem key="{Novedades>Codigo}" text="{Novedades>Codigo} - {Novedades>Descripcion}" enabled="{parts:[{path:'Novedades>Codigo'},{path:'editModel>/mode'}], formatter:'.formatter.isNovedadEnabled'}"/>
                             </ComboBox>
                         </VBox>
